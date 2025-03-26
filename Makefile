@@ -28,8 +28,7 @@ CLIENT_BINARY_NAME	=	jetpack_client
 
 MAIN_CLIENT_SRC		=	./client/src/main.cpp
 
-CLIENT_SRC			=	./client/src/client/Client.cpp						\
-						./client/src/parsing/Parser.cpp						\
+CLIENT_SRC			=	./client/src/parsing/Parser.cpp						\
 						./server/src/sockets/Socket.cpp						\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
