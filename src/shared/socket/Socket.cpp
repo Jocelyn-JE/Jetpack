@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "./server/src/sockets/Socket.hpp"
+#include "./src/shared/socket/Socket.hpp"
 
 Socket::Socket(int fd, struct sockaddr_in address) noexcept :
     _closeSocketOnDestruction(false) {

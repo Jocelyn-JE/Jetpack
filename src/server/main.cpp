@@ -6,17 +6,17 @@
 */
 
 #include <iostream>
-#include "./server/src/server/Server.hpp"
-#include "./server/src/parsing/Parser.hpp"
+#include "./src/server/Server.hpp"
+#include "./src/shared/parsing/Parser.hpp"
 
 int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);
 
     try {
-        parser.parseArgs();
+        parser.parseServerArgs();
     } catch(const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
-        std::cerr << parser.getUsage() << std::endl;
+        std::cerr << parser.getServerUsage() << std::endl;
         return 84;
     }
     return jetpack::server::Server::runServer(atoi(argv[1]));

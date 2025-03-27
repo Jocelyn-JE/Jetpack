@@ -5,8 +5,8 @@
 ** PollFdList
 */
 
-#ifndef SERVER_SRC_SERVER_POLLFDLIST_HPP_
-    #define SERVER_SRC_SERVER_POLLFDLIST_HPP_
+#ifndef SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_
+    #define SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_
 
     #include <poll.h>
     #include <vector>
@@ -25,4 +25,4 @@ class PollFdList : public std::vector<struct pollfd> {
 }  // namespace server
 }  // namespace jetpack
 
-#endif  // SERVER_SRC_SERVER_POLLFDLIST_HPP_
+#endif  // SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_

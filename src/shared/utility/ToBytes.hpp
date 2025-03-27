@@ -5,8 +5,8 @@
 ** ToBytes
 */
 
-#ifndef SERVER_SRC_SERVER_TOBYTES_HPP_
-    #define SERVER_SRC_SERVER_TOBYTES_HPP_
+#ifndef SRC_SHARED_UTILITY_TOBYTES_HPP_
+    #define SRC_SHARED_UTILITY_TOBYTES_HPP_
 
     #include <vector>
     #include <cstdint>
@@ -21,4 +21,4 @@ std::vector<uint8_t> toBytes(const T &data) {
 }
 }  // namespace jetpack
 
-#endif  // SERVER_SRC_SERVER_TOBYTES_HPP_
+#endif  // SRC_SHARED_UTILITY_TOBYTES_HPP_

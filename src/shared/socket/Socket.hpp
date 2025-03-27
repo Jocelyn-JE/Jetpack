@@ -5,8 +5,8 @@
 ** Socket
 */
 
-#ifndef SERVER_SRC_SOCKETS_SOCKET_HPP_
-    #define SERVER_SRC_SOCKETS_SOCKET_HPP_
+#ifndef SRC_SHARED_SOCKET_SOCKET_HPP_
+    #define SRC_SHARED_SOCKET_SOCKET_HPP_
 
     #include <netinet/in.h>
     #include <string>
@@ -82,4 +82,4 @@ class Socket {
     struct sockaddr_in _address;
 };
 
-#endif  // SERVER_SRC_SOCKETS_SOCKET_HPP_
+#endif  // SRC_SHARED_SOCKET_SOCKET_HPP_

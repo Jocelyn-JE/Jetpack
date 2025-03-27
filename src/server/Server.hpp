@@ -5,15 +5,15 @@
 ** Server
 */
 
-#ifndef SERVER_SRC_SERVER_SERVER_HPP_
-    #define SERVER_SRC_SERVER_SERVER_HPP_
+#ifndef SRC_SERVER_SERVER_HPP_
+    #define SRC_SERVER_SERVER_HPP_
 
     #include <memory>
     #include <vector>
     #include <string>
-    #include "./server/src/sockets/Socket.hpp"
-    #include "./server/src/server/PollFdList.hpp"
-    #include "./server/src/client/Client.hpp"
+    #include "./src/shared/socket/Socket.hpp"
+    #include "./src/server/pollfdlist/PollFdList.hpp"
+    #include "./src/server/client/Client.hpp"
     #define LISTEN_BACKLOG 128
 
 namespace jetpack {
@@ -39,4 +39,4 @@ class Server {
 }  // namespace server
 }  // namespace jetpack
 
-#endif  // SERVER_SRC_SERVER_SERVER_HPP_
+#endif  // SRC_SERVER_SERVER_HPP_

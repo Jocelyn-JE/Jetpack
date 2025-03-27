@@ -5,14 +5,14 @@
 ** Client
 */
 
-#ifndef SERVER_SRC_CLIENT_CLIENT_HPP_
-    #define SERVER_SRC_CLIENT_CLIENT_HPP_
+#ifndef SRC_SERVER_CLIENT_CLIENT_HPP_
+    #define SRC_SERVER_CLIENT_CLIENT_HPP_
 
     #include <bits/stdc++.h>
     #include <unordered_map>
     #include <memory>
     #include <string>
-    #include "./server/src/sockets/Socket.hpp"
+    #include "./src/shared/socket/Socket.hpp"
 
 namespace jetpack {
 namespace server {
@@ -32,4 +32,4 @@ class Client {
 }  // namespace server
 }  // namespace jetpack
 
-#endif  // SERVER_SRC_CLIENT_CLIENT_HPP_
+#endif  // SRC_SERVER_CLIENT_CLIENT_HPP_
