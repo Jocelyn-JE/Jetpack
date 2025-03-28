@@ -6,8 +6,8 @@
 */
 
 #include <iostream>
-#include "./src/server/Server.hpp"
-#include "./src/shared/parsing/Parser.hpp"
+#include "Server.hpp"
+#include "Parser.hpp"
 
 int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);

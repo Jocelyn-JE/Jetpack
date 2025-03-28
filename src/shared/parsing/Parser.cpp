@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <string>
-#include "./src/shared/parsing/Parser.hpp"
+#include "Parser.hpp"
 
 jetpack::Parser::Parser(int argc, char **argv) :
     _args(argv, argv + argc), _argc(argc) {
