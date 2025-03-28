@@ -97,6 +97,7 @@ $(CPPTESTFLAGS)
 
 clean:
 	rm -f $(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
+	rm -f $(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ)
 	rm -f *.gcda
 	rm -f *.gcno
 	rm -f vgcore.*
