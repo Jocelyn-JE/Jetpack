@@ -39,7 +39,8 @@ MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 
 TESTS_SRC			=
 
-INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket -I ./src/shared/utility
+INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
+						-I ./src/shared/utility
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) -O2 -g
 
