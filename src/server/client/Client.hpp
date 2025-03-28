@@ -14,7 +14,7 @@
     #include <string>
     #include "Socket.hpp"
 
-namespace jetpack {
+namespace Jetpack {
 namespace server {
 class Client {
  public:

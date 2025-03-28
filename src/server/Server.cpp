@@ -19,7 +19,7 @@ static void handler(int signum) {
     stopFlag = signum;
 }
 
-int jetpack::server::Server::runServer(int port) {
+int Jetpack::server::Server::runServer(int port) {
     int poll_result = 0;
     struct sigaction sa;
 
@@ -28,7 +28,7 @@ int jetpack::server::Server::runServer(int port) {
     sa.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sa, NULL);
     try {
-        jetpack::server::Server server(port);
+        Jetpack::server::Server server(port);
 
         while (poll_result != -1 && !stopFlag) {
             poll_result = server.pollSockets();
@@ -43,7 +43,7 @@ int jetpack::server::Server::runServer(int port) {
 
 //-----------------------------------------------------------------------------
 
-jetpack::server::Server::Server(int port) :
+Jetpack::server::Server::Server(int port) :
     _serverSocket(AF_INET, SOCK_STREAM, 0),
     _socketPollList(_serverSocket.getSocketFd()), _nextClientId(0) {
     _serverSocket.bindSocket(port);
@@ -51,10 +51,10 @@ jetpack::server::Server::Server(int port) :
     std::cout << "Server started on port " << port << std::endl;
 }
 
-jetpack::server::Server::~Server() {
+Jetpack::server::Server::~Server() {
 }
 
-int jetpack::server::Server::pollSockets() {
+int Jetpack::server::Server::pollSockets() {
     int result = poll(_socketPollList.data(), _clients.size() + 1, -1);
     if (result == -1)
         throw Socket::SocketError("Poll failed: " +
@@ -62,14 +62,14 @@ int jetpack::server::Server::pollSockets() {
     return result;
 }
 
-bool jetpack::server::Server::isClosed() {
+bool Jetpack::server::Server::isClosed() {
     return !_serverSocket.closesOnDestroy();
 }
 
 // Iterate through all clients with _clients.size() (+ 1 for the server socket)
 // and update/execute depending on values read from the sockets.
 // Server socket is _serverSocket polling is _socketPollList[0]
-void jetpack::server::Server::updateSockets() {
+void Jetpack::server::Server::updateSockets() {
     std::string socketStr;
     std::string buffer;
 
@@ -100,12 +100,12 @@ void jetpack::server::Server::updateSockets() {
 
 // This function does not close the given socket, it only removes it from the
 // socket list and poll list
-void jetpack::server::Server::handleDisconnection(int socketIndex) {
+void Jetpack::server::Server::handleDisconnection(int socketIndex) {
     _clients.erase(_clients.begin() + (socketIndex - 1));
     _socketPollList.removeSocket(_socketPollList[socketIndex].fd);
 }
 
-void jetpack::server::Server::handleConnection() {
+void Jetpack::server::Server::handleConnection() {
     struct sockaddr_in client_addr;
     socklen_t client_addr_size = sizeof(client_addr);
     int client_socket = accept(_serverSocket.getSocketFd(),
@@ -122,7 +122,7 @@ void jetpack::server::Server::handleConnection() {
         this->_clients.back()->getId()));
 }
 
-void jetpack::server::Server::sendToAllClients(std::string data) {
+void Jetpack::server::Server::sendToAllClients(std::string data) {
     for (size_t i = 0; i < this->_clients.size(); i++) {
         this->_clients[i]->sendData(data);
     }

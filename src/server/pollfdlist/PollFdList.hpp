@@ -12,7 +12,7 @@
     #include <vector>
     #include <cstdint>
 
-namespace jetpack {
+namespace Jetpack {
 namespace server {
 class PollFdList : public std::vector<struct pollfd> {
  public:

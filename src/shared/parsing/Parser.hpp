@@ -12,28 +12,26 @@
     #include <string>
     #include <vector>
 
-namespace jetpack {
+namespace Jetpack {
 class Parser {
  public:
         Parser() = delete;
         Parser(int argc, char **argv);
         ~Parser();
         class ParsingError : public std::exception {
-         public:
-            explicit ParsingError(std::string message);
-            ~ParsingError();
-            const char *what() const noexcept override;
-         private:
-            std::string _message;
+	         public:
+	            explicit ParsingError(std::string message);
+	            ~ParsingError();
+	            const char *what() const noexcept override;
+	         private:
+	            std::string _message;
         };
         void parseServerArgs();
-        void parseClientArgs();
         std::string getServerUsage();
-        std::string getClientUsage();
  private:
         std::vector<std::string> _args;
         int _argc;
 };
-}  // namespace jetpack
+}  // namespace Jetpack
 
 #endif  // SRC_SHARED_PARSING_PARSER_HPP_
