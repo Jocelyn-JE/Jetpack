@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-.PHONY: all clean fclean re tests_run vg cs linter
+.PHONY: all clean fclean re tests_run vg cs linter lib
 
 %.o: %.cpp
 	g++ $(CPPFLAGS) -c $< -o $@
@@ -27,15 +27,27 @@ SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
 MAIN_SERVER_OBJ		=	$(MAIN_SERVER_SRC:.cpp=.o)
 
+
 CLIENT_BINARY_NAME	=	jetpack_client
 
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
-CLIENT_SRC			=
+CLIENT_SRC			=	./src/client/Graphic.cpp						\
+						./src/client/Program.cpp						\
+						./src/client/Parser.cpp							\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
+
 MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
+
+
+LIB_SRC				=	./src/shared/utility/splitString.cpp	\
+						./src/shared/utility/isNumber.cpp
+
+LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
+
+LIB_NAME			=	libjetpack.a
 
 TESTS_SRC			=
 
@@ -43,7 +55,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client
 
-CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) -O2 -g
+CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) -L./ -ljetpack -O2 -g
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS)
 
@@ -70,17 +82,20 @@ VALGRIND_LOG		=	valgrind.log
 
 all: server client
 
-$(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
+$(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) $(LIB_NAME)
 	g++ $(CPPFLAGS) -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
 $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
 
-$(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ)
-	g++ $(SFML_FLAGS) -o $(CLIENT_BINARY_NAME) $(CLIENT_OBJ) \
-$(MAIN_CLIENT_OBJ) $(SHARED_OBJ)
+$(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) $(LIB_NAME)
+	g++ -o $(CLIENT_BINARY_NAME) $(CLIENT_OBJ) \
+$(MAIN_CLIENT_OBJ) $(SHARED_OBJ) $(CPPFLAGS) $(SFML_FLAGS)
 
 client: $(CLIENT_BINARY_NAME)
 
 server: $(SERVER_BINARY_NAME)
+
+$(LIB_NAME): $(LIB_OBJ)
+	ar rc $(LIB_NAME) $(LIB_OBJ)
 
 vg: $(SERVER_BINARY_NAME) $(CLIENT_BINARY_NAME)
 	valgrind $(VALGRIND_FLAGS) ./$(SERVER_BINARY_NAME) 4242 tests
@@ -97,14 +112,15 @@ $(CPPTESTFLAGS)
 
 clean:
 	rm -f $(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
-	rm -f $(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ)
+	rm -f $(CLIENT_OBJ) $(MAIN_CLIENT_OBJ)
+	rm -f $(LIB_OBJ)
 	rm -f *.gcda
 	rm -f *.gcno
 	rm -f vgcore.*
 	rm -f *.log
 
 fclean: clean
-	rm -f $(SERVER_BINARY_NAME) $(CLIENT_BINARY_NAME)
+	rm -f $(SERVER_BINARY_NAME) $(CLIENT_BINARY_NAME) $(LIB_NAME)
 	rm -f unit_tests
 
 re: fclean all
