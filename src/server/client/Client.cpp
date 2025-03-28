@@ -11,7 +11,7 @@
 
 // Helper functions -----------------------------------------------------------
 
-static bool clientDisconnect(jetpack::server::Client const &client) {
+static bool clientDisconnect(Jetpack::server::Client const &client) {
     std::cout << "Client " << client._controlSocket.getSocketFd()
         << " disconnected" << std::endl;
     return true;
@@ -19,23 +19,23 @@ static bool clientDisconnect(jetpack::server::Client const &client) {
 
 // Client class member functions ----------------------------------------------
 
-jetpack::server::Client::Client(int fd, struct sockaddr_in address,
+Jetpack::server::Client::Client(int fd, struct sockaddr_in address,
     unsigned int id) : _controlSocket(fd, address), _id(id) {
 }
 
-jetpack::server::Client::~Client() {
+Jetpack::server::Client::~Client() {
     std::cout << "Destroying client" << std::endl;
 }
 
-unsigned int jetpack::server::Client::getId() const {
+unsigned int Jetpack::server::Client::getId() const {
     return _id;
 }
 
-void jetpack::server::Client::sendData(std::string data) {
+void Jetpack::server::Client::sendData(std::string data) {
     _controlSocket.writeToSocket(data);
 }
 
-bool jetpack::server::Client::handleCommand(std::string commandLine) {
+bool Jetpack::server::Client::handleCommand(std::string commandLine) {
     if (commandLine == "")
         return clientDisconnect(*this);
     if (commandLine == "QUIT\r\n") {

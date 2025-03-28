@@ -16,7 +16,7 @@
     #include "Client.hpp"
     #define LISTEN_BACKLOG 128
 
-namespace jetpack {
+namespace Jetpack {
 namespace server {
 class Server {
  public:
