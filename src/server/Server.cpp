@@ -10,8 +10,8 @@
 #include <unistd.h>
 #include <string>
 #include <iostream>
-#include "./src/shared/socket/Socket.hpp"
-#include "./src/server/Server.hpp"
+#include "Socket.hpp"
+#include "Server.hpp"
 
 volatile sig_atomic_t stopFlag = 0;
 

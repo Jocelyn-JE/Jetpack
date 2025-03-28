@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <string>
-#include "./src/server/client/Client.hpp"
+#include "Client.hpp"
 
 // Helper functions -----------------------------------------------------------
 

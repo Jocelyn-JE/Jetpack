@@ -11,9 +11,9 @@
     #include <memory>
     #include <vector>
     #include <string>
-    #include "./src/shared/socket/Socket.hpp"
-    #include "./src/server/pollfdlist/PollFdList.hpp"
-    #include "./src/server/client/Client.hpp"
+    #include "Socket.hpp"
+    #include "PollFdList.hpp"
+    #include "Client.hpp"
     #define LISTEN_BACKLOG 128
 
 namespace jetpack {

@@ -7,8 +7,7 @@
 
 #include <string>
 #include <iostream>
-#include "./src/shared/parsing/Parser.hpp"
-// #include "./client/src/client/Client.hpp"
+#include "Parser.hpp"
 
 int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);

@@ -10,13 +10,11 @@
 %.o: %.cpp
 	g++ $(CPPFLAGS) -c $< -o $@
 
-# Shared ressources
 SHARED_SRC			=	./src/shared/parsing/Parser.cpp						\
 						./src/shared/socket/Socket.cpp						\
 
 SHARED_OBJ			=	$(SHARED_SRC:.cpp=.o)
 
-# Server ressources
 SERVER_BINARY_NAME	=	jetpack_server
 
 MAIN_SERVER_SRC		=	./src/server/main.cpp
@@ -29,7 +27,6 @@ SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
 MAIN_SERVER_OBJ		=	$(MAIN_SERVER_SRC:.cpp=.o)
 
-# Client ressources
 CLIENT_BINARY_NAME	=	jetpack_client
 
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
@@ -40,11 +37,11 @@ CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
 MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 
-# Tests ressources
 TESTS_SRC			=
 
-# Flags
-INCLUDES			=	-I ./src -I ./
+INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
+						-I ./src/shared/utility -I ./src/server/pollfdlist	\
+						-I ./src/server/client
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) -O2 -g
 
@@ -100,6 +97,7 @@ $(CPPTESTFLAGS)
 
 clean:
 	rm -f $(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
+	rm -f $(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ)
 	rm -f *.gcda
 	rm -f *.gcno
 	rm -f vgcore.*

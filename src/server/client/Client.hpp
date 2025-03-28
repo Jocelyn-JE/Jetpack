@@ -12,7 +12,7 @@
     #include <unordered_map>
     #include <memory>
     #include <string>
-    #include "./src/shared/socket/Socket.hpp"
+    #include "Socket.hpp"
 
 namespace jetpack {
 namespace server {
