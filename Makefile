@@ -55,7 +55,8 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client
 
-CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) -L./ -ljetpack -O2 -g
+CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) \
+ 						-L./ -ljetpack -O2 -g
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS)
 
@@ -82,11 +83,13 @@ VALGRIND_LOG		=	valgrind.log
 
 all: server client
 
-$(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) $(LIB_NAME)
+$(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) \
+	$(LIB_NAME)
 	g++ $(CPPFLAGS) -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
 $(MAIN_SERVER_OBJ) $(SHARED_OBJ)
 
-$(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) $(LIB_NAME)
+$(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) \
+	$(LIB_NAME)
 	g++ -o $(CLIENT_BINARY_NAME) $(CLIENT_OBJ) \
 $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) $(CPPFLAGS) $(SFML_FLAGS)
 
