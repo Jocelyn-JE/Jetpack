@@ -1,2 +1,7 @@
 jetpack_server
 jetpack_client
+.idea
+.vscode
+*.o
+*.a
+vg*

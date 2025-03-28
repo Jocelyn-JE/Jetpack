@@ -10,6 +10,7 @@
 
     #include <vector>
     #include <cstdint>
+    #include <cstring>
 
 namespace jetpack {
 template <typename T>

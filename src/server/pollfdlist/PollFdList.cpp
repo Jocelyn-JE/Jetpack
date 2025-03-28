@@ -5,7 +5,7 @@
 ** PollFdList
 */
 
-#include "./src/server/pollfdlist/PollFdList.hpp"
+#include "PollFdList.hpp"
 
 jetpack::server::PollFdList::PollFdList(int serverSocket) {
     addSocket(serverSocket, POLLIN);
