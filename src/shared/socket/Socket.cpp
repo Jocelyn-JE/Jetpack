@@ -6,7 +6,6 @@
 */
 
 #include "Socket.hpp"
-
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
