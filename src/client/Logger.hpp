@@ -6,6 +6,7 @@
 #define SRC_CLIENT_LOGGER_HPP_
 
 #include <iostream>
+#include <mutex>
 #include <string>
 
 namespace jetpack {

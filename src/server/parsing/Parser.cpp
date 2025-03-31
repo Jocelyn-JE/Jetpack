@@ -51,18 +51,6 @@ void jetpack::Parser::parseServerArgs() {
     }
 }
 
-void jetpack::Parser::parseClientArgs() {
-    if (this->_argc == 2 && this->_args[1] == "-help") {
-        std::cout << getClientUsage() << std::endl;
-        exit(0);
-    }
-    if (this->_argc < 3) throw ParsingError("Not enough args");
-    if (this->_argc > 3) throw ParsingError("Too many args");
-    if (!isNumber(this->_args[2])) throw ParsingError("Port must be a number");
-    if (inet_addr(this->_args[1].c_str()) == INADDR_NONE)
-        throw ParsingError("IP must be a valid IPv4 address");
-}
-
 jetpack::Parser::ParsingError::ParsingError(std::string message) {
     this->_message = message;
 }

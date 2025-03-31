@@ -10,8 +10,7 @@
 %.o: %.cpp
 	g++ $(CPPFLAGS) -c $< -o $@
 
-SHARED_SRC			=	./src/shared/parsing/Parser.cpp						\
-						./src/shared/socket/Socket.cpp						\
+SHARED_SRC			=	./src/shared/socket/Socket.cpp						\
 
 SHARED_OBJ			=	$(SHARED_SRC:.cpp=.o)
 
@@ -22,6 +21,7 @@ MAIN_SERVER_SRC		=	./src/server/main.cpp
 SERVER_SRC			=	./src/server/client/Client.cpp						\
 						./src/server/pollfdlist/PollFdList.cpp				\
 						./src/server/Server.cpp								\
+						./src/server/parsing/Parser.cpp						\
 
 SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
