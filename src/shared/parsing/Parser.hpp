@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace Jetpack {
+namespace jetpack {
 class Parser {
  public:
     Parser() = delete;
@@ -36,6 +36,6 @@ class Parser {
     std::vector<std::string> _args;
     int _argc;
 };
-}  // namespace Jetpack
+}  // namespace jetpack
 
 #endif  // SRC_SHARED_PARSING_PARSER_HPP_

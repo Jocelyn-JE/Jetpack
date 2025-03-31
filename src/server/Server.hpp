@@ -17,7 +17,7 @@
 #include "Socket.hpp"
 #define LISTEN_BACKLOG 128
 
-namespace Jetpack {
+namespace jetpack {
 namespace server {
 class Server {
  public:

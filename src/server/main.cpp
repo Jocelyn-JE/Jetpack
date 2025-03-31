@@ -11,14 +11,14 @@
 #include "Server.hpp"
 
 int main(int argc, char **argv) {
-    Jetpack::Parser parser(argc, argv);
+    jetpack::Parser parser(argc, argv);
 
     try {
         parser.parseServerArgs();
-    } catch(const Jetpack::Parser::ParsingError &e) {
+    } catch (const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
         std::cerr << parser.getServerUsage() << std::endl;
         return 84;
     }
-    return Jetpack::server::Server::runServer(atoi(argv[1]));
+    return jetpack::server::Server::runServer(atoi(argv[1]));
 }

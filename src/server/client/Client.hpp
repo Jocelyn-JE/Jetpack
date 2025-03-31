@@ -16,7 +16,7 @@
 
 #include "Socket.hpp"
 
-namespace Jetpack {
+namespace jetpack {
 namespace server {
 class Client {
  public:

@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** Jetpack
+** jetpack
 ** File description:
 ** ToBytes
 */
