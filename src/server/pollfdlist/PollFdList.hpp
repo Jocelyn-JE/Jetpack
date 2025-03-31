@@ -6,11 +6,12 @@
 */
 
 #ifndef SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_
-    #define SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_
+#define SRC_SERVER_POLLFDLIST_POLLFDLIST_HPP_
 
-    #include <poll.h>
-    #include <vector>
-    #include <cstdint>
+#include <poll.h>
+
+#include <cstdint>
+#include <vector>
 
 namespace jetpack {
 namespace server {

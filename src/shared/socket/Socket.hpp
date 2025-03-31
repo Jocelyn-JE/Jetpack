@@ -6,12 +6,13 @@
 */
 
 #ifndef SRC_SHARED_SOCKET_SOCKET_HPP_
-    #define SRC_SHARED_SOCKET_SOCKET_HPP_
+#define SRC_SHARED_SOCKET_SOCKET_HPP_
 
-    #include <netinet/in.h>
-    #include <string>
-    #include <exception>
-    #include <vector>
+#include <netinet/in.h>
+
+#include <exception>
+#include <string>
+#include <vector>
 
 class Socket {
  public:
@@ -41,8 +42,8 @@ class Socket {
     void listenSocket(int backlog) noexcept(false);
     // Connect the socket to an address.
     // May throw a SocketError exception if the socket could not connect.
-    void connectSocket(const struct sockaddr *address, socklen_t addressLen)
-        noexcept(false);
+    void connectSocket(const struct sockaddr *address,
+                       socklen_t addressLen) noexcept(false);
     // Connect the socket to a specific IP address and port.
     // May throw a SocketError exception if the socket could not connect.
     void connectSocket(const char *ip_address, uint16_t port) noexcept(false);
@@ -71,8 +72,9 @@ class Socket {
         explicit SocketError(std::string message) noexcept;
         ~SocketError() noexcept;
         const char *what() const noexcept override;
+
      private:
-       std::string _message;
+        std::string _message;
     };
 
  private:

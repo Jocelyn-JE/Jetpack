@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-.PHONY: all clean fclean re tests_run vg cs linter
+.PHONY: all clean fclean re tests_run vg cs linter format
 
 %.o: %.cpp
 	g++ $(CPPFLAGS) -c $< -o $@
@@ -63,7 +63,8 @@ VALGRIND_FLAGS		=														\
 CPPLINT_FLAGS		=														\
 	--root=./include														\
 	--repository=. 															\
-	--filter=-legal/copyright,-build/c++17,+build/c++20,-runtime/references	\
+	--filter=-legal/copyright,-build/c++17,+build/c++20,-runtime/references,$\
+-build/include_subdir														\
 	--recursive																\
 
 VALGRIND_LOG		=	valgrind.log
@@ -116,3 +117,7 @@ cs:	clean
 
 linter: clean
 	cpplint $(CPPLINT_FLAGS) ./src/
+
+format: clean
+	find . -type f \( -name "*.cpp" -o -name "*.hpp" \) ! -path "./tests/*"	\
+	-exec clang-format -i {} +

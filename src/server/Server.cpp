@@ -5,19 +5,20 @@
 ** Server
 */
 
-#include <poll.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string>
-#include <iostream>
-#include "Socket.hpp"
 #include "Server.hpp"
+
+#include <arpa/inet.h>
+#include <poll.h>
+#include <unistd.h>
+
+#include <iostream>
+#include <string>
+
+#include "Socket.hpp"
 
 volatile sig_atomic_t stopFlag = 0;
 
-static void handler(int signum) {
-    stopFlag = signum;
-}
+static void handler(int signum) { stopFlag = signum; }
 
 int jetpack::server::Server::runServer(int port) {
     int poll_result = 0;
@@ -34,7 +35,7 @@ int jetpack::server::Server::runServer(int port) {
             poll_result = server.pollSockets();
             server.updateSockets();
         }
-    } catch(const std::exception &e) {
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return 84;
     }
@@ -43,22 +44,23 @@ int jetpack::server::Server::runServer(int port) {
 
 //-----------------------------------------------------------------------------
 
-jetpack::server::Server::Server(int port) :
-    _serverSocket(AF_INET, SOCK_STREAM, 0),
-    _socketPollList(_serverSocket.getSocketFd()), _nextClientId(0) {
+jetpack::server::Server::Server(int port)
+    : _serverSocket(AF_INET, SOCK_STREAM, 0),
+      _socketPollList(_serverSocket.getSocketFd()),
+      _nextClientId(0) {
     _serverSocket.bindSocket(port);
     _serverSocket.listenSocket(LISTEN_BACKLOG);
     std::cout << "Server started on port " << port << std::endl;
 }
 
-jetpack::server::Server::~Server() {
-}
+jetpack::server::Server::~Server() {}
 
 int jetpack::server::Server::pollSockets() {
     int result = poll(_socketPollList.data(), _clients.size() + 1, -1);
-    if (result == -1)
+    if (result == -1) {
         throw Socket::SocketError("Poll failed: " +
-            std::string(strerror(errno)));
+                                  std::string(strerror(errno)));
+    }
     return result;
 }
 
@@ -79,20 +81,21 @@ void jetpack::server::Server::updateSockets() {
             handleConnection();
             for (size_t i = 0; i < _clients.size(); i++) {
                 playerList += std::to_string(_clients[i]->getId());
-                if (i < _clients.size() - 1)
+                if (i < _clients.size() - 1) {
                     playerList += ",";
+                }
             }
             sendToAllClients(playerList);
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handleCommand(buffer)) {
-                sendToAllClients("disconnected:" + std::to_string(
-                    _clients[i - 1]->getId()));
+                sendToAllClients("disconnected:" +
+                                 std::to_string(_clients[i - 1]->getId()));
                 handleDisconnection(i);
             } else {
                 sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
-                    ":" + buffer);
+                                 ":" + buffer);
             }
         }
     }
@@ -108,18 +111,19 @@ void jetpack::server::Server::handleDisconnection(int socketIndex) {
 void jetpack::server::Server::handleConnection() {
     struct sockaddr_in client_addr;
     socklen_t client_addr_size = sizeof(client_addr);
-    int client_socket = accept(_serverSocket.getSocketFd(),
-        (struct sockaddr *) &client_addr, &client_addr_size);
+    int client_socket =
+        accept(_serverSocket.getSocketFd(), (struct sockaddr *)&client_addr,
+               &client_addr_size);
 
-    this->_clients.push_back(std::make_unique<Client>(client_socket,
-        client_addr, this->_nextClientId));
+    this->_clients.push_back(std::make_unique<Client>(
+        client_socket, client_addr, this->_nextClientId));
     this->_nextClientId++;
     this->_socketPollList.addSocket(client_socket, POLLIN);
     std::cout << inet_ntoa(client_addr.sin_addr) << ":"
-        << ntohs(client_addr.sin_port) << " connected fd: " << client_socket
-        << std::endl;
-    this->_clients.back()->_controlSocket.writeToSocket("id:" + std::to_string(
-        this->_clients.back()->getId()));
+              << ntohs(client_addr.sin_port)
+              << " connected fd: " << client_socket << std::endl;
+    this->_clients.back()->_controlSocket.writeToSocket(
+        "id:" + std::to_string(this->_clients.back()->getId()));
 }
 
 void jetpack::server::Server::sendToAllClients(std::string data) {
