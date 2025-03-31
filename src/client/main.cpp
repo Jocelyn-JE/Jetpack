@@ -5,8 +5,9 @@
 ** main
 */
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Parser.hpp"
 
 int main(int argc, char **argv) {
@@ -14,7 +15,7 @@ int main(int argc, char **argv) {
 
     try {
         parser.parseClientArgs();
-    } catch(const jetpack::Parser::ParsingError &e) {
+    } catch (const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
         std::cerr << parser.getClientUsage() << std::endl;
         return 84;
