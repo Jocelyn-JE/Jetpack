@@ -6,7 +6,6 @@
 */
 
 #include "Parser.hpp"
-
 #include <arpa/inet.h>
 #include <bits/algorithmfwd.h>
 
