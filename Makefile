@@ -58,7 +58,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) \
  						-L./ -ljetpack -O2 -g
 
-CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS)
+CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 
 SFML_FLAGS			=	\
 	-lsfml-graphics															\
@@ -77,7 +77,7 @@ CPPLINT_FLAGS		=														\
 	--root=./include														\
 	--repository=. 															\
 	--filter=-legal/copyright,-build/c++17,+build/c++20,-runtime/references,$\
--build/include_subdir														\
+-build/include_subdir,-build/c++11											\
 	--recursive																\
 
 VALGRIND_LOG		=	valgrind.log
@@ -107,7 +107,7 @@ vg: $(SERVER_BINARY_NAME) $(CLIENT_BINARY_NAME)
 	valgrind $(VALGRIND_FLAGS) ./$(CLIENT_BINARY_NAME) 0.0.0.0 4242 tests
 	cat $(VALGRIND_LOG)
 
-tests_run:
+tests_run: $(LIB_NAME)
 	g++ -o unit_tests $(SERVER_SRC) $(CLIENT_SRC) $(SHARED_SRC) $(TESTS_SRC) \
 $(CPPTESTFLAGS)
 	./unit_tests
