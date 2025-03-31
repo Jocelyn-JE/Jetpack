@@ -5,8 +5,9 @@
 ** main
 */
 
-#include <string>
 #include <iostream>
+#include <string>
+
 #include "Parser.hpp"
 #include "Program.hpp"
 #include "Logger.hpp"

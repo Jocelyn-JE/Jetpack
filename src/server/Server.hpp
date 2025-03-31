@@ -6,15 +6,16 @@
 */
 
 #ifndef SRC_SERVER_SERVER_HPP_
-    #define SRC_SERVER_SERVER_HPP_
+#define SRC_SERVER_SERVER_HPP_
 
-    #include <memory>
-    #include <vector>
-    #include <string>
-    #include "Socket.hpp"
-    #include "PollFdList.hpp"
-    #include "Client.hpp"
-    #define LISTEN_BACKLOG 128
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "Client.hpp"
+#include "PollFdList.hpp"
+#include "Socket.hpp"
+#define LISTEN_BACKLOG 128
 
 namespace Jetpack {
 namespace server {
@@ -24,6 +25,7 @@ class Server {
     explicit Server(int port);
     ~Server();
     static int runServer(int port);
+
  private:
     int pollSockets();
     void updateSockets();

@@ -6,13 +6,15 @@
 */
 
 #ifndef SRC_SERVER_CLIENT_CLIENT_HPP_
-    #define SRC_SERVER_CLIENT_CLIENT_HPP_
+#define SRC_SERVER_CLIENT_CLIENT_HPP_
 
-    #include <bits/stdc++.h>
-    #include <unordered_map>
-    #include <memory>
-    #include <string>
-    #include "Socket.hpp"
+#include <bits/stdc++.h>
+
+#include <memory>
+#include <string>
+#include <unordered_map>
+
+#include "Socket.hpp"
 
 namespace Jetpack {
 namespace server {
@@ -26,6 +28,7 @@ class Client {
     bool handleCommand(std::string commandLine);
     void sendData(std::string data);
     unsigned int getId() const;
+
  private:
     unsigned int _id;
 };
