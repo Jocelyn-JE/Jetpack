@@ -9,7 +9,7 @@
 #include <string>
 
 #include "Logger.hpp"
-#include "Parser.hpp"
+#include "ClientParser.hpp"
 #include "Program.hpp"
 
 int main(int argc, char **argv) {

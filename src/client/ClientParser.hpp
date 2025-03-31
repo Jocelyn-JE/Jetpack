@@ -2,8 +2,8 @@
 // Created by roussierenoa on 3/28/25.
 //
 
-#ifndef SRC_CLIENT_PARSER_HPP_
-#define SRC_CLIENT_PARSER_HPP_
+#ifndef SRC_CLIENT_CLIENTPARSER_HPP_
+#define SRC_CLIENT_CLIENTPARSER_HPP_
 
 #include <iostream>
 #include <string>
@@ -26,4 +26,4 @@ class Parser {
 
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_PARSER_HPP_
+#endif  // SRC_CLIENT_CLIENTPARSER_HPP_

@@ -32,9 +32,9 @@ CLIENT_BINARY_NAME	=	jetpack_client
 
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
-CLIENT_SRC			=	./src/client/Graphic.cpp						\
-						./src/client/Program.cpp						\
-						./src/client/Parser.cpp							\
+CLIENT_SRC			=	./src/client/Graphic.cpp							\
+						./src/client/Program.cpp							\
+						./src/client/ClientParser.cpp						\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
@@ -42,7 +42,7 @@ CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 
 
-LIB_SRC				=	./src/shared/utility/splitString.cpp	\
+LIB_SRC				=	./src/shared/utility/splitString.cpp				\
 						./src/shared/utility/isNumber.cpp
 
 LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
@@ -51,11 +51,11 @@ LIB_NAME			=	libjetpack.a
 
 TESTS_SRC			=
 
-INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket	\
+INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client
 
-CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) \
+CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
