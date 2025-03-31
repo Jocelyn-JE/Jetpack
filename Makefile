@@ -10,10 +10,12 @@
 %.o: %.cpp
 	g++ $(CPPFLAGS) -c $< -o $@
 
+# Shared files ----------------------------------------------------------------
 SHARED_SRC			=	./src/shared/socket/Socket.cpp						\
 
 SHARED_OBJ			=	$(SHARED_SRC:.cpp=.o)
 
+# Server
 SERVER_BINARY_NAME	=	jetpack_server
 
 MAIN_SERVER_SRC		=	./src/server/main.cpp
@@ -27,7 +29,7 @@ SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
 MAIN_SERVER_OBJ		=	$(MAIN_SERVER_SRC:.cpp=.o)
 
-
+# Client
 CLIENT_BINARY_NAME	=	jetpack_client
 
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
@@ -41,16 +43,18 @@ CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
 MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 
-
+# Library files ---------------------------------------------------------------
 LIB_SRC				=	./src/shared/utility/splitString.cpp				\
-						./src/shared/utility/isNumber.cpp
+						./src/shared/utility/isNumber.cpp					\
 
 LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
 
 LIB_NAME			=	libjetpack.a
 
+# Tests sources ---------------------------------------------------------------
 TESTS_SRC			=
 
+# Flags -----------------------------------------------------------------------
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client
@@ -82,6 +86,7 @@ CPPLINT_FLAGS		=														\
 
 VALGRIND_LOG		=	valgrind.log
 
+# Rules -----------------------------------------------------------------------
 all: server client
 
 $(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) \
