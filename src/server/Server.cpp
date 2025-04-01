@@ -5,7 +5,6 @@
 ** Server
 */
 
-#include "Server.hpp"
 #include <arpa/inet.h>
 #include <poll.h>
 #include <unistd.h>
@@ -13,6 +12,7 @@
 #include <iostream>
 #include <string>
 
+#include "Server.hpp"
 #include "Socket.hpp"
 
 volatile sig_atomic_t stopFlag = 0;
