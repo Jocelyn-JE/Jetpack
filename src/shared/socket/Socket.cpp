@@ -5,7 +5,6 @@
 ** Socket
 */
 
-#include "Socket.hpp"
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
@@ -13,6 +12,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "Socket.hpp"
 
 Socket::Socket(int fd, struct sockaddr_in address) noexcept
     : _closeSocketOnDestruction(false) {

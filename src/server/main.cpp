@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "Parser.hpp"
+#include "./parsing/Parser.hpp"
 #include "Server.hpp"
 
 int main(int argc, char **argv) {

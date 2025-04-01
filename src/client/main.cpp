@@ -8,18 +8,23 @@
 #include <iostream>
 #include <string>
 
-#include "Parser.hpp"
+#include "Logger.hpp"
+#include "ClientParser.hpp"
+#include "Program.hpp"
 
 int main(int argc, char **argv) {
-    jetpack::Parser parser(argc, argv);
-
     try {
-        parser.parseClientArgs();
-    } catch (const jetpack::Parser::ParsingError &e) {
-        std::cerr << e.what() << std::endl;
-        std::cerr << parser.getClientUsage() << std::endl;
+        jetpack::Client::Parser parser(argc, argv);
+        jetpack::Logger logger(parser.isDebugMode());
+        logger.log("Debug mode is " + std::to_string(parser.isDebugMode()));
+        logger.log("IP: " + parser.getIp());
+        logger.log("Port: " + std::to_string(parser.getPort()));
+        jetpack::Client::Program app(parser.getIp().c_str(), parser.getPort(),
+                                     logger);
+        app.loop();
+    } catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
         return 84;
     }
-    // return jetpack::client::Client::runGameUI(argv[1], atoi(argv[2]));
     return 0;
 }

@@ -5,8 +5,8 @@
 ** Parser
 */
 
-#ifndef SRC_SHARED_PARSING_PARSER_HPP_
-#define SRC_SHARED_PARSING_PARSER_HPP_
+#ifndef SRC_SERVER_PARSING_PARSER_HPP_
+#define SRC_SERVER_PARSING_PARSER_HPP_
 
 #include <exception>
 #include <string>
@@ -28,9 +28,7 @@ class Parser {
         std::string _message;
     };
     void parseServerArgs();
-    void parseClientArgs();
     std::string getServerUsage();
-    std::string getClientUsage();
 
  private:
     std::vector<std::string> _args;
@@ -38,4 +36,4 @@ class Parser {
 };
 }  // namespace jetpack
 
-#endif  // SRC_SHARED_PARSING_PARSER_HPP_
+#endif  // SRC_SERVER_PARSING_PARSER_HPP_
