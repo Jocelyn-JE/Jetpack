@@ -9,7 +9,9 @@
 #include <arpa/inet.h>
 #include <bits/algorithmfwd.h>
 
+#include <fstream>
 #include <iostream>
+#include <vector>
 #include <string>
 
 jetpack::Parser::Parser(int argc, char **argv)
@@ -30,8 +32,10 @@ static bool isNumber(const std::string &str) {
 }
 
 std::string jetpack::Parser::getServerUsage() {
-    return R"(USAGE: ./jetpack_server port
-    port is the port number on which the server socket listens)";
+    return R"(USAGE: ./jetpack_server [-d] [-m map_file] [-p port]
+    -d: enable debug mode
+    -m map_file: specify the map file (default: map.joy)
+    -p port: specify the port number (default: 4242))";
 }
 
 std::string jetpack::Parser::getClientUsage() {
@@ -75,6 +79,45 @@ void jetpack::Parser::parseClientArgs() {
     }
 }
 
+size_t jetpack::Parser::findFlagIndex(const std::string& flag) const {
+    auto it = std::find(_args.begin(), _args.end(), flag);
+    return it - _args.begin();
+}
+
+void jetpack::Parser::parseServerFlags(GameData& data) {
+    if (this->_argc == 2 && this->_args[1] == "-help") {
+        std::cout << getServerUsage() << std::endl;
+        exit(0);
+    }
+
+    size_t idx;
+    
+    // Parse debug flag
+    idx = findFlagIndex("-d");
+    if (idx < _args.size()) {
+        data.debug = true;
+    }
+
+    // Parse map flag
+    idx = findFlagIndex("-m");
+    if (idx < _args.size() - 1) {
+        data.filename = _args[idx + 1];
+    } else if (idx < _args.size()) {
+        throw ParsingError("Missing filename after -m flag");
+    }
+
+    // Parse port flag
+    idx = findFlagIndex("-p");
+    if (idx < _args.size() - 1) {
+        if (!isNumber(_args[idx + 1])) {
+            throw ParsingError("Port must be a number");
+        }
+        data.port = std::stoi(_args[idx + 1]);
+    } else if (idx < _args.size()) {
+        throw ParsingError("Missing port number after -p flag");
+    }
+}
+
 jetpack::Parser::ParsingError::ParsingError(std::string message) {
     this->_message = message;
 }
@@ -83,4 +126,38 @@ jetpack::Parser::ParsingError::~ParsingError() {}
 
 const char *jetpack::Parser::ParsingError::what() const noexcept {
     return this->_message.c_str();
+}
+
+void jetpack::MapParser::processLine(
+    const std::string& line, int y,
+    std::vector<std::shared_ptr<coinsPos_t>>& coins,
+    std::vector<std::shared_ptr<obstacle_t>>& obstacles) {
+    for (size_t x = 0; x < line.length(); x++) {
+        if (line[x] == '#') {
+            obstacles.push_back(std::make_shared<obstacle_t>(x, y));
+        } else if (line[x] == '*') {
+            coins.push_back(std::make_shared<coinsPos_t>(x, y));
+        }
+    }
+}
+
+bool jetpack::MapParser::parseMap(const std::string& filename,
+                         std::vector<std::shared_ptr<coinsPos_t>>& coins,
+                         std::vector<std::shared_ptr<obstacle_t>>& obstacles) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open map file: " << filename << std::endl;
+        return false;
+    }
+
+    coins.clear();
+    obstacles.clear();
+
+    std::string line;
+    int y = 0;
+    while (std::getline(file, line)) {
+        processLine(line, y, coins, obstacles);
+        y++;
+    }
+    return true;
 }

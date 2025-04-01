@@ -11,6 +11,12 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <memory>
+
+
+#include "../../../include/Coin.hpp"
+#include "../../../include/Obstacle.hpp"
+#include "../../../include/GameData.hpp"
 
 namespace jetpack {
 class Parser {
@@ -31,11 +37,27 @@ class Parser {
     void parseClientArgs();
     std::string getServerUsage();
     std::string getClientUsage();
+    void parseServerFlags(GameData& data);
 
  private:
     std::vector<std::string> _args;
     int _argc;
+    size_t findFlagIndex(const std::string& flag) const;
 };
+
+class MapParser {
+   public:
+      static bool parseMap(const std::string& filename,
+                           std::vector<std::shared_ptr<coinsPos_t>>& coins,
+                           std::vector<std::shared_ptr<obstacle_t>>& obstacles);
+  
+   private:
+      static void processLine(
+          const std::string& line, int y,
+          std::vector<std::shared_ptr<coinsPos_t>>& coins,
+          std::vector<std::shared_ptr<obstacle_t>>& obstacles);
+  };
+
 }  // namespace jetpack
 
 #endif  // SRC_SHARED_PARSING_PARSER_HPP_
