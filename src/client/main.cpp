@@ -10,6 +10,7 @@
 
 #include "Logger.hpp"
 #include "ClientParser.hpp"
+#include "Exception.hpp"
 #include "Program.hpp"
 
 int main(int argc, char **argv) {
@@ -22,6 +23,8 @@ int main(int argc, char **argv) {
         jetpack::Client::Program app(parser.getIp().c_str(), parser.getPort(),
                                      logger);
         app.loop();
+    } catch (HelpException &e) {
+        std::cout << "HELP" << std::endl;
     } catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 84;

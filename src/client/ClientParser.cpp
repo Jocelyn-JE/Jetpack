@@ -17,6 +17,9 @@ unsigned int Parser::getPort() const { return this->_port; }
 bool Parser::isDebugMode() const { return this->_isDebugMode; }
 
 Parser::Parser(int ac, char **av) {
+    if (ac == 2 && std::string(av[1]) == "--help") {
+        throw HelpException();
+    }
     if (ac < 5) {
         throw ParsingException("Not enough arguments");
     }
