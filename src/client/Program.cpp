@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #include "Exception.hpp"
 #include "lib.hpp"
@@ -114,6 +115,12 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
     this->_connnectToSocket(ip, port);
     if (this->_socketFd == -1) {
         throw NetworkException("Failed to init socket");
+    }
+    unsigned char message[26] = {0x24, 0x24, 0x01, 0x00, 0x02, 0x08};
+    unsigned char username[20] = "nduboi";
+    std::memcpy(message + 6, username, sizeof(username));
+    if (send(this->_socketFd, message, sizeof(message), 0) == -1) {
+        perror("send()");
     }
     this->_networkThread = std::thread([this] {
         pthread_setname_np(pthread_self(), "Network thread");

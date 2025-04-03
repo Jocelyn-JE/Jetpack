@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
         logger.log("IP: " + parser.getIp());
         logger.log("Port: " + std::to_string(parser.getPort()));
         jetpack::Client::Program app(parser.getIp().c_str(), parser.getPort(),
-                                     logger);
+                                    logger);
         app.loop();
     } catch (HelpException &e) {
         std::cout << "HELP" << std::endl;

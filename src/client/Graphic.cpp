@@ -8,16 +8,28 @@
 
 void jetpack::Client::Graphic::display() {
     this->_window.clear();
-    for (auto &s : this->_listPlayers) {
-        this->_window.draw(s.second.first);
+    if (this->_windowType == MENU) {
+        this->_window.draw(this->_gameBackground);
+        // TODO(noa) : add menu
+    }
+    if (this->_windowType == GAME) {
+        this->_window.draw(this->_gameBackground);
+        for (auto &s : this->_listPlayers) {
+            this->_window.draw(s.second.first);
+        }
     }
     this->_window.display();
 }
 
 void jetpack::Client::Graphic::compute() {
     this->_posMutex.lock();
-    for (auto &s : this->_listPlayers) {
-        s.second.first.setPosition(s.second.second);
+    if (this->_windowType == MENU) {
+        // TODO(noa) : add menu
+    }
+    if (this->_windowType == GAME) {
+        for (auto &s : this->_listPlayers) {
+            s.second.first.setPosition(s.second.second);
+        }
     }
     this->_posMutex.unlock();
 }
@@ -61,8 +73,13 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isCurrent) {
 
 jetpack::Client::Graphic::Graphic(
     std::function<void(UserInteractions_s)> &sendUserInteraction)
-    : _window(sf::VideoMode({1920, 1080}), "jetpack",
+    : _window(sf::VideoMode({400, 350}), "jetpack",
               sf::Style::Close | sf::Style::Titlebar),
       _sendUserEvent(sendUserInteraction) {
+    this->_windowType = MENU;
+    this->_gameBackgroundTexture = sf::Texture();
+    this->_gameBackgroundTexture.loadFromFile("src/client/assets/background.png");
+    this->_gameBackground = sf::Sprite(this->_gameBackgroundTexture);
+
     this->_window.setFramerateLimit(144);
 }

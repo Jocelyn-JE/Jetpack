@@ -17,10 +17,19 @@
 namespace jetpack::Client {
 class Graphic {
  private:
+	enum WindowType {
+	    GAME,
+		MENU,
+		TYPE_COUNT
+	};
+
+	WindowType _windowType;
     sf::RenderWindow _window;
     std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f>>
         _listPlayers;
     std::mutex _posMutex;
+	sf::Texture _gameBackgroundTexture;
+	sf::Sprite _gameBackground;
     std::function<void(UserInteractions_s)> &_sendUserEvent;
 
  public:
