@@ -16,32 +16,34 @@
 #include "Logger.hpp"
 
 namespace jetpack::Client {
+	class Program {
+	private:
+		int _socketFd = -1;
+		bool _isOpen = true;
+		std::thread _networkThread;
+		std::mutex _interactionMutex;
 
-class Program {
- private:
-    int _socketFd = -1;
-    bool _isOpen = true;
-    std::thread _networkThread;
-    std::mutex _interactionMutex;
+		std::function<void(UserInteractions_s)> _sendUserInteraction =
+				([this](UserInteractions_s data) { this->_sendPlayerInput(data); });
 
-    std::function<void(UserInteractions_s)> _sendUserInteraction =
-        ([this](UserInteractions_s data) { this->_sendPlayerInput(data); });
+		jetpack::Logger &_logger;
+		Graphic _graphic;
 
-    jetpack::Logger &_logger;
-    Graphic _graphic;
+		void _connnectToSocket(const char *ip, unsigned int port);
 
-    void _connnectToSocket(const char *ip, unsigned int port);
-    void _handleMessageFromServer(std::string msg);
-    void _sniffANetwork();
-    void _sendPlayerInput(UserInteractions_s);
+		void _handleMessageFromServer(std::string msg);
 
- public:
-    void loop();
+		void _sniffANetwork();
 
-    Program(const char *ip, unsigned int port, jetpack::Logger &logger);
-    ~Program();
-};
+		void _sendPlayerInput(UserInteractions_s);
 
-}  // namespace jetpack::Client
+	public:
+		void loop();
+
+		Program(const char *ip, unsigned int port, jetpack::Logger &logger);
+
+		~Program();
+	};
+} // namespace jetpack::Client
 
 #endif  // SRC_CLIENT_PROGRAM_HPP_

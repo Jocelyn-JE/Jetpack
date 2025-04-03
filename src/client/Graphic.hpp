@@ -15,37 +15,44 @@
 #include "userInteractions.hpp"
 
 namespace jetpack::Client {
-class Graphic {
- private:
-	enum WindowType {
-	    GAME,
-		MENU,
-		TYPE_COUNT
+	class Graphic {
+	private:
+		enum WindowType {
+			GAME,
+			MENU,
+			TYPE_COUNT
+		};
+
+		WindowType _windowType;
+		sf::RenderWindow _window;
+		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> >
+		_listPlayers;
+		std::mutex _posMutex;
+		sf::Texture _gameBackgroundTexture;
+		sf::Sprite _gameBackground;
+		std::function<void(UserInteractions_s)> &_sendUserEvent;
+
+	public:
+		void display();
+
+		bool isOpen() const { return this->_window.isOpen(); }
+
+		void compute();
+
+		void close() { return this->_window.close(); }
+
+		void setPosRectangle(unsigned int id, sf::Vector2f pos);
+
+		void handleEvent();
+
+		void addNewPlayer(unsigned int id, bool isCurrent);
+
+		explicit Graphic(
+			std::function<void(UserInteractions_s)> &_sendUserInteraction);
+
+		~Graphic() = default;
 	};
-
-	WindowType _windowType;
-    sf::RenderWindow _window;
-    std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f>>
-        _listPlayers;
-    std::mutex _posMutex;
-	sf::Texture _gameBackgroundTexture;
-	sf::Sprite _gameBackground;
-    std::function<void(UserInteractions_s)> &_sendUserEvent;
-
- public:
-    void display();
-    bool isOpen() const { return this->_window.isOpen(); }
-    void compute();
-    void close() { return this->_window.close(); }
-    void setPosRectangle(unsigned int id, sf::Vector2f pos);
-    void handleEvent();
-    void addNewPlayer(unsigned int id, bool isCurrent);
-
-    explicit Graphic(
-        std::function<void(UserInteractions_s)> &_sendUserInteraction);
-    ~Graphic() = default;
-};
-}  // namespace jetpack::Client
+} // namespace jetpack::Client
 
 // jetpack
 
