@@ -67,11 +67,7 @@ bool jetpack::server::Server::isClosed() {
     return !_serverSocket.closesOnDestroy();
 }
 
-// Iterate through all clients with _clients.size() (+ 1 for the server socket)
-// and update/execute depending on values read from the sockets.
-// Server socket is _serverSocket polling is _socketPollList[0]
 void jetpack::server::Server::updateSockets() {
-    std::string socketStr;
     std::string buffer;
 
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
@@ -89,9 +85,11 @@ void jetpack::server::Server::updateSockets() {
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handleCommand(buffer)) {
+                handleDisconnection(i);
                 sendToAllClients("disconnected:" +
                                  std::to_string(_clients[i - 1]->getId()));
-                handleDisconnection(i);
+                std::cout << "Client " << _clients[i - 1]->getId()
+                          << " disconnected" << std::endl;
             } else {
                 sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
                                  ":" + buffer);
@@ -100,8 +98,6 @@ void jetpack::server::Server::updateSockets() {
     }
 }
 
-// This function does not close the given socket, it only removes it from the
-// socket list and poll list
 void jetpack::server::Server::handleDisconnection(int socketIndex) {
     _clients.erase(_clients.begin() + (socketIndex - 1));
     _socketPollList.removeSocket(_socketPollList[socketIndex].fd);

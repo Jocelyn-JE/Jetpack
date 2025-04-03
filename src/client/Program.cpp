@@ -8,7 +8,6 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
-#include <cstring>
 
 #include "Exception.hpp"
 #include "lib.hpp"
