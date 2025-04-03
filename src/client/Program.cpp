@@ -4,11 +4,10 @@
 
 #include "Program.hpp"
 #include <unistd.h>
-
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <string>
-
 #include "Exception.hpp"
 #include "lib.hpp"
 
