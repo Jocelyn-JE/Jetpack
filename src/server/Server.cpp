@@ -85,9 +85,11 @@ void jetpack::server::Server::updateSockets() {
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handleCommand(buffer)) {
+                handleDisconnection(i);
                 sendToAllClients("disconnected:" +
                                  std::to_string(_clients[i - 1]->getId()));
-                handleDisconnection(i);
+                std::cout << "Client " << _clients[i - 1]->getId()
+                          << " disconnected" << std::endl;
             } else {
                 sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
                                  ":" + buffer);
