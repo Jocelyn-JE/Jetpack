@@ -53,6 +53,27 @@ class Socket {
     // Write a buffer to the socket.
     // May throw a SocketError exception if the write failed.
     void writeToSocket(std::vector<uint8_t> buffer) noexcept(false);
+    // Write a buffer to the socket.
+    // May throw a SocketError exception if the write failed.
+    template <typename T>
+    void writeToSocket(T buffer) noexcept(false) {
+        if (write(this->_socketFd, &buffer, sizeof(buffer)) == -1) {
+            throw Socket::SocketError(
+                "Write on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+    }
+    // Write a vector of a buffer to the socket.
+    // May throw a SocketError exception if the write failed.
+    template <typename T>
+    void writeToSocket(std::vector<T> bufferVector) noexcept(false) {
+        if (write(this->_socketFd, bufferVector.data(),
+                  bufferVector.size() * sizeof(T)) == -1) {
+            throw Socket::SocketError(
+                "Write on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+    }
     // Read a string from the socket.
     // May throw a SocketError exception if the read failed.
     std::string readFromSocket() noexcept(false);
