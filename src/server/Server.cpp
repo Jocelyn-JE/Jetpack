@@ -68,7 +68,6 @@ bool jetpack::server::Server::isClosed() {
 }
 
 void jetpack::server::Server::updateSockets() {
-    std::string socketStr;
     std::string buffer;
 
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
