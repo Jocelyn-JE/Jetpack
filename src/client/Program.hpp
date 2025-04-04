@@ -4,6 +4,7 @@
 
 #ifndef SRC_CLIENT_PROGRAM_HPP_
 #define SRC_CLIENT_PROGRAM_HPP_
+#include <communicationHeader.hpp>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
@@ -12,13 +13,14 @@
 #include <string>
 #include <thread>
 
+#include <Socket.hpp>
+
 #include "Graphic.hpp"
 #include "Logger.hpp"
 
 namespace jetpack::Client {
 	class Program {
 	private:
-		int _socketFd = -1;
 		bool _isOpen = true;
 		std::thread _networkThread;
 		std::mutex _interactionMutex;
@@ -28,10 +30,13 @@ namespace jetpack::Client {
 
 		jetpack::Logger &_logger;
 		Graphic _graphic;
+		Socket _socket;
 
 		void _connnectToSocket(const char *ip, unsigned int port);
 
 		void _handleMessageFromServer(std::string msg);
+
+		void _handlePayload(std::string msg, Payload_t payload, int &indexPayload);
 
 		void _sniffANetwork();
 

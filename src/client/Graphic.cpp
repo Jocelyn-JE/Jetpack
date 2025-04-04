@@ -41,6 +41,12 @@ void jetpack::Client::Graphic::setPosRectangle(unsigned int id,
 	this->_posMutex.unlock();
 }
 
+void jetpack::Client::Graphic::setUsername(const std::string &name) {
+	this->_posMutex.lock();
+	this->_username = name;
+	this->_posMutex.unlock();
+}
+
 void jetpack::Client::Graphic::handleEvent() {
 	sf::Event event{};
 	while (this->_window.pollEvent(event)) {

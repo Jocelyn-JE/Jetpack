@@ -6,6 +6,26 @@
 #define COMMUNICATIONHEADER_HPP
 #include <arpa/inet.h>
 
+enum PayloadType_t {
+	INT = 1,
+	SIZE_T = 2,
+	BOOL = 3,
+	DOUBLE = 4,
+	FLOAT = 5,
+	SHORT = 6,
+	PLAYER = 7,
+	NAME = 8,
+	COIN_POS = 9,
+	HAZARD_POS = 10,
+	ENUM_COMMAND = 11,
+	GAMESPEED = 12,
+	PLAYER_INPUT = 13,
+	START = 14,
+	HEALTHCHECK = 15,
+	JETPACK_FORCE = 16,
+	VELOCITY_LIMITS = 17,
+};
+
 #pragma pack(push, 1)
 
 union Header_t {

@@ -24,6 +24,7 @@ namespace jetpack::Client {
 		};
 
 		WindowType _windowType;
+		std::string _username;
 		sf::RenderWindow _window;
 		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> >
 		_listPlayers;
@@ -42,6 +43,8 @@ namespace jetpack::Client {
 		void close() { return this->_window.close(); }
 
 		void setPosRectangle(unsigned int id, sf::Vector2f pos);
+
+		void setUsername(const std::string &name);
 
 		void handleEvent();
 
