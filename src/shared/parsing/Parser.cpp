@@ -11,15 +11,16 @@
 
 #include <fstream>
 #include <iostream>
-#include <vector>
+#include <ranges>
 #include <string>
+#include <vector>
 
-jetpack::Parser::Parser(int argc, char **argv)
+jetpack::Parser::Parser(int argc, char** argv)
     : _args(argv, argv + argc), _argc(argc) {}
 
 jetpack::Parser::~Parser() {}
 
-static bool isNumber(const std::string &str) {
+static bool isNumber(const std::string& str) {
     if (str.empty()) {
         return false;
     }
@@ -91,7 +92,7 @@ void jetpack::Parser::parseServerFlags(GameData& data) {
     }
 
     size_t idx;
-    
+
     // Parse debug flag
     idx = findFlagIndex("-d");
     if (idx < _args.size()) {
@@ -124,7 +125,7 @@ jetpack::Parser::ParsingError::ParsingError(std::string message) {
 
 jetpack::Parser::ParsingError::~ParsingError() {}
 
-const char *jetpack::Parser::ParsingError::what() const noexcept {
+const char* jetpack::Parser::ParsingError::what() const noexcept {
     return this->_message.c_str();
 }
 
@@ -141,9 +142,10 @@ void jetpack::MapParser::processLine(
     }
 }
 
-bool jetpack::MapParser::parseMap(const std::string& filename,
-                         std::vector<std::shared_ptr<coinsPos_t>>& coins,
-                         std::vector<std::shared_ptr<obstacle_t>>& obstacles) {
+bool jetpack::MapParser::parseMap(
+    const std::string& filename,
+    std::vector<std::shared_ptr<coinsPos_t>>& coins,
+    std::vector<std::shared_ptr<obstacle_t>>& obstacles) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open map file: " << filename << std::endl;

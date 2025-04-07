@@ -1,8 +1,8 @@
 #include "Game.hpp"
 
 #include <iostream>
-#include <thread>
 #include <string>
+#include <thread>
 
 #include "MapParser.hpp"
 

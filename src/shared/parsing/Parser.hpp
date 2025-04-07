@@ -9,26 +9,25 @@
 #define SRC_SHARED_PARSING_PARSER_HPP_
 
 #include <exception>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-
 
 #include "../../../include/Coin.hpp"
-#include "../../../include/Obstacle.hpp"
 #include "../../../include/GameData.hpp"
+#include "../../../include/Obstacle.hpp"
 
 namespace jetpack {
 class Parser {
  public:
     Parser() = delete;
-    Parser(int argc, char **argv);
+    Parser(int argc, char** argv);
     ~Parser();
     class ParsingError : public std::exception {
      public:
         explicit ParsingError(std::string message);
         ~ParsingError();
-        const char *what() const noexcept override;
+        const char* what() const noexcept override;
 
      private:
         std::string _message;
@@ -46,17 +45,17 @@ class Parser {
 };
 
 class MapParser {
-   public:
-      static bool parseMap(const std::string& filename,
-                           std::vector<std::shared_ptr<coinsPos_t>>& coins,
-                           std::vector<std::shared_ptr<obstacle_t>>& obstacles);
-  
-   private:
-      static void processLine(
-          const std::string& line, int y,
-          std::vector<std::shared_ptr<coinsPos_t>>& coins,
-          std::vector<std::shared_ptr<obstacle_t>>& obstacles);
-  };
+ public:
+    static bool parseMap(const std::string& filename,
+                         std::vector<std::shared_ptr<coinsPos_t>>& coins,
+                         std::vector<std::shared_ptr<obstacle_t>>& obstacles);
+
+ private:
+    static void processLine(
+        const std::string& line, int y,
+        std::vector<std::shared_ptr<coinsPos_t>>& coins,
+        std::vector<std::shared_ptr<obstacle_t>>& obstacles);
+};
 
 }  // namespace jetpack
 

@@ -10,10 +10,10 @@
 #include <memory>
 #include <thread>
 
-#include "logic/Game.hpp"
 #include "../../../include/GameData.hpp"
-#include "logic/GameServer.hpp"
 #include "../shared/parsing/Parser.hpp"
+#include "logic/Game.hpp"
+#include "logic/GameServer.hpp"
 
 void gameLoop(std::shared_ptr<GameData> gameData) {
     Game game(gameData);
@@ -44,7 +44,8 @@ int main(int argc, char **argv) {
         gameThread.join();
         networkThread.join();
     } else {
-        std::cerr << "Error: " << gameData->filename << " not found" << std::endl;
+        std::cerr << "Error: " << gameData->filename << " not found"
+                  << std::endl;
         return 1;
     }
 

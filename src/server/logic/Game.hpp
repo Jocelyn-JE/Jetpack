@@ -1,13 +1,21 @@
+/*
+** EPITECH PROJECT, 2025
+** Jetpack
+** File description:
+** Game
+*/
+
 #pragma once
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "Clock.hpp"
 #include "../../../include/Coin.hpp"
 #include "../../../include/GameData.hpp"
 #include "../../../include/Obstacle.hpp"
 #include "../../../include/Player.hpp"
+#include "Clock.hpp"
 
 class Game {
  private:
@@ -24,7 +32,7 @@ class Game {
     void printServerData() const;
 
  public:
-    Game(std::shared_ptr<GameData> data);
+    explicit Game(std::shared_ptr<GameData> data);
     void start(const std::string& mapFile);
     void stop();
     void gameLoop();

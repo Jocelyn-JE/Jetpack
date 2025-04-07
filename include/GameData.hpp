@@ -18,5 +18,6 @@ struct GameData {
     int port;
     std::string filename;
 
-    GameData() : isRunning(true), debug(false), port(4242), filename("map.joy") {}
+    GameData()
+        : isRunning(true), debug(false), port(4242), filename("map.joy") {}
 };
