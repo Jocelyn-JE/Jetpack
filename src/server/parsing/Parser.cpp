@@ -7,8 +7,8 @@
 
 #include "Parser.hpp"
 #include <arpa/inet.h>
-#include <bits/algorithmfwd.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <ranges>

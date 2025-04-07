@@ -5,8 +5,8 @@
 ** Parser
 */
 
-#ifndef SRC_SHARED_PARSING_PARSER_HPP_
-#define SRC_SHARED_PARSING_PARSER_HPP_
+#ifndef SRC_SERVER_PARSING_PARSER_HPP_
+#define SRC_SERVER_PARSING_PARSER_HPP_
 
 #include <exception>
 #include <memory>
@@ -59,4 +59,4 @@ class MapParser {
 
 }  // namespace jetpack
 
-#endif  // SRC_SHARED_PARSING_PARSER_HPP_
+#endif  // SRC_SERVER_PARSING_PARSER_HPP_

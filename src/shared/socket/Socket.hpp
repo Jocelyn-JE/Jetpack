@@ -53,12 +53,57 @@ class Socket {
     // Write a buffer to the socket.
     // May throw a SocketError exception if the write failed.
     void writeToSocket(std::vector<uint8_t> buffer) noexcept(false);
+    // Write a buffer to the socket.
+    // May throw a SocketError exception if the write failed.
+    template <typename T>
+    void writeToSocket(T buffer) noexcept(false) {
+        if (write(this->_socketFd, &buffer, sizeof(buffer)) == -1) {
+            throw Socket::SocketError(
+                "Write on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+    }
+    // Write a vector of a buffer to the socket.
+    // May throw a SocketError exception if the write failed.
+    template <typename T>
+    void writeToSocket(std::vector<T> bufferVector) noexcept(false) {
+        if (write(this->_socketFd, bufferVector.data(),
+                  bufferVector.size() * sizeof(T)) == -1) {
+            throw Socket::SocketError(
+                "Write on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+    }
     // Read a string from the socket.
     // May throw a SocketError exception if the read failed.
     std::string readFromSocket() noexcept(false);
     // Read a buffer from the socket.
     // May throw a SocketError exception if the read failed.
     std::vector<uint8_t> readFromSocket(size_t size) noexcept(false);
+    // Read a buffer from the socket.
+    // May throw a SocketError exception if the read failed.
+    template <typename T>
+    T readFromSocket() noexcept(false) {
+        T buffer;
+        if (read(_socketFd, &buffer, sizeof(buffer)) == -1) {
+            throw Socket::SocketError(
+                "Read on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+        return buffer;
+    }
+    // Read a vector of a buffer from the socket.
+    // May throw a SocketError exception if the read failed.
+    template <typename T>
+    std::vector<T> readFromSocket(size_t size) noexcept(false) {
+        std::vector<T> buffer(size);
+        if (read(_socketFd, buffer.data(), size * sizeof(T)) == -1) {
+            throw Socket::SocketError(
+                "Read on fd " + std::to_string(_socketFd) +
+                (" failed: " + std::string(strerror(errno))));
+        }
+        return buffer;
+    }
     // Close the socket.
     // May throw a SocketError exception if the socket could not be closed.
     void closeSocket() noexcept(false);
