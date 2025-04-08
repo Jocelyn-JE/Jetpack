@@ -5,7 +5,6 @@
 ** Parser
 */
 
-#include "Parser.hpp"
 #include <arpa/inet.h>
 
 #include <algorithm>
@@ -14,6 +13,8 @@
 #include <ranges>
 #include <string>
 #include <vector>
+
+#include "Parser.hpp"
 
 jetpack::Parser::Parser(int argc, char** argv)
     : _args(argv, argv + argc), _argc(argc) {}
