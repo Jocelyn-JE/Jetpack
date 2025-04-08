@@ -7,10 +7,10 @@
 
 #include <arpa/inet.h>
 
+#include <ranges>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <ranges>
 #include <string>
 #include <vector>
 
