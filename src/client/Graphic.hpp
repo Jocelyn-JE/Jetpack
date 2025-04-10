@@ -26,11 +26,15 @@ namespace jetpack::Client {
 		WindowType _windowType;
 		std::string _username;
 		sf::RenderWindow _window;
-		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> >
-		_listPlayers;
+		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> > _listPlayers;
 		std::mutex _posMutex;
 		sf::Texture _gameBackgroundTexture;
+		sf::Texture _menuBackgroundTexture;
+		sf::Font _jetpackFont;
+		sf::Color _menuTextColor;
 		sf::Sprite _gameBackground;
+		sf::Sprite _menuBackground;
+		sf::Text _menuCountdown;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
 
 	public:
@@ -49,6 +53,10 @@ namespace jetpack::Client {
 		void handleEvent();
 
 		void addNewPlayer(unsigned int id, bool isCurrent);
+
+		void switchToGame();
+
+		void switchToMenu();
 
 		explicit Graphic(
 			std::function<void(UserInteractions_s)> &_sendUserInteraction);

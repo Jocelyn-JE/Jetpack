@@ -9,8 +9,8 @@
 void jetpack::Client::Graphic::display() {
 	this->_window.clear();
 	if (this->_windowType == MENU) {
-		this->_window.draw(this->_gameBackground);
-		// TODO(noa) : add menu
+		this->_window.draw(this->_menuBackground);
+		this->_window.draw(this->_menuCountdown);
 	}
 	if (this->_windowType == GAME) {
 		this->_window.draw(this->_gameBackground);
@@ -77,15 +77,45 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isCurrent) {
 	}
 }
 
+void jetpack::Client::Graphic::switchToGame() {
+	this->_windowType = GAME;
+}
+
+void jetpack::Client::Graphic::switchToMenu() {
+	this->_windowType = MENU;
+}
+
 jetpack::Client::Graphic::Graphic(
 	std::function<void(UserInteractions_s)> &sendUserInteraction)
-	: _window(sf::VideoMode({400, 350}), "jetpack",
+	: _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
 	          sf::Style::Close | sf::Style::Titlebar),
-	  _sendUserEvent(sendUserInteraction) {
+	  _sendUserEvent(sendUserInteraction)
+
+{
 	this->_windowType = MENU;
 	this->_gameBackgroundTexture = sf::Texture();
-	this->_gameBackgroundTexture.loadFromFile("src/client/assets/background.png");
-	this->_gameBackground = sf::Sprite(this->_gameBackgroundTexture);
+	this->_menuBackgroundTexture = sf::Texture();
+	if (!this->_gameBackgroundTexture.loadFromFile("src/client/assets/GameBackground.png")) {
+		throw std::runtime_error("Erreur : Impossible de charger GameBackground.png");
+	}
+	if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/MenuBackground.png")) {
+		throw std::runtime_error("Erreur : Impossible de charger MenuBackground.png");
+	}
+	this->_jetpackFont = sf::Font();
+	if (!this->_jetpackFont.loadFromFile("src/client/assets/JetpackFont.ttf")) {
+		throw std::runtime_error("Erreur : Impossible de charger la police JetpackFont.ttf");
+	}
+	this->_menuTextColor = sf::Color(255, 197, 84, 255);
+	this->_menuCountdown = sf::Text();
+	this->_menuCountdown.setFont(this->_jetpackFont);
+	this->_menuCountdown.setString("PAUSE");
+	this->_menuCountdown.setCharacterSize(60);
+	this->_menuCountdown.setFillColor(this->_menuTextColor);
+	this->_menuCountdown.setOutlineThickness(3);
+	this->_menuCountdown.setOutlineColor(sf::Color::Black);
+	this->_menuCountdown.setPosition({1250, 20});
 
+	this->_gameBackground = sf::Sprite(this->_gameBackgroundTexture);
+	this->_menuBackground = sf::Sprite(this->_menuBackgroundTexture);
 	this->_window.setFramerateLimit(144);
 }
