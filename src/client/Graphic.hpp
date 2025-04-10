@@ -22,6 +22,7 @@ namespace jetpack::Client {
 			MENU,
 			TYPE_COUNT
 		};
+		bool _isUserNamePressed = false;
 
 		WindowType _windowType;
 		std::string _username;
@@ -30,16 +31,27 @@ namespace jetpack::Client {
 		std::mutex _posMutex;
 		sf::Texture _gameBackgroundTexture;
 		sf::Texture _menuBackgroundTexture;
+		sf::Texture _blurTexture;
 		sf::Font _jetpackFont;
 		sf::Color _menuTextColor;
 		sf::Color _menuButtonColor;
 		sf::Color _menuButtonTextColor;
+		sf::Color _menuUsernameBoxColor;
 		sf::Sprite _gameBackground;
 		sf::Sprite _menuBackground;
+		sf::Sprite _blurSprite;
 		sf::Text _menuCountdown;
-		sf::Text _usernameTextBox;
+		sf::Text _usernameTextButton;
+		sf::RectangleShape _usernameButton;
+		sf::RectangleShape _usernameField;
 		sf::RectangleShape _usernameBox;
+		sf::Text _usernameBoxTitle;
+		sf::Text _usernameBoxContent;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
+		std::function<void()> _sendChangeUserName;
+
+		void _handleKeyPressed(const sf::Event &);
+		void _handleMousePressed(const sf::Event &);
 
 	public:
 		void display();
@@ -54,7 +66,11 @@ namespace jetpack::Client {
 
 		void setUsername(const std::string &name);
 
-		void handleEvent();
+		std::string getUsername() const {
+			return this->_username;
+		}
+
+		void analyse();
 
 		void addNewPlayer(unsigned int id, bool isCurrent);
 
@@ -63,7 +79,9 @@ namespace jetpack::Client {
 		void switchToMenu();
 
 		explicit Graphic(
-			std::function<void(UserInteractions_s)> &_sendUserInteraction);
+			std::function<void(UserInteractions_s)> &sendUserInteraction,
+			std::function<void()> &sendChangeUserName
+		);
 
 		~Graphic() = default;
 	};
