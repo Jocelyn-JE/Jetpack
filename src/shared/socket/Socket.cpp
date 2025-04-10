@@ -122,6 +122,13 @@ void Socket::writeToSocket(std::string str) noexcept(false) {
 	}
 }
 
+void Socket::writeToSocket(char data) noexcept(false) {
+	if (write(this->_socketFd, &data, 1) == -1) {
+		throw Socket::SocketError("Write on fd " + this->_socketFd +
+								  (" failed: " + std::string(strerror(errno))));
+	}
+}
+
 void Socket::writeToSocket(std::vector<uint8_t> buffer) noexcept(false) {
 	if (write(this->_socketFd, buffer.data(), buffer.size()) == -1) {
 		throw Socket::SocketError("Write on fd " + this->_socketFd +

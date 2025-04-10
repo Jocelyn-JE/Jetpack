@@ -27,6 +27,8 @@ namespace jetpack::Client {
 
 		std::function<void(UserInteractions_s)> _sendUserInteraction =
 				([this](UserInteractions_s data) { this->_sendPlayerInput(data); });
+		std::function<void()> _sendChangeUserName =
+		([this]() { this->_sendChangeUsername(); });
 
 		jetpack::Logger &_logger;
 		Graphic _graphic;
@@ -41,6 +43,8 @@ namespace jetpack::Client {
 		void _sniffANetwork();
 
 		void _sendPlayerInput(UserInteractions_s);
+
+		void _sendChangeUsername();
 
 	public:
 		void loop();

@@ -62,6 +62,8 @@ public:
 	// May throw a SocketError exception if the write failed.
 	void writeToSocket(std::string) noexcept(false);
 
+	void writeToSocket(char) noexcept(false);
+
 	// Write a buffer to the socket.
 	// May throw a SocketError exception if the write failed.
 	void writeToSocket(std::vector<uint8_t> buffer) noexcept(false);

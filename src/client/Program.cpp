@@ -84,26 +84,19 @@ void jetpack::Client::Program::_sendPlayerInput(UserInteractions_s event) {
 
 void jetpack::Client::Program::loop() {
     while (this->_isOpen) {
-        if (!this->_graphic.isOpen()) this->_isOpen = false;
-        this->_graphic.handleEvent();
+        if (!this->_graphic.isOpen())
+            this->_isOpen = false;
+        this->_graphic.analyse();
         this->_graphic.compute();
         this->_graphic.display();
     }
 }
 
-jetpack::Client::Program::Program(const char *ip, unsigned int port,
-                                  jetpack::Logger &logger)
-    : _logger(logger),
-      _graphic(_sendUserInteraction),
-      _socket(AF_INET, SOCK_STREAM, 0) {
-    this->_logger.log("Connecting to " + std::string(ip) +
-                      " port: " + std::to_string(port));
-    this->_connnectToSocket(ip, port);
+void jetpack::Client::Program::_sendChangeUsername() {
     Header_t header{};
-
     header.magic1 = 42;
     header.magic2 = 42;
-    header.nbrPayload = 0;
+    header.nbrPayload = 1;
     auto valueHeaderBigEndian = htons(header.rawData);
     this->_logger.log("Header: little endian: " +
                       std::to_string(header.rawData));
@@ -122,6 +115,20 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
 
     this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
     this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
+    this->_socharcket.writeToSocket(this->_graphic.getUsername());
+    for (size_t i = 0; i < 20 - this->_graphic.getUsername().length(); i++)
+        this->_socket.writeToSocket('\0');
+    this->_logger.log("Received Username: " + this->_graphic.getUsername());
+}
+
+jetpack::Client::Program::Program(const char *ip, unsigned int port,
+                                  jetpack::Logger &logger)
+    : _logger(logger),
+      _graphic(this->_sendUserInteraction, this->_sendChangeUserName),
+      _socket(AF_INET, SOCK_STREAM, 0)
+{
+    this->_logger.log("Connecting to " + std::string(ip) + " port: " + std::to_string(port));
+    this->_connnectToSocket(ip, port);
     this->_networkThread = std::thread([this] {
         pthread_setname_np(pthread_self(), "Network thread");
         try {
