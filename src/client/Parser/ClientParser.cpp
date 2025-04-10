@@ -6,7 +6,7 @@
 #include <string>
 
 #include "ClientParser.hpp"
-#include "Exception.hpp"
+#include "../Exception.hpp"
 #include "lib.hpp"
 
 namespace jetpack::Client {
