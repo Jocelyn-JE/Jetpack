@@ -79,7 +79,6 @@ jobs:
   check_program_compilation:
     name: "Check program compilation"
     needs:
-      - check_cpp_linter
       - check_coding_style
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker:latest
