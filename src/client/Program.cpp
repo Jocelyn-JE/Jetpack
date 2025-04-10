@@ -58,10 +58,21 @@ void jetpack::Client::Program::_handlePayload(std::string msg, Payload_t payload
 void jetpack::Client::Program::_sniffANetwork() {
     while (this->_isOpen) {
         try {
-            std::string buffer = this->_socket.readFromSocket();
-            if (!buffer.empty()) {
-                this->_handleMessageFromServer(buffer);
+            std::string buffer;
+            fd_set readfds;
+            struct timeval tv;
+            int maxfd = this->_socket.getSocketFd();
+            FD_ZERO(&readfds);
+            FD_SET(maxfd, &readfds);
+            tv.tv_sec = 0;
+            tv.tv_usec = 100000; // 100ms timeout
+            if (select(maxfd + 1, &readfds, nullptr, nullptr, &tv) > 0 && FD_ISSET(maxfd, &readfds)) {
+                buffer = this->_socket.readFromSocket();
+                if (buffer.empty())
+                    throw Socket::SocketError("Connection closed by server");
             }
+            if (!buffer.empty())
+                this->_handleMessageFromServer(buffer);
         } catch (const Socket::SocketError &e) {
             std::cerr << "Socket error: " << e.what() << std::endl;
             this->_isOpen = false;
@@ -115,7 +126,7 @@ void jetpack::Client::Program::_sendChangeUsername() {
 
     this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
     this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
-    this->_socharcket.writeToSocket(this->_graphic.getUsername());
+    this->_socket.writeToSocket(this->_graphic.getUsername());
     for (size_t i = 0; i < 20 - this->_graphic.getUsername().length(); i++)
         this->_socket.writeToSocket('\0');
     this->_logger.log("Received Username: " + this->_graphic.getUsername());
@@ -142,6 +153,7 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
 
 jetpack::Client::Program::~Program() {
     this->_isOpen = false;
+    
     if (this->_networkThread.joinable())
         this->_networkThread.join();
 }
