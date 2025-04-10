@@ -18,11 +18,11 @@ void jetpack::Client::Program::_connnectToSocket(const char *ip,
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
-        std::cout << "Connected to server at " << ip << ":" << port << std::endl;
+        this->_logger.log("Connected to server at " + std::string(ip) + ":" + std::to_string(port));
         this->_graphic.serverOK();
     } catch (const std::exception& e) {
         this->_graphic.serverError();
-        std::cerr << "Connection failed: " << e.what() << std::endl;
+        this->_logger.log("Connection failed: " + std::string(e.what()));
     }
 }
 
@@ -71,14 +71,13 @@ void jetpack::Client::Program::_sniffANetwork() {
             int maxfd = this->_socket.getSocketFd();
 
             if (maxfd == -1) {
-                std::cout << "Attempting to reconnect..." << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
                 try {
                     this->_connnectToSocket(this->_ip, this->_port);
-                    usleep(100000); // 100ms
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     continue;
                 } catch (const std::exception &e) {
-                    std::cerr << "Reconnection failed: " << e.what() << std::endl;
-                    usleep(1000000);
+                    std::this_thread::sleep_for(std::chrono::seconds(4));
                     continue;
                 }
             }
@@ -96,40 +95,40 @@ void jetpack::Client::Program::_sniffANetwork() {
             if (selectResult < 0) {
                 this->_socket.closeSocket();
                 continue;
-            } else if (selectResult > 0 && FD_ISSET(maxfd, &readfds)) {
+            }
+            if (selectResult > 0 && FD_ISSET(maxfd, &readfds)) {
                 try {
                     buffer = this->_socket.readFromSocket();
                     if (buffer.empty()) {
-                        std::cerr << "Server disconnected" << std::endl;
+                        this->_logger.log("Server disconnected");
                         this->_graphic.serverError();
                         this->_socket.closeSocket();
                         continue;
                     }
                 } catch (const Socket::SocketError &e) {
-                    std::cerr << "Read error: " << e.what() << std::endl;
+                    this->_logger.log("Read disconnected" + std::string(e.what()));
                     this->_socket.closeSocket();
                     continue;
                 }
             }
-            
             if (!buffer.empty()) {
                 try {
                     this->_handleMessageFromServer(buffer);
                     this->_graphic.serverOK();
                 } catch (const NetworkException &e) {
-                    std::cerr << "Network error in message handling: " << e.what() << std::endl;
+                    this->_logger.log("Network error in message handling: " + std::string(e.what()));
                 }
             }
         } catch (const Socket::SocketError &e) {
-            std::cerr << "Socket error: " << e.what() << std::endl;
+            this->_logger.log("Socket error: " + std::string(e.what()));
             try {
                 this->_socket.closeSocket();
             } catch (...) {
             }
-            usleep(1000000);
+            std::this_thread::sleep_for(std::chrono::seconds(4));
         } catch (const std::exception &e) {
-            std::cerr << "Error in network thread: " << e.what() << std::endl;
-            usleep(500000);
+            this->_logger.log("Error in network thread: " + std::string(e.what()));
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
     }
     this->_interactionMutex.lock();
