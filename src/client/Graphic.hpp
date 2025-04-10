@@ -32,9 +32,13 @@ namespace jetpack::Client {
 		sf::Texture _menuBackgroundTexture;
 		sf::Font _jetpackFont;
 		sf::Color _menuTextColor;
+		sf::Color _menuButtonColor;
+		sf::Color _menuButtonTextColor;
 		sf::Sprite _gameBackground;
 		sf::Sprite _menuBackground;
 		sf::Text _menuCountdown;
+		sf::Text _usernameTextBox;
+		sf::RectangleShape _usernameBox;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
 
 	public:

@@ -11,6 +11,7 @@ void jetpack::Client::Graphic::display() {
 	if (this->_windowType == MENU) {
 		this->_window.draw(this->_menuBackground);
 		this->_window.draw(this->_menuCountdown);
+		this->_window.draw(this->_usernameBox);
 	}
 	if (this->_windowType == GAME) {
 		this->_window.draw(this->_gameBackground);
@@ -106,7 +107,10 @@ jetpack::Client::Graphic::Graphic(
 		throw std::runtime_error("Erreur : Impossible de charger la police JetpackFont.ttf");
 	}
 	this->_menuTextColor = sf::Color(255, 197, 84, 255);
+	this->_menuButtonColor = sf::Color(255, 197, 84, 255);
+	this->_menuButtonTextColor = sf::Color(255, 255, 255, 255);
 	this->_menuCountdown = sf::Text();
+	this->_usernameBox = sf::RectangleShape();
 	this->_menuCountdown.setFont(this->_jetpackFont);
 	this->_menuCountdown.setString("PAUSE");
 	this->_menuCountdown.setCharacterSize(60);
@@ -114,6 +118,13 @@ jetpack::Client::Graphic::Graphic(
 	this->_menuCountdown.setOutlineThickness(3);
 	this->_menuCountdown.setOutlineColor(sf::Color::Black);
 	this->_menuCountdown.setPosition({1250, 20});
+	this->_usernameBox.setPosition({20, 20});
+	this->_usernameBox.setFillColor(this->_menuButtonColor);
+	this->_usernameBox.setSize({200, 70});
+	this->_usernameBox.setOutlineColor(sf::Color::Black);
+	this->_usernameBox.setOutlineThickness(3);
+
+
 
 	this->_gameBackground = sf::Sprite(this->_gameBackgroundTexture);
 	this->_menuBackground = sf::Sprite(this->_menuBackgroundTexture);
