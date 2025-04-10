@@ -22,6 +22,8 @@ namespace jetpack::Client {
 	class Program {
 	private:
 		bool _isOpen = true;
+		const char *_ip;
+		unsigned int _port;
 		std::thread _networkThread;
 		std::mutex _interactionMutex;
 

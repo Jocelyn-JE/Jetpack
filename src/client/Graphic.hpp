@@ -59,6 +59,10 @@ namespace jetpack::Client {
 
 		void switchToMenu();
 
+		void serverError();
+
+		void serverOK();
+
 		explicit Graphic(
 			std::function<void(UserInteractions_s)> &sendUserInteraction,
 			std::function<void()> &sendChangeUserName

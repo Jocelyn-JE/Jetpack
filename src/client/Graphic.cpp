@@ -98,6 +98,18 @@ void jetpack::Client::Graphic::switchToMenu() {
 	this->_windowType = MENU;
 }
 
+void jetpack::Client::Graphic::serverError() {
+	this->_posMutex.lock();
+	this->_menu.setServerStateError();
+	this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::serverOK() {
+	this->_posMutex.lock();
+	this->_menu.setServerStateOk();
+	this->_posMutex.unlock();
+}
+
 jetpack::Client::Graphic::Graphic(
 	std::function<void(UserInteractions_s)> &sendUserInteraction,
 	std::function<void()> &sendChangeUserName

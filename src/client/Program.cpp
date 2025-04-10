@@ -12,9 +12,18 @@
 #include "lib.hpp"
 
 void jetpack::Client::Program::_connnectToSocket(const char *ip,
-                                                 unsigned int port) {
-    this->_socket.connectSocket(ip, port);
-    this->_socket.setCloseOnDestroy(true);
+    unsigned int port)
+{
+    this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
+    try {
+        this->_socket.connectSocket(ip, port);
+        this->_socket.setCloseOnDestroy(true);
+        std::cout << "Connected to server at " << ip << ":" << port << std::endl;
+        this->_graphic.serverOK();
+    } catch (const std::exception& e) {
+        this->_graphic.serverError();
+        std::cerr << "Connection failed: " << e.what() << std::endl;
+    }
 }
 
 void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
@@ -59,23 +68,68 @@ void jetpack::Client::Program::_sniffANetwork() {
     while (this->_isOpen) {
         try {
             std::string buffer;
+            int maxfd = this->_socket.getSocketFd();
+
+            if (maxfd == -1) {
+                std::cout << "Attempting to reconnect..." << std::endl;
+                try {
+                    this->_connnectToSocket(this->_ip, this->_port);
+                    usleep(100000); // 100ms
+                    continue;
+                } catch (const std::exception &e) {
+                    std::cerr << "Reconnection failed: " << e.what() << std::endl;
+                    usleep(1000000);
+                    continue;
+                }
+            }
+            if (this->_socket.getSocketFd() == -1) {
+                continue;
+            }
+            
             fd_set readfds;
             struct timeval tv;
-            int maxfd = this->_socket.getSocketFd();
             FD_ZERO(&readfds);
             FD_SET(maxfd, &readfds);
             tv.tv_sec = 0;
-            tv.tv_usec = 100000; // 100ms timeout
-            if (select(maxfd + 1, &readfds, nullptr, nullptr, &tv) > 0 && FD_ISSET(maxfd, &readfds)) {
-                buffer = this->_socket.readFromSocket();
-                if (buffer.empty())
-                    throw Socket::SocketError("Connection closed by server");
+            tv.tv_usec = 100000;
+            int selectResult = select(maxfd + 1, &readfds, nullptr, nullptr, &tv);
+            if (selectResult < 0) {
+                this->_socket.closeSocket();
+                continue;
+            } else if (selectResult > 0 && FD_ISSET(maxfd, &readfds)) {
+                try {
+                    buffer = this->_socket.readFromSocket();
+                    if (buffer.empty()) {
+                        std::cerr << "Server disconnected" << std::endl;
+                        this->_graphic.serverError();
+                        this->_socket.closeSocket();
+                        continue;
+                    }
+                } catch (const Socket::SocketError &e) {
+                    std::cerr << "Read error: " << e.what() << std::endl;
+                    this->_socket.closeSocket();
+                    continue;
+                }
             }
-            if (!buffer.empty())
-                this->_handleMessageFromServer(buffer);
+            
+            if (!buffer.empty()) {
+                try {
+                    this->_handleMessageFromServer(buffer);
+                    this->_graphic.serverOK();
+                } catch (const NetworkException &e) {
+                    std::cerr << "Network error in message handling: " << e.what() << std::endl;
+                }
+            }
         } catch (const Socket::SocketError &e) {
             std::cerr << "Socket error: " << e.what() << std::endl;
-            this->_isOpen = false;
+            try {
+                this->_socket.closeSocket();
+            } catch (...) {
+            }
+            usleep(1000000);
+        } catch (const std::exception &e) {
+            std::cerr << "Error in network thread: " << e.what() << std::endl;
+            usleep(500000);
         }
     }
     this->_interactionMutex.lock();
@@ -84,11 +138,20 @@ void jetpack::Client::Program::_sniffANetwork() {
 
 void jetpack::Client::Program::_sendPlayerInput(UserInteractions_s event) {
     this->_interactionMutex.lock();
-    if (event == jetpack::Client::UP) {
-        this->_socket.writeToSocket<std::string>("UP\n");
-    }
-    if (event == jetpack::Client::ESCAPE) {
-        this->_socket.writeToSocket<std::string>("ESCAPE\n");
+    try {
+        if (this->_socket.getSocketFd() != -1) {
+            if (event == jetpack::Client::UP) {
+                this->_socket.writeToSocket<std::string>("UP\n");
+            }
+            if (event == jetpack::Client::ESCAPE) {
+                this->_socket.writeToSocket<std::string>("ESCAPE\n");
+            }
+        }
+    } catch (const Socket::SocketError &e) {
+        std::cerr << "Error sending player input: " << e.what() << std::endl;
+        try {
+            this->_socket.closeSocket();
+        } catch (...) {}
     }
     this->_interactionMutex.unlock();
 }
@@ -104,32 +167,43 @@ void jetpack::Client::Program::loop() {
 }
 
 void jetpack::Client::Program::_sendChangeUsername() {
-    Header_t header{};
-    header.magic1 = 42;
-    header.magic2 = 42;
-    header.nbrPayload = 1;
-    auto valueHeaderBigEndian = htons(header.rawData);
-    this->_logger.log("Header: little endian: " +
-                      std::to_string(header.rawData));
-    this->_logger.log("Header: big endian: " +
-                      std::to_string(valueHeaderBigEndian));
-    Payload_t payload{};
+    try {
+        if (this->_socket.getSocketFd() == -1) {
+            std::cerr << "Cannot send username: not connected to server" << std::endl;
+            return;
+        }
+        Header_t header{};
+        header.magic1 = 42;
+        header.magic2 = 42;
+        header.nbrPayload = 1;
+        auto valueHeaderBigEndian = htons(header.rawData);
+        this->_logger.log("Header: little endian: " +
+                          std::to_string(header.rawData));
+        this->_logger.log("Header: big endian: " +
+                          std::to_string(valueHeaderBigEndian));
+        Payload_t payload{};
 
-    payload.dataCount = 1;
-    payload.dataId = 8;
-    auto valuePayloadBigEndian = htons(payload.rawData);
+        payload.dataCount = 1;
+        payload.dataId = 8;
+        auto valuePayloadBigEndian = htons(payload.rawData);
 
-    this->_logger.log("Payload: little endian: " +
-                      std::to_string(payload.rawData));
-    this->_logger.log("Payload: big endian: " +
-                      std::to_string(valuePayloadBigEndian));
+        this->_logger.log("Payload: little endian: " +
+                          std::to_string(payload.rawData));
+        this->_logger.log("Payload: big endian: " +
+                          std::to_string(valuePayloadBigEndian));
 
-    this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
-    this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
-    this->_socket.writeToSocket(this->_graphic.getUsername());
-    for (size_t i = 0; i < 20 - this->_graphic.getUsername().length(); i++)
-        this->_socket.writeToSocket('\0');
-    this->_logger.log("Received Username: " + this->_graphic.getUsername());
+        this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
+        this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
+        this->_socket.writeToSocket(this->_graphic.getUsername());
+        for (size_t i = 0; i < 20 - this->_graphic.getUsername().length(); i++)
+            this->_socket.writeToSocket('\0');
+        this->_logger.log("Received Username: " + this->_graphic.getUsername());
+    } catch (const Socket::SocketError &e) {
+        std::cerr << "Error sending username change: " << e.what() << std::endl;
+        try {
+            this->_socket.closeSocket();
+        } catch (...) {}
+    }
 }
 
 jetpack::Client::Program::Program(const char *ip, unsigned int port,
@@ -138,6 +212,8 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
       _graphic(this->_sendUserInteraction, this->_sendChangeUserName),
       _socket(AF_INET, SOCK_STREAM, 0)
 {
+    this->_ip = ip;
+    this->_port = port;
     this->_logger.log("Connecting to " + std::string(ip) + " port: " + std::to_string(port));
     this->_connnectToSocket(ip, port);
     this->_networkThread = std::thread([this] {
