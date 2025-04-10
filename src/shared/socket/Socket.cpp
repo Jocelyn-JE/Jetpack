@@ -42,6 +42,18 @@ Socket::~Socket() noexcept(false) {
 			<< std::endl;
 }
 
+void Socket::resetSocket(int domain, int type, int protocol)
+{
+	if (this->_socketFd != -1)
+		return;
+	this->_socketFd = socket(domain, type, protocol);
+	if (this->_socketFd == -1) {
+		throw Socket::SocketError("Socket creation failed: " +
+								  std::string(strerror(errno)));
+	}
+	std::cout << "Created socket on fd: " << this->_socketFd << std::endl;
+}
+
 bool Socket::closesOnDestroy() const noexcept {
 	return this->_closeSocketOnDestruction;
 }
@@ -52,6 +64,7 @@ void Socket::closeSocket() noexcept(false) {
 		                          std::string(strerror(errno)));
 	}
 	std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
+	this->_socketFd = -1;
 	this->_closeSocketOnDestruction = false;
 }
 

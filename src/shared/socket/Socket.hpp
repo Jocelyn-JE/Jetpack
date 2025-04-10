@@ -35,6 +35,10 @@ public:
 	// May throw a SocketError exception if the socket could not be closed.
 	~Socket() noexcept(false);
 
+	// Open a new socket on a new file descriptor.
+	// May throw a SocketError exception if the socket could not be created.
+	void resetSocket(int domain, int type, int protocol);
+
 	// Returns the socket's file descriptor.
 	int getSocketFd() const noexcept;
 
