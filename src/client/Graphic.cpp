@@ -3,7 +3,6 @@
 //
 
 #include "Graphic.hpp"
-
 #include "Program.hpp"
 
 void jetpack::Client::Graphic::display() {
@@ -12,8 +11,10 @@ void jetpack::Client::Graphic::display() {
 		this->_menu.display(this->_window);
 	}
 	if (this->_windowType == GAME) {
+		this->_game.display(this->_window);
 		for (auto &s: this->_listPlayers) {
-			this->_window.draw(s.second.first);
+			std::cout << "Displaying player " << s.first << std::endl;
+			s.second.first->display(this->_window);
 		}
 	}
 	this->_window.display();
@@ -22,20 +23,23 @@ void jetpack::Client::Graphic::display() {
 void jetpack::Client::Graphic::compute() {
 	this->_posMutex.lock();
 	if (this->_windowType == MENU) {
-		// TODO(noa) : add menu
+		this->_menu.compute();
 	}
 	if (this->_windowType == GAME) {
+		this->_game.compute();
 		for (auto &s: this->_listPlayers) {
-			s.second.first.setPosition(s.second.second);
+			std::cout << "Compute player " << s.first << std::endl;
+			s.second.first->compute();
 		}
 	}
 	this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setPosRectangle(unsigned int id,
+void jetpack::Client::Graphic::setPosPlayer(unsigned int id,
                                                sf::Vector2f pos) {
 	this->_posMutex.lock();
-	for (auto s: this->_listPlayers) this->_listPlayers.at(id).second = pos;
+	this->_listPlayers.at(id).second = pos;
+	this->_listPlayers.at(id).first->changePosValue(pos);
 	this->_posMutex.unlock();
 }
 
@@ -52,27 +56,15 @@ std::string jetpack::Client::Graphic::getUsername() {
 	return data;
 }
 
-void jetpack::Client::Graphic::_handleKeyPressed(const sf::Event &event) {
-	//TODO(noa) : A mettre dans le analyze Game
-	if (event.key.code == sf::Keyboard::Up) {
-		this->_sendUserEvent(UserInteractions_s::UP);
-	}
-	// TODO(noa) : demander les autres interaction possible entre le
-	// server et le client
-	if (event.key.code == sf::Keyboard::Escape) {
-		this->_sendUserEvent(UserInteractions_s::ESCAPE);
-	}
-}
-
 void jetpack::Client::Graphic::analyse() {
 	sf::Event event{};
 	while (this->_window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed)
 			this->_window.close();
-		if (event.type == sf::Event::KeyPressed)
-			this->_handleKeyPressed(event);
 		if (this->_windowType == MENU)
 			this->_menu.analyze(event);
+		else
+			this->_game.analyze(event);
 	}
 }
 
@@ -80,15 +72,14 @@ void jetpack::Client::Graphic::analyse() {
 
 void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isCurrent) {
 	(void) isCurrent;
-	// Is current == is the player that is playing
+
 	if (!this->_listPlayers.contains(id)) {
-		sf::RectangleShape rect;
-		rect.setSize({50.0f, 50.0f});
-		rect.setFillColor(sf::Color::Red);
-		sf::Vector2f pos = rect.getPosition();
-		this->_listPlayers.insert({id, {rect, pos}});
+		this->_listPlayers.emplace(id, std::make_pair(
+			std::make_unique<Player>(new Player(isCurrent)),
+			sf::Vector2f(0, 0)
+		));
 	}
-}
+}	
 
 void jetpack::Client::Graphic::switchToGame() {
 	this->_windowType = GAME;
@@ -117,9 +108,10 @@ jetpack::Client::Graphic::Graphic(
 	_window(sf::VideoMode({1440, 550}), "Jetpack Joyride", sf::Style::Close | sf::Style::Titlebar),
 	_sendUserEvent(sendUserInteraction),
 	_sendChangeUserName(sendChangeUserName),
-	_menu(sendChangeUserName)
-
+	_menu(sendChangeUserName),
+	_game(sendUserInteraction)
 {
-	this->_windowType = MENU;
+	this->_windowType = GAME;
 	this->_window.setFramerateLimit(144);
+	this->addNewPlayer(1, true);
 }

@@ -7,13 +7,14 @@
 
 #include <functional>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <utility>
-
 #include <SFML/Graphics.hpp>
-
-#include "Menu/Menu.hpp"
 #include "userInteractions.hpp"
+#include "Game/Game.hpp"
+#include "Menu/Menu.hpp"
+#include "Player/Player.hpp"
 
 namespace jetpack::Client {
 	class Graphic {
@@ -26,12 +27,13 @@ namespace jetpack::Client {
 
 		WindowType _windowType;
 		sf::RenderWindow _window;
-		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> > _listPlayers;
+		std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> > _listPlayers;
 		std::mutex _posMutex;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
 		std::function<void()> _sendChangeUserName;
 
 		Menu _menu;
+		Game _game;
 
 		void _handleKeyPressed(const sf::Event &);
 		void _handleMousePressed(const sf::Event &);
@@ -45,7 +47,7 @@ namespace jetpack::Client {
 
 		void close() { return this->_window.close(); }
 
-		void setPosRectangle(unsigned int id, sf::Vector2f pos);
+		void setPosPlayer(unsigned int id, sf::Vector2f pos);
 
 		void setUsername(const std::string &name);
 

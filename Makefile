@@ -36,8 +36,10 @@ MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
 CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Menu/Menu.cpp							\
+						./src/client/Game/Game.cpp							\
 						./src/client/Program.cpp							\
 						./src/client/Parser/ClientParser.cpp				\
+						./src/client/Player/Player.cpp				\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
@@ -47,6 +49,8 @@ MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 # Library files ---------------------------------------------------------------
 LIB_SRC				=	./src/shared/utility/splitString.cpp				\
 						./src/shared/utility/isNumber.cpp					\
+						./src/shared/sfml/Sprite.cpp						\
+						./src/shared/sfml/SpriteSheet.cpp						\
 
 LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
 
@@ -58,7 +62,7 @@ TESTS_SRC			=
 # Flags -----------------------------------------------------------------------
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
-						-I ./src/server/client
+						-I ./src/server/client  -I ./src/shared/sfml
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g
