@@ -12,7 +12,7 @@
 
 #include "../../../include/GameData.hpp"
 #include "./parsing/Parser.hpp"
-#include "./server/Server.hpp"
+#include "Server.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
 
