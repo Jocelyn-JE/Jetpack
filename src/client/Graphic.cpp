@@ -13,7 +13,6 @@ void jetpack::Client::Graphic::display() {
 	if (this->_windowType == GAME) {
 		this->_game.display(this->_window);
 		for (auto &s: this->_listPlayers) {
-			std::cout << "Displaying player " << s.first << std::endl;
 			s.second.first->display(this->_window);
 		}
 	}
@@ -28,7 +27,6 @@ void jetpack::Client::Graphic::compute() {
 	if (this->_windowType == GAME) {
 		this->_game.compute();
 		for (auto &s: this->_listPlayers) {
-			std::cout << "Compute player " << s.first << std::endl;
 			s.second.first->compute();
 		}
 	}
@@ -68,17 +66,9 @@ void jetpack::Client::Graphic::analyse() {
 	}
 }
 
-
-
-void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isCurrent) {
-	(void) isCurrent;
-
-	if (!this->_listPlayers.contains(id)) {
-		this->_listPlayers.emplace(id, std::make_pair(
-			std::make_unique<Player>(new Player(isCurrent)),
-			sf::Vector2f(0, 0)
-		));
-	}
+void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isTransparent) {
+	if (!this->_listPlayers.contains(id))
+		this->_listPlayers.emplace(id, std::make_pair(std::make_unique<Player>(isTransparent), sf::Vector2f(0, 0)));
 }	
 
 void jetpack::Client::Graphic::switchToGame() {
@@ -113,5 +103,9 @@ jetpack::Client::Graphic::Graphic(
 {
 	this->_windowType = GAME;
 	this->_window.setFramerateLimit(144);
-	this->addNewPlayer(1, true);
+	//Simulation de deux joueurs
+	this->addNewPlayer(1, false);
+	this->addNewPlayer(2, true);
+	this->setPosPlayer(1, {10, 400});
+	this->setPosPlayer(2, {10, 200});
 }
