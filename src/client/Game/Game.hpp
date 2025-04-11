@@ -19,7 +19,6 @@ private:
 
    void _handleKeyPressed(const sf::Event &event);
 public:
-   void setInfinite();
 
    void display(sf::RenderWindow &window);
 
