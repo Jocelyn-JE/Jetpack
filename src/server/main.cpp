@@ -12,6 +12,7 @@
 
 #include "../../../include/GameData.hpp"
 #include "./parsing/Parser.hpp"
+#include "./server/Server.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
 
@@ -48,6 +49,5 @@ int main(int argc, char **argv) {
                   << std::endl;
         return 1;
     }
-
-    return 0;
+    return jetpack::server::Server::runServer(atoi(argv[1]));
 }
