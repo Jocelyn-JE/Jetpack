@@ -6,7 +6,9 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <fcntl.h>
 #include <string>
+#include <poll.h>
 #include "Program.hpp"
 #include "Exception.hpp"
 #include "lib.hpp"
@@ -15,6 +17,8 @@ void jetpack::Client::Program::_connnectToSocket(const char *ip,
     unsigned int port)
 {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
+    auto fd = (this->_socket.getSocketFd());
+    fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
@@ -66,37 +70,34 @@ void jetpack::Client::Program::_handlePayload(std::string msg, Payload_t payload
 
 void jetpack::Client::Program::_sniffANetwork() {
     while (this->_isOpen) {
+        
         try {
-            std::string buffer;
-            int maxfd = this->_socket.getSocketFd();
+            int socketFd = this->_socket.getSocketFd();
 
-            if (maxfd == -1) {
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+            if (socketFd == -1) {
+                this->_graphic.serverError();
                 try {
                     this->_connnectToSocket(this->_ip, this->_port);
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                    continue;
-                } catch (const std::exception &e) {
-                    std::this_thread::sleep_for(std::chrono::seconds(4));
-                    continue;
+                } catch (...) {
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
                 }
-            }
-            if (this->_socket.getSocketFd() == -1) {
                 continue;
             }
+            struct pollfd pfd;
+            pfd.fd = socketFd;
+            pfd.events = POLLIN;
+            int pollResult = poll(&pfd, 1, 500);  // 500ms timeout
             
-            fd_set readfds;
-            struct timeval tv;
-            FD_ZERO(&readfds);
-            FD_SET(maxfd, &readfds);
-            tv.tv_sec = 0;
-            tv.tv_usec = 100000;
-            int selectResult = select(maxfd + 1, &readfds, nullptr, nullptr, &tv);
-            if (selectResult < 0) {
+            if (pollResult < 0) {
+                this->_logger.log("Poll error");
                 this->_socket.closeSocket();
+                this->_graphic.serverError();
                 continue;
             }
-            if (selectResult > 0 && FD_ISSET(maxfd, &readfds)) {
+            this->_graphic.serverOK();
+            if (pollResult > 0 && (pfd.revents & POLLIN)) {
+                std::string buffer;
                 try {
                     buffer = this->_socket.readFromSocket();
                     if (buffer.empty()) {
@@ -105,34 +106,25 @@ void jetpack::Client::Program::_sniffANetwork() {
                         this->_socket.closeSocket();
                         continue;
                     }
-                } catch (const Socket::SocketError &e) {
-                    this->_logger.log("Read disconnected" + std::string(e.what()));
-                    this->_socket.closeSocket();
-                    continue;
-                }
-            }
-            if (!buffer.empty()) {
-                try {
                     this->_handleMessageFromServer(buffer);
                     this->_graphic.serverOK();
+                } catch (const Socket::SocketError &e) {
+                    this->_logger.log("Socket read error: " + std::string(e.what()));
+                    this->_graphic.serverError();
+                    this->_socket.closeSocket();
                 } catch (const NetworkException &e) {
-                    this->_logger.log("Network error in message handling: " + std::string(e.what()));
+                    this->_logger.log("Network error: " + std::string(e.what()));
                 }
             }
-        } catch (const Socket::SocketError &e) {
-            this->_logger.log("Socket error: " + std::string(e.what()));
-            try {
-                this->_socket.closeSocket();
-            } catch (...) {
-            }
-            std::this_thread::sleep_for(std::chrono::seconds(4));
         } catch (const std::exception &e) {
             this->_logger.log("Error in network thread: " + std::string(e.what()));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            this->_graphic.serverError();
+            try {
+                this->_socket.closeSocket();
+            } catch (...) {}
+            std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
-    this->_interactionMutex.lock();
-    this->_interactionMutex.unlock();
 }
 
 void jetpack::Client::Program::_sendPlayerInput(UserInteractions_s event) {
