@@ -5,3 +5,5 @@ jetpack_client
 *.o
 *.a
 vg*
+.clang-tidy
+.clang-format
