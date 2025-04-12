@@ -34,10 +34,9 @@ private:
 
 	void _handleMousePressed(const sf::Event &event);
 	std::function<void(std::string)> _changeUsername;
+	std::function<std::string()> _getUsername;
 
 public:
-	void setUsername(const std::string &data);
-
 	void setServerStateError();
 
 	void setServerStateOk();
@@ -48,7 +47,10 @@ public:
 
 	void analyze(const sf::Event &event);
 
-	Menu(std::function<void(std::string)> &changeUsername);
+	Menu(
+		std::function<void(std::string)> &changeUsername,
+		std::function<std::string()> &getUsername
+	);
 
 	~Menu() = default;
 };

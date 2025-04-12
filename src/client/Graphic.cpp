@@ -123,7 +123,7 @@ jetpack::Client::Graphic::Graphic(
 	_sendUserEvent(sendUserInteraction),
 	_changeUsername(changeUsername),
 	_getUsername(getUsername),
-	_menu(_changeUsername),
+	_menu(_changeUsername, _getUsername),
 	_game(sendUserInteraction)
 {
 	this->_windowType = MENU;
