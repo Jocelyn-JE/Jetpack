@@ -18,7 +18,6 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
 {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
     auto fd = (this->_socket.getSocketFd());
-    fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
@@ -29,6 +28,7 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_socket.closeSocket();
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
+    fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
 }
 
 void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
@@ -78,7 +78,7 @@ void jetpack::Client::Program::_sniffANetwork() {
                 this->_graphic.serverError();
                 try {
                     this->_connectToSocket(this->_ip, this->_port);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
                 } catch (...) {
                     std::this_thread::sleep_for(std::chrono::seconds(5));
                 }
@@ -86,7 +86,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             struct pollfd pfd;
             pfd.fd = socketFd;
-            pfd.events = POLLIN & POLLOUT;
+            pfd.events = POLLIN | POLLOUT;
             int pollResult = poll(&pfd, 1, 100);
             
             if (pollResult < 0) {
@@ -96,7 +96,6 @@ void jetpack::Client::Program::_sniffANetwork() {
                 continue;
             }
             this->_graphic.serverOK();
-            this->_sendPlayerInput();
 
             if (pollResult > 0 && (pfd.revents & POLLOUT)) {
                 this->_sendNewUsername();
