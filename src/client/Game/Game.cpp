@@ -10,6 +10,7 @@ namespace jetpack::Client {
 	void Game::display(sf::RenderWindow &window) {
 		this->_background.display(window);
 		this->_background2.display(window);
+		this->_coinStats.display(window);
 	}
 
 	void Game::compute() {
@@ -27,6 +28,11 @@ namespace jetpack::Client {
 			if (pos2.x < completelyOutPosition)
 				this->_background2.changePos({pos1.x + bgWidth - 5, pos2.y});
 		}
+		this->_coinStats.compute();
+	}
+
+	void Game::setCoinsAmount(unsigned int coinsAmount) {
+		this->_coinStats.setCoinsAmount(coinsAmount);
 	}
 
 	void Game::_handleKeyPressed(const sf::Event &event) {

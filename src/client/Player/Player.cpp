@@ -34,8 +34,22 @@ namespace jetpack::Client {
 		this->_playerMutex.unlock();
 	}
 
+	unsigned int Player::getCoinsAmount() {
+		this->_playerMutex.lock();
+		auto data =  this->_coinsAmount;
+		this->_playerMutex.unlock();
+		return data;
+	}
+
+	void Player::setCoinsAmount(unsigned int coins) {
+		this->_playerMutex.lock();
+		this->_coinsAmount = coins;
+		this->_playerMutex.unlock();
+	}
+
 	Player::Player(bool isPlayer)
 		:
+		_isHost(!isPlayer),
 		_player("./src/client/assets/player_sprite_sheet.png", {138, 135}, 6, 4, {0.65, 0.65})
 	{
 		this->_pos = {0, 0};

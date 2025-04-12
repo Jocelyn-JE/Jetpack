@@ -5,22 +5,28 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 #include <functional>
+#include <SpriteSheet.hpp>
 #include <SFML/Graphics.hpp>
 #include "Sprite.hpp"
 #include "../userInteractions.hpp"
+#include "../CoinStats/CoinStats.hpp"
 
 namespace jetpack::Client {
 class Game {
 private:
    std::function<void(UserInteractions_s)> &_sendUserInteraction;
 
-   Sprite _background;
-   Sprite _background2;
    bool _isBg1 = true;
    sf::Clock _clock;
 
+   Sprite _background;
+   Sprite _background2;
+   CoinStats _coinStats;
+
    void _handleKeyPressed(const sf::Event &event);
 public:
+
+   void setCoinsAmount(unsigned int coinsAmount);
 
    void display(sf::RenderWindow &window);
 

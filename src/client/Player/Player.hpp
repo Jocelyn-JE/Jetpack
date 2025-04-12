@@ -20,14 +20,25 @@ class Player {
       SHOCK = 5,
    };
    PlayerSprite_t _currentSpriteState = RUNNING;
+   bool _isHost = false;
+   unsigned int _coinsAmount = 182;
    sf::Vector2f _pos;
-   bool _visibility = false;
    std::string _username;
    std::mutex _playerMutex;
+   std::mutex _coinMutex;
    sf::Clock _clock;
 
    SpriteSheet _player;
 public:
+
+   unsigned int getCoinsAmount();
+
+   void setCoinsAmount(unsigned int coins);
+
+   bool isHost() const {;
+      return this->_isHost;
+   };
+
    void display(sf::RenderWindow &window);
 
    void compute();
@@ -35,6 +46,7 @@ public:
    void changePosValue(sf::Vector2f pos);
 
    Player(bool isPlayer);
+
    ~Player();
 };
 
