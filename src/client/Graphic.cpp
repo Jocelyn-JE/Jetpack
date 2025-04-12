@@ -34,6 +34,8 @@ void jetpack::Client::Graphic::compute() {
 		this->_game.compute();
 		for (auto &s: this->_listPlayers) {
 			s.second.first->compute();
+			if (s.second.first->isHost())
+				this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
 		}
 		for (auto &s: this->_listCoins) {
 			s.second.first->compute();
@@ -126,7 +128,7 @@ jetpack::Client::Graphic::Graphic(
 	_menu(_changeUsername, _getUsername),
 	_game(sendUserInteraction)
 {
-	this->_windowType = MENU;
+	this->_windowType = GAME;
 	this->_window.setFramerateLimit(144);
 	//Simulation de deux joueurs avec deux piece et deux laser
 	this->addNewPlayer(1, false);
