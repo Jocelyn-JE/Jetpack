@@ -22,7 +22,7 @@ namespace jetpack::Client {
 			this->_background.changePos({pos1.x - 5, pos1.y});
 			this->_background2.changePos({pos2.x - 5, pos2.y});
 			float bgWidth = 3444;
-			float completelyOutPosition = -3444;
+			float completelyOutPosition = -3452;
 			if (pos1.x < completelyOutPosition)
 				this->_background.changePos({pos2.x + bgWidth - 5, pos1.y});
 			if (pos2.x < completelyOutPosition)
