@@ -33,11 +33,7 @@ namespace jetpack::Client {
 		if (event.key.code == sf::Keyboard::Up) {
 			this->_sendUserInteraction(UserInteractions_s::UP);
 		}
-		// TODO(noa) : demander les autres interaction possible entre le
-		// server et le client
-		if (event.key.code == sf::Keyboard::Escape) {
-			this->_sendUserInteraction(UserInteractions_s::ESCAPE);
-		}
+		// TODO(noa) : demander les autres interaction possible entre le server et le client
 	}
 
 	void Game::analyze(const sf::Event &event) {

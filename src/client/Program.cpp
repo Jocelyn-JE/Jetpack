@@ -131,6 +131,33 @@ void jetpack::Client::Program::_sniffANetwork() {
     }
 }
 
+void jetpack::Client::Program::_sendUpEvent() {
+    if (this->_socket.getSocketFd() == -1) {
+        this->_logger.log("Cannot send username: not connected to server");
+        return;
+    }
+    Header_t header{};
+    header.magic1 = 42;
+    header.magic2 = 42;
+    header.nbrPayload = 1;
+    auto valueHeaderBigEndian = htons(header.rawData);
+    this->_logger.log("Header: little endian: " +
+                      std::to_string(header.rawData));
+    this->_logger.log("Header: big endian: " +
+                      std::to_string(valueHeaderBigEndian));
+    Payload_t payload{};
+    payload.dataCount = 1;
+    payload.dataId = 13;
+    auto valuePayloadBigEndian = htons(payload.rawData);
+    this->_logger.log("Payload: little endian: " +
+                      std::to_string(payload.rawData));
+    this->_logger.log("Payload: big endian: " +
+                      std::to_string(valuePayloadBigEndian));
+    this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
+    this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
+    this->_socket.writeToSocket<bool>(true);
+}
+
 void jetpack::Client::Program::_sendPlayerInput() {
     this->_interactionMutex.lock();
     if (this->_lastUserInteraction == UserInteractions_s::NO_INTERACTION) {
@@ -140,10 +167,7 @@ void jetpack::Client::Program::_sendPlayerInput() {
     try {
         if (this->_socket.getSocketFd() != -1) {
             if (this->_lastUserInteraction == jetpack::Client::UP) {
-                this->_socket.writeToSocket(std::string("UP\n"));
-            }
-            if (this->_lastUserInteraction == jetpack::Client::ESCAPE) {
-                this->_socket.writeToSocket(std::string("ESCAPE\n"));
+                this->_sendUpEvent();
             }
         }
         this->_lastUserInteraction = UserInteractions_s::NO_INTERACTION;
@@ -169,7 +193,7 @@ void jetpack::Client::Program::loop() {
 void jetpack::Client::Program::_sendChangeUsername() {
     try {
         if (this->_socket.getSocketFd() == -1) {
-            std::cerr << "Cannot send username: not connected to server" << std::endl;
+            this->_logger.log("Cannot send username: not connected to server");
             return;
         }
         Header_t header{};

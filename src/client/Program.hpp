@@ -50,6 +50,8 @@ namespace jetpack::Client {
 
 		void _sniffANetwork();
 
+		void _sendUpEvent();
+
 		void _sendPlayerInput();
 
 		void _sendChangeUsername();
