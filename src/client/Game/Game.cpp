@@ -8,7 +8,6 @@
 
 namespace jetpack::Client {
 	void Game::display(sf::RenderWindow &window) {
-		// Afficher les deux backgrounds
 		this->_background.display(window);
 		this->_background2.display(window);
 	}
