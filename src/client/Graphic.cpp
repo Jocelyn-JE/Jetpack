@@ -67,19 +67,6 @@ void jetpack::Client::Graphic::setPosLaser(unsigned int id, sf::Vector2f pos) {
 	this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setUsername(const std::string &name) {
-	this->_posMutex.lock();
-	this->_menu.setUsername(name);
-	this->_posMutex.unlock();
-}
-
-std::string jetpack::Client::Graphic::getUsername() {
-	this->_posMutex.lock();
-	auto data = this->_menu.getUsername();
-	this->_posMutex.unlock();
-	return data;
-}
-
 void jetpack::Client::Graphic::analyse() {
 	sf::Event event{};
 	while (this->_window.pollEvent(event)) {
@@ -129,17 +116,19 @@ void jetpack::Client::Graphic::serverOK() {
 
 jetpack::Client::Graphic::Graphic(
 	std::function<void(UserInteractions_s)> &sendUserInteraction,
-	std::function<void()> &sendChangeUserName
+	std::function<void(std::string)> &changeUsername,
+	std::function<std::string()> &getUsername
 ):
 	_window(sf::VideoMode({1440, 550}), "Jetpack Joyride", sf::Style::Close | sf::Style::Titlebar),
 	_sendUserEvent(sendUserInteraction),
-	_sendChangeUserName(sendChangeUserName),
-	_menu(sendChangeUserName),
+	_changeUsername(changeUsername),
+	_getUsername(getUsername),
+	_menu(_changeUsername, _getUsername),
 	_game(sendUserInteraction)
 {
-	this->_windowType = GAME;
+	this->_windowType = MENU;
 	this->_window.setFramerateLimit(144);
-	//Simulation de deux joueurs
+	//Simulation de deux joueurs avec deux piece et deux laser
 	this->addNewPlayer(1, false);
 	this->addNewPlayer(2, true);
 	this->addNewCoin(1);

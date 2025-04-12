@@ -8,7 +8,6 @@
 
 namespace jetpack::Client {
 	void Game::display(sf::RenderWindow &window) {
-		// Afficher les deux backgrounds
 		this->_background.display(window);
 		this->_background2.display(window);
 	}
@@ -34,11 +33,7 @@ namespace jetpack::Client {
 		if (event.key.code == sf::Keyboard::Up) {
 			this->_sendUserInteraction(UserInteractions_s::UP);
 		}
-		// TODO(noa) : demander les autres interaction possible entre le
-		// server et le client
-		if (event.key.code == sf::Keyboard::Escape) {
-			this->_sendUserInteraction(UserInteractions_s::ESCAPE);
-		}
+		// TODO(noa) : demander les autres interaction possible entre le server et le client
 	}
 
 	void Game::analyze(const sf::Event &event) {
