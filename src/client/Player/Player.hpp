@@ -21,7 +21,7 @@ class Player {
    };
    PlayerSprite_t _currentSpriteState = RUNNING;
    bool _isHost = false;
-   unsigned int _coinsAmount = 182;
+   unsigned int _coinsAmount = 0;
    sf::Vector2f _pos;
    std::string _username;
    std::mutex _playerMutex;
