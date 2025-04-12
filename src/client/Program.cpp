@@ -133,7 +133,6 @@ void jetpack::Client::Program::_sniffANetwork() {
 
 void jetpack::Client::Program::_sendPlayerInput() {
     this->_interactionMutex.lock();
-    std::cout << "Sending player input: " << this->_lastUserInteraction << std::endl;
     if (this->_lastUserInteraction == UserInteractions_s::NO_INTERACTION) {
         this->_interactionMutex.unlock();
         return;
