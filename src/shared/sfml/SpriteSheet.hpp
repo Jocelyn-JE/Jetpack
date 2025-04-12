@@ -21,6 +21,14 @@ public:
 
 	void setSprite(int col, int line);
 
+	void setSpriteType(int col);
+
+	std::pair<int, int> getRectPosition() const;
+
+	sf::Vector2f getSpritePosition() const;
+
+	void nextSprite();
+
     void setPos(sf::Vector2f pos);
 
 	void setTransparency();

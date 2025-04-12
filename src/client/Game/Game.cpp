@@ -16,7 +16,8 @@ namespace jetpack::Client {
 			this->_clock.restart();
 			auto pos = this->_background.getPos();
 			if (pos.x > -2000)
-				this->_background.changePos({(float)(pos.x - 10), pos.y});
+				this->_background.changePos({(float)(pos.x - 15), pos.y});
+			//Ajouter un deuxième background pour faire la transition
 			// Else  {// end of map}
 		}
 	}
@@ -39,7 +40,7 @@ namespace jetpack::Client {
 
 	Game::Game(std::function<void(UserInteractions_s)> &sendUserInteraction) :
 		_sendUserInteraction(sendUserInteraction),
-		_background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.1})
+		_background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15})
 	{
 		this->_clock = sf::Clock();
 	}

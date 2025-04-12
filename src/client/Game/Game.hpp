@@ -19,6 +19,7 @@ private:
 
    void _handleKeyPressed(const sf::Event &event);
 public:
+
    void display(sf::RenderWindow &window);
 
    void compute();

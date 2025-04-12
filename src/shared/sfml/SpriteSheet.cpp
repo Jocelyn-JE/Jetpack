@@ -13,6 +13,24 @@ void SpriteSheet::setSprite(int col, int line) {
 		throw std::runtime_error("Erreur : Impossible de changer le sprite");
 	this->_rect.left = col * this->_sizeElements.x;
 	this->_rect.top = line * this->_sizeElements.y;
+	this->_sprite.setTextureRect(this->_rect);
+}
+
+void SpriteSheet::setSpriteType(int line) {
+	if (line >= this->_nbrLines)
+		throw std::runtime_error("Erreur : Impossible de changer le sprite");
+	this->_rect.top = line * this->_sizeElements.y;
+	this->_rect.left = 0;
+	this->_sprite.setTextureRect(this->_rect);
+}
+
+void SpriteSheet::nextSprite() {
+	if (this->_nbrColumns == (this->_rect.left + this->_sizeElements.x) / this->_sizeElements.x) {
+		this->_rect.left = 0;
+	} else {
+		this->_rect.left += this->_sizeElements.x;
+	}
+	this->_sprite.setTextureRect(this->_rect);
 }
 
 void SpriteSheet::setPos(sf::Vector2f pos) {
@@ -21,8 +39,19 @@ void SpriteSheet::setPos(sf::Vector2f pos) {
 
 void SpriteSheet::setTransparency() {
 	sf::Color color = this->_sprite.getColor();
-	color.a = 180;
+	color.a = 135;
 	this->_sprite.setColor(color);
+}
+
+std::pair<int, int> SpriteSheet::getRectPosition() const {
+	return std::make_pair<int, int>(
+		this->_rect.left / this->_sizeElements.x + 1,
+		this->_rect.top / this->_sizeElements.y + 1
+	);
+}
+
+sf::Vector2f SpriteSheet::getSpritePosition() const {
+	return this->_sprite.getPosition();
 }
 
 SpriteSheet::SpriteSheet(const std::string &path, sf::Vector2i sizeElements, int nbrLines, int nbrColumns, sf::Vector2f scale
