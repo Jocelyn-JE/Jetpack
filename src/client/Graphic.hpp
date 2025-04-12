@@ -14,6 +14,7 @@
 #include "userInteractions.hpp"
 #include "Coin/Coin.hpp"
 #include "Game/Game.hpp"
+#include "Laser/Laser.hpp"
 #include "Menu/Menu.hpp"
 #include "Player/Player.hpp"
 
@@ -30,15 +31,13 @@ namespace jetpack::Client {
 		sf::RenderWindow _window;
 		std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> > _listPlayers;
 		std::map<unsigned int, std::pair<std::unique_ptr<Coin>, sf::Vector2f> > _listCoins;
+		std::map<unsigned int, std::pair<std::unique_ptr<Laser>, sf::Vector2f> > _listLasers;
 		std::mutex _posMutex;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
 		std::function<void()> _sendChangeUserName;
 
 		Menu _menu;
 		Game _game;
-
-		void _handleKeyPressed(const sf::Event &);
-		void _handleMousePressed(const sf::Event &);
 
 	public:
 		void display();
@@ -53,6 +52,8 @@ namespace jetpack::Client {
 
 		void setPosCoin(unsigned int id, sf::Vector2f pos);
 
+		void setPosLaser(unsigned int id, sf::Vector2f pos);
+
 		void setUsername(const std::string &name);
 
 		std::string getUsername();
@@ -62,6 +63,8 @@ namespace jetpack::Client {
 		void addNewPlayer(unsigned int id, bool isCurrent);
 
 		void addNewCoin(unsigned int id);
+
+		void addNewLaser(unsigned int id);
 
 		void switchToGame();
 

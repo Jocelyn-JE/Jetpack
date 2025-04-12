@@ -39,8 +39,9 @@ CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Game/Game.cpp							\
 						./src/client/Program.cpp							\
 						./src/client/Parser/ClientParser.cpp				\
-						./src/client/Player/Player.cpp				\
-						./src/client/Coin/Coin.cpp				\
+						./src/client/Player/Player.cpp						\
+						./src/client/Coin/Coin.cpp							\
+						./src/client/Laser/Laser.cpp						\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 

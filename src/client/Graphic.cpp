@@ -18,6 +18,9 @@ void jetpack::Client::Graphic::display() {
 		for (auto &s: this->_listCoins) {
 			s.second.first->display(this->_window);
 		}
+		for (auto &s: this->_listLasers) {
+			s.second.first->display(this->_window);
+		}
 	}
 	this->_window.display();
 }
@@ -33,6 +36,9 @@ void jetpack::Client::Graphic::compute() {
 			s.second.first->compute();
 		}
 		for (auto &s: this->_listCoins) {
+			s.second.first->compute();
+		}
+		for (auto &s: this->_listLasers) {
 			s.second.first->compute();
 		}
 	}
@@ -51,6 +57,13 @@ void jetpack::Client::Graphic::setPosCoin(unsigned int id, sf::Vector2f pos) {
 	this->_posMutex.lock();
 	this->_listCoins.at(id).second = pos;
 	this->_listCoins.at(id).first->changePosValue(pos);
+	this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::setPosLaser(unsigned int id, sf::Vector2f pos) {
+	this->_posMutex.lock();
+	this->_listLasers.at(id).second = pos;
+	this->_listLasers.at(id).first->changePosValue(pos);
 	this->_posMutex.unlock();
 }
 
@@ -87,6 +100,11 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isTransparent)
 void jetpack::Client::Graphic::addNewCoin(unsigned int id) {
 	if (!this->_listCoins.contains(id))
 		this->_listCoins.emplace(id, std::make_pair(std::make_unique<Coin>(), sf::Vector2f(0, 0)));
+}
+
+void jetpack::Client::Graphic::addNewLaser(unsigned int id) {
+	if (!this->_listLasers.contains(id))
+		this->_listLasers.emplace(id, std::make_pair(std::make_unique<Laser>(), sf::Vector2f(0, 0)));
 }
 
 void jetpack::Client::Graphic::switchToGame() {
@@ -126,8 +144,12 @@ jetpack::Client::Graphic::Graphic(
 	this->addNewPlayer(2, true);
 	this->addNewCoin(1);
 	this->addNewCoin(2);
+	this->addNewLaser(1);
+	this->addNewLaser(2);
 	this->setPosCoin(1, {1000, 400});
 	this->setPosCoin(2, {1050, 400});
 	this->setPosPlayer(1, {10, 400});
 	this->setPosPlayer(2, {10, 200});
+	this->setPosLaser(1, {500, 400});
+	this->setPosLaser(2, {200, 200});
 }
