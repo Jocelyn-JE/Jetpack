@@ -15,6 +15,9 @@ void jetpack::Client::Graphic::display() {
 		for (auto &s: this->_listPlayers) {
 			s.second.first->display(this->_window);
 		}
+		for (auto &s: this->_listCoins) {
+			s.second.first->display(this->_window);
+		}
 	}
 	this->_window.display();
 }
@@ -29,6 +32,9 @@ void jetpack::Client::Graphic::compute() {
 		for (auto &s: this->_listPlayers) {
 			s.second.first->compute();
 		}
+		for (auto &s: this->_listCoins) {
+			s.second.first->compute();
+		}
 	}
 	this->_posMutex.unlock();
 }
@@ -38,6 +44,13 @@ void jetpack::Client::Graphic::setPosPlayer(unsigned int id,
 	this->_posMutex.lock();
 	this->_listPlayers.at(id).second = pos;
 	this->_listPlayers.at(id).first->changePosValue(pos);
+	this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::setPosCoin(unsigned int id, sf::Vector2f pos) {
+	this->_posMutex.lock();
+	this->_listCoins.at(id).second = pos;
+	this->_listCoins.at(id).first->changePosValue(pos);
 	this->_posMutex.unlock();
 }
 
@@ -69,7 +82,12 @@ void jetpack::Client::Graphic::analyse() {
 void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isTransparent) {
 	if (!this->_listPlayers.contains(id))
 		this->_listPlayers.emplace(id, std::make_pair(std::make_unique<Player>(isTransparent), sf::Vector2f(0, 0)));
-}	
+}
+
+void jetpack::Client::Graphic::addNewCoin(unsigned int id) {
+	if (!this->_listCoins.contains(id))
+		this->_listCoins.emplace(id, std::make_pair(std::make_unique<Coin>(), sf::Vector2f(0, 0)));
+}
 
 void jetpack::Client::Graphic::switchToGame() {
 	this->_windowType = GAME;
@@ -106,6 +124,10 @@ jetpack::Client::Graphic::Graphic(
 	//Simulation de deux joueurs
 	this->addNewPlayer(1, false);
 	this->addNewPlayer(2, true);
+	this->addNewCoin(1);
+	this->addNewCoin(2);
+	this->setPosCoin(1, {1000, 400});
+	this->setPosCoin(2, {1050, 400});
 	this->setPosPlayer(1, {10, 400});
 	this->setPosPlayer(2, {10, 200});
 }
