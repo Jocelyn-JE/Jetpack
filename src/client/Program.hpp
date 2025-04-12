@@ -26,9 +26,15 @@ namespace jetpack::Client {
 		unsigned int _port;
 		std::thread _networkThread;
 		std::mutex _interactionMutex;
+		UserInteractions_s _lastUserInteraction = UserInteractions_s::NO_INTERACTION;
 
 		std::function<void(UserInteractions_s)> _sendUserInteraction =
-				([this](UserInteractions_s data) { this->_sendPlayerInput(data); });
+			([this](UserInteractions_s data) {
+				this->_interactionMutex.lock();
+				this->_lastUserInteraction = data;
+				this->_interactionMutex.unlock();
+			});
+
 		std::function<void()> _sendChangeUserName =
 		([this]() { this->_sendChangeUsername(); });
 
@@ -44,7 +50,7 @@ namespace jetpack::Client {
 
 		void _sniffANetwork();
 
-		void _sendPlayerInput(UserInteractions_s);
+		void _sendPlayerInput();
 
 		void _sendChangeUsername();
 

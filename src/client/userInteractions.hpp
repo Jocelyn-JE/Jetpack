@@ -9,6 +9,7 @@ namespace jetpack::Client {
 enum UserInteractions_s {
     UP,
     ESCAPE,
+    NO_INTERACTION,
 };
 }
 #endif  // SRC_CLIENT_USERINTERACTIONS_HPP_

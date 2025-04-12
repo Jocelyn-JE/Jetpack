@@ -70,7 +70,6 @@ void jetpack::Client::Program::_handlePayload(std::string msg, Payload_t payload
 
 void jetpack::Client::Program::_sniffANetwork() {
     while (this->_isOpen) {
-        
         try {
             int socketFd = this->_socket.getSocketFd();
 
@@ -80,14 +79,14 @@ void jetpack::Client::Program::_sniffANetwork() {
                     this->_connnectToSocket(this->_ip, this->_port);
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 } catch (...) {
-                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                    std::this_thread::sleep_for(std::chrono::seconds(5));
                 }
                 continue;
             }
             struct pollfd pfd;
             pfd.fd = socketFd;
             pfd.events = POLLIN;
-            int pollResult = poll(&pfd, 1, 500);  // 500ms timeout
+            int pollResult = poll(&pfd, 1, 100);
             
             if (pollResult < 0) {
                 this->_logger.log("Poll error");
@@ -96,6 +95,11 @@ void jetpack::Client::Program::_sniffANetwork() {
                 continue;
             }
             this->_graphic.serverOK();
+            this->_sendPlayerInput();
+
+            if (pollResult > 0 && (pfd.revents & POLLOUT)) {
+                this->_sendPlayerInput();
+            }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
                 std::string buffer;
                 try {
@@ -127,17 +131,23 @@ void jetpack::Client::Program::_sniffANetwork() {
     }
 }
 
-void jetpack::Client::Program::_sendPlayerInput(UserInteractions_s event) {
+void jetpack::Client::Program::_sendPlayerInput() {
     this->_interactionMutex.lock();
+    std::cout << "Sending player input: " << this->_lastUserInteraction << std::endl;
+    if (this->_lastUserInteraction == UserInteractions_s::NO_INTERACTION) {
+        this->_interactionMutex.unlock();
+        return;
+    }
     try {
         if (this->_socket.getSocketFd() != -1) {
-            if (event == jetpack::Client::UP) {
-                this->_socket.writeToSocket<std::string>("UP\n");
+            if (this->_lastUserInteraction == jetpack::Client::UP) {
+                this->_socket.writeToSocket(std::string("UP\n"));
             }
-            if (event == jetpack::Client::ESCAPE) {
-                this->_socket.writeToSocket<std::string>("ESCAPE\n");
+            if (this->_lastUserInteraction == jetpack::Client::ESCAPE) {
+                this->_socket.writeToSocket(std::string("ESCAPE\n"));
             }
         }
+        this->_lastUserInteraction = UserInteractions_s::NO_INTERACTION;
     } catch (const Socket::SocketError &e) {
         std::cerr << "Error sending player input: " << e.what() << std::endl;
         try {
