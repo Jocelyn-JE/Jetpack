@@ -8,17 +8,25 @@
 
 namespace jetpack::Client {
 	void Game::display(sf::RenderWindow &window) {
+		// Afficher les deux backgrounds
 		this->_background.display(window);
+		this->_background2.display(window);
 	}
 
 	void Game::compute() {
-		if (this->_clock.getElapsedTime().asMilliseconds() >= 25) {
+		if (this->_clock.getElapsedTime().asMilliseconds() >= 15) {
 			this->_clock.restart();
-			auto pos = this->_background.getPos();
-			if (pos.x > -2000)
-				this->_background.changePos({(float)(pos.x - 15), pos.y});
-			//Ajouter un deuxième background pour faire la transition
-			// Else  {// end of map}
+			auto pos1 = this->_background.getPos();
+			auto pos2 = this->_background2.getPos();
+			
+			this->_background.changePos({pos1.x - 5, pos1.y});
+			this->_background2.changePos({pos2.x - 5, pos2.y});
+			float bgWidth = 3444;
+			float completelyOutPosition = -3452;
+			if (pos1.x < completelyOutPosition)
+				this->_background.changePos({pos2.x + bgWidth - 5, pos1.y});
+			if (pos2.x < completelyOutPosition)
+				this->_background2.changePos({pos1.x + bgWidth - 5, pos2.y});
 		}
 	}
 
@@ -40,7 +48,8 @@ namespace jetpack::Client {
 
 	Game::Game(std::function<void(UserInteractions_s)> &sendUserInteraction) :
 		_sendUserInteraction(sendUserInteraction),
-		_background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15})
+		_background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15}),
+		_background2("src/client/assets/GameBackground.png", {3444, 0}, {2, 2.15})
 	{
 		this->_clock = sf::Clock();
 	}

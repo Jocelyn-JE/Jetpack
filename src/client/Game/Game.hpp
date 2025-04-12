@@ -15,6 +15,8 @@ private:
    std::function<void(UserInteractions_s)> &_sendUserInteraction;
 
    Sprite _background;
+   Sprite _background2;
+   bool _isBg1 = true;
    sf::Clock _clock;
 
    void _handleKeyPressed(const sf::Event &event);
