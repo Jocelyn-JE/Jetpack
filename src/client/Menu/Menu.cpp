@@ -16,7 +16,7 @@ namespace jetpack::Client {
 					this->_usernameButton.setSize({105, 70});
 				} else {
 					if (!this->_username.empty())
-						this->_sendChangeUserName();
+						this->_changeUsername(this->_username);
 					this->_usernameTextButton.setString("Change Username");
 					this->_usernameButton.setSize({250, 70});
 				}
@@ -56,10 +56,6 @@ namespace jetpack::Client {
 		}
 	}
 
-    std::string Menu::getUsername() const {
-		return this->_username;
-	}
-
     void Menu::setServerStateError() {
 		this->_serverStateString = "KO";
 		this->_serverStateText.setFillColor(sf::Color::Red);
@@ -81,8 +77,8 @@ namespace jetpack::Client {
 		this->_usernameBoxContent.setString(this->_username);
 	}
 
-	Menu::Menu(std::function<void()> &sendChangeUserName):
-		_sendChangeUserName(sendChangeUserName)
+	Menu::Menu(std::function<void(std::string)> &changeUsername):
+		_changeUsername(changeUsername)
 	{
 		this->_menuBackgroundTexture = sf::Texture();
 		this->_jetpackFont = sf::Font();

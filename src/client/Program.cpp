@@ -13,7 +13,7 @@
 #include "Exception.hpp"
 #include "lib.hpp"
 
-void jetpack::Client::Program::_connnectToSocket(const char *ip,
+void jetpack::Client::Program::_connectToSocket(const char *ip,
     unsigned int port)
 {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
@@ -26,6 +26,7 @@ void jetpack::Client::Program::_connnectToSocket(const char *ip,
         this->_graphic.serverOK();
     } catch (const std::exception& e) {
         this->_graphic.serverError();
+        this->_socket.closeSocket();
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
 }
@@ -61,10 +62,10 @@ void jetpack::Client::Program::_handlePayload(std::string msg, Payload_t payload
     if (payload.dataId == PayloadType_t::NAME) {
         if (payload.dataCount > 1)
             throw NetworkException("There is too much payload for this action expected 1 data currently: " + std::to_string(payload.dataCount));
-        this->_interactionMutex.lock();
-        this->_graphic.setUsername(msg.substr(indexListCount, 20));
+        this->_communicationMutex.lock();
+        this->_username = (msg.substr(indexListCount, 20));
+        this->_usernameMutex.unlock();
         indexListCount += 20;
-        this->_interactionMutex.unlock();
     }
 }
 
@@ -76,7 +77,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             if (socketFd == -1) {
                 this->_graphic.serverError();
                 try {
-                    this->_connnectToSocket(this->_ip, this->_port);
+                    this->_connectToSocket(this->_ip, this->_port);
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 } catch (...) {
                     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -85,7 +86,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             struct pollfd pfd;
             pfd.fd = socketFd;
-            pfd.events = POLLIN;
+            pfd.events = POLLIN & POLLOUT;
             int pollResult = poll(&pfd, 1, 100);
             
             if (pollResult < 0) {
@@ -98,6 +99,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             this->_sendPlayerInput();
 
             if (pollResult > 0 && (pfd.revents & POLLOUT)) {
+                this->_sendNewUsername();
                 this->_sendPlayerInput();
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
@@ -159,9 +161,11 @@ void jetpack::Client::Program::_sendUpEvent() {
 }
 
 void jetpack::Client::Program::_sendPlayerInput() {
-    this->_interactionMutex.lock();
+    this->_communicationMutex.lock();
+    this->_userInteractionMutex.lock();
     if (this->_lastUserInteraction == UserInteractions_s::NO_INTERACTION) {
-        this->_interactionMutex.unlock();
+        this->_userInteractionMutex.unlock();
+        this->_communicationMutex.unlock();
         return;
     }
     try {
@@ -177,7 +181,8 @@ void jetpack::Client::Program::_sendPlayerInput() {
             this->_socket.closeSocket();
         } catch (...) {}
     }
-    this->_interactionMutex.unlock();
+    this->_userInteractionMutex.unlock();
+    this->_communicationMutex.unlock();
 }
 
 void jetpack::Client::Program::loop() {
@@ -190,12 +195,14 @@ void jetpack::Client::Program::loop() {
     }
 }
 
-void jetpack::Client::Program::_sendChangeUsername() {
+void jetpack::Client::Program::_sendNewUsername() {
     try {
         if (this->_socket.getSocketFd() == -1) {
             this->_logger.log("Cannot send username: not connected to server");
             return;
         }
+        if (!this->_isChangeUsername)
+            return;
         Header_t header{};
         header.magic1 = 42;
         header.magic2 = 42;
@@ -216,12 +223,17 @@ void jetpack::Client::Program::_sendChangeUsername() {
         this->_logger.log("Payload: big endian: " +
                           std::to_string(valuePayloadBigEndian));
 
+        this->_communicationMutex.lock();
+        this->_usernameMutex.lock();
         this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
         this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
-        this->_socket.writeToSocket(this->_graphic.getUsername());
-        for (size_t i = 0; i < 20 - this->_graphic.getUsername().length(); i++)
+        this->_socket.writeToSocket(this->_username);
+        for (size_t i = 0; i < 20 - this->_username.length(); i++)
             this->_socket.writeToSocket('\0');
-        this->_logger.log("Received Username: " + this->_graphic.getUsername());
+        this->_logger.log("Sent Username: " + this->_username);
+        this->_isChangeUsername = false;
+        this->_usernameMutex.unlock();
+        this->_communicationMutex.unlock();
     } catch (const Socket::SocketError &e) {
         std::cerr << "Error sending username change: " << e.what() << std::endl;
         try {
@@ -233,13 +245,13 @@ void jetpack::Client::Program::_sendChangeUsername() {
 jetpack::Client::Program::Program(const char *ip, unsigned int port,
                                   jetpack::Logger &logger)
     : _logger(logger),
-      _graphic(this->_sendUserInteraction, this->_sendChangeUserName),
+      _graphic(this->_sendUserInteraction, this->_changeUsername, this->_getUsername),
       _socket(AF_INET, SOCK_STREAM, 0)
 {
     this->_ip = ip;
     this->_port = port;
     this->_logger.log("Connecting to " + std::string(ip) + " port: " + std::to_string(port));
-    this->_connnectToSocket(ip, port);
+    this->_connectToSocket(ip, port);
     this->_networkThread = std::thread([this] {
         pthread_setname_np(pthread_self(), "Network thread");
         try {

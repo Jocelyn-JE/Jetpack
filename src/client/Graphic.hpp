@@ -34,7 +34,8 @@ namespace jetpack::Client {
 		std::map<unsigned int, std::pair<std::unique_ptr<Laser>, sf::Vector2f> > _listLasers;
 		std::mutex _posMutex;
 		std::function<void(UserInteractions_s)> &_sendUserEvent;
-		std::function<void()> _sendChangeUserName;
+		std::function<void(std::string)> &_changeUsername;
+		std::function<std::string()> &_getUsername;
 
 		Menu _menu;
 		Game _game;
@@ -54,10 +55,6 @@ namespace jetpack::Client {
 
 		void setPosLaser(unsigned int id, sf::Vector2f pos);
 
-		void setUsername(const std::string &name);
-
-		std::string getUsername();
-
 		void analyse();
 
 		void addNewPlayer(unsigned int id, bool isCurrent);
@@ -76,7 +73,8 @@ namespace jetpack::Client {
 
 		explicit Graphic(
 			std::function<void(UserInteractions_s)> &sendUserInteraction,
-			std::function<void()> &sendChangeUserName
+			std::function<void(std::string)> &changeUsername,
+			std::function<std::string()> &getUsername
 		);
 
 		~Graphic() = default;

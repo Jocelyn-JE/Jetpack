@@ -25,24 +25,41 @@ namespace jetpack::Client {
 		const char *_ip;
 		unsigned int _port;
 		std::thread _networkThread;
-		std::mutex _interactionMutex;
+		std::mutex _communicationMutex;
+		std::mutex _usernameMutex;
+		std::mutex _userInteractionMutex;
 		UserInteractions_s _lastUserInteraction = UserInteractions_s::NO_INTERACTION;
+		std::string _username;
+		bool _isChangeUsername = false;
 
 		std::function<void(UserInteractions_s)> _sendUserInteraction =
 			([this](UserInteractions_s data) {
-				this->_interactionMutex.lock();
+				this->_userInteractionMutex.lock();
 				this->_lastUserInteraction = data;
-				this->_interactionMutex.unlock();
+				this->_userInteractionMutex.unlock();
 			});
 
-		std::function<void()> _sendChangeUserName =
-		([this]() { this->_sendChangeUsername(); });
+		std::function<void(std::string)> _changeUsername =
+		([this](std::string username) {
+			this->_usernameMutex.lock();
+			this->_username = username;
+			this->_isChangeUsername = true;
+			this->_usernameMutex.unlock();
+		});
+
+		std::function<std::string()> _getUsername =
+		([this]() -> std::string {
+			this->_usernameMutex.lock();
+			auto data = this->_username;
+			this->_usernameMutex.unlock();
+			return data;
+		});
 
 		jetpack::Logger &_logger;
 		Graphic _graphic;
 		Socket _socket;
 
-		void _connnectToSocket(const char *ip, unsigned int port);
+		void _connectToSocket(const char *ip, unsigned int port);
 
 		void _handleMessageFromServer(std::string msg);
 
@@ -54,7 +71,7 @@ namespace jetpack::Client {
 
 		void _sendPlayerInput();
 
-		void _sendChangeUsername();
+		void _sendNewUsername();
 
 	public:
 		void loop();
