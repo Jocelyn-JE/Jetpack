@@ -59,6 +59,10 @@ class Program {
     Graphic _graphic;
     Socket _socket;
 
+    void _setSize_tData(std::vector<unsigned char> msg);
+
+    void _getServerMessage();
+
     void _connectToSocket(const char *ip, unsigned int port);
 
     void _handleMessageFromServer(Payload_t payload);

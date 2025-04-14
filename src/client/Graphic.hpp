@@ -27,6 +27,8 @@ class Graphic {
     enum WindowType { GAME, MENU, TYPE_COUNT };
 
     WindowType _windowType;
+    size_t _gameSpeed;
+
     sf::RenderWindow _window;
     std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> >
         _listPlayers;
@@ -58,6 +60,8 @@ class Graphic {
     void setPosLaser(unsigned int id, sf::Vector2f pos);
 
     void analyse();
+
+    void setGameSpeed(size_t value);
 
     void addNewPlayer(unsigned int id, bool isCurrent);
 

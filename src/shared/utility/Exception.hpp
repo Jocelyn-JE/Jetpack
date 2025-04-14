@@ -2,8 +2,8 @@
 // Created by roussierenoa on 3/25/25.
 //
 
-#ifndef SRC_CLIENT_EXCEPTION_HPP_
-#define SRC_CLIENT_EXCEPTION_HPP_
+#ifndef SRC_SHARED_UTILITY_EXCEPTION_HPP_
+#define SRC_SHARED_UTILITY_EXCEPTION_HPP_
 
 #include <exception>
 #include <string>
@@ -44,6 +44,18 @@ class PayloadException : public std::exception {
     ~PayloadException() override = default;
 };
 
+class GetMessageException : public std::exception {
+ private:
+    std::string _msg;
+
+ public:
+    const char *what() const noexcept override { return this->_msg.c_str(); }
+
+    explicit GetMessageException(const std::string &msg) : _msg(msg) {}
+
+    ~GetMessageException() override = default;
+};
+
 class ParsingException : public std::exception {
  private:
     std::string _msg;
@@ -63,4 +75,4 @@ class HelpException : public std::exception {
     ~HelpException() override = default;
 };
 
-#endif  // SRC_CLIENT_EXCEPTION_HPP_
+#endif  // SRC_SHARED_UTILITY_EXCEPTION_HPP_

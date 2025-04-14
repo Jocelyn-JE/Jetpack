@@ -19,6 +19,57 @@
 
 #include "lib.hpp"
 
+void jetpack::Client::Program::_setSize_tData(
+    std::vector<unsigned char> msg) {
+    if (!this->_auth.isConnected()) {
+        size_t value = 0;
+        value |= static_cast<size_t>(msg[0]) << 24;
+        value |= static_cast<size_t>(msg[1]) << 16;
+        value |= static_cast<size_t>(msg[2]) << 8;
+        value |= static_cast<size_t>(msg[3]);
+        this->_logger.log("User ID = " + std::to_string(ntohl(value)));
+        this->_auth.setId(ntohl(value));
+    }
+    if (this->_auth.isConnected()) {
+        size_t value = 0;
+        value |= static_cast<size_t>(msg[0]) << 24;
+        value |= static_cast<size_t>(msg[1]) << 16;
+        value |= static_cast<size_t>(msg[2]) << 8;
+        value |= static_cast<size_t>(msg[3]);
+        this->_logger.log("GameSpeed = " + std::to_string(ntohl(value)));
+        this->_graphic.setGameSpeed(ntohl(value));
+    }
+}
+
+void jetpack::Client::Program::_getServerMessage() {
+    Header_t header{};
+    try {
+        header = getHeader(this->_logger, this->_socket);
+    } catch (HeaderException &) {
+        this->_socket.closeSocket();
+        this->_graphic.serverError();
+        this->_auth.resetAuth();
+        throw GetMessageException("Header error");
+    }
+    if (header.nbrPayload == 0) {
+        this->_logger.log("No payload");
+        throw GetMessageException("Header error");
+    }
+    Payload_t payload {};
+    try {
+        payload = getPayload(this->_logger, this->_socket);
+    } catch (PayloadException &) {
+        this->_socket.closeSocket();
+        this->_graphic.serverError();
+        this->_auth.resetAuth();
+        throw GetMessageException("Payload error");
+    }
+    if (payload.dataId == PayloadType_t::START)
+        this->_graphic.switchToGame();
+    else
+        this->_handleMessageFromServer(payload);
+}
+
 void jetpack::Client::Program::_connectToSocket(const char *ip,
                                                 unsigned int port) {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
@@ -31,6 +82,7 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_graphic.serverOK();
     } catch (const std::exception &e) {
         this->_graphic.serverError();
+        this->_auth.resetAuth();
         this->_socket.closeSocket();
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
@@ -64,14 +116,8 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
 
 void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
     Payload_t payload) {
-    if (payload.dataId == PayloadType_t::SIZE_T) {
-        size_t value = 0;
-        value |= static_cast<size_t>(msg[0]) << 24;
-        value |= static_cast<size_t>(msg[1]) << 16;
-        value |= static_cast<size_t>(msg[2]) << 8;
-        value |= static_cast<size_t>(msg[3]);
-        this->_logger.log("Converted size_t value: " + std::to_string(ntohl(value)));
-    }
+    if (payload.dataId == SIZE_T)
+        this->_setSize_tData(msg);
 }
 
 void jetpack::Client::Program::_sniffANetwork() {
@@ -81,6 +127,7 @@ void jetpack::Client::Program::_sniffANetwork() {
 
             if (socketFd == -1) {
                 this->_graphic.serverError();
+                this->_auth.resetAuth();
                 try {
                     this->_connectToSocket(this->_ip, this->_port);
                     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -98,6 +145,7 @@ void jetpack::Client::Program::_sniffANetwork() {
                 this->_logger.log("Poll error");
                 this->_socket.closeSocket();
                 this->_graphic.serverError();
+                this->_auth.resetAuth();
                 continue;
             }
             this->_graphic.serverOK();
@@ -108,36 +156,17 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
                 try {
-                    Header_t header{};
                     try {
-                         header = getHeader(this->_logger, this->_socket);
-                    } catch (HeaderException &) {
-                        this->_socket.closeSocket();
-                        this->_graphic.serverError();
+                        this->_getServerMessage();
+                    } catch (GetMessageException &) {
                         continue;
                     }
-                    if (header.nbrPayload == 0) {
-                        this->_logger.log("No payload");
-                        continue;
-                    }
-                    Payload_t payload {};
-                    try {
-                        payload = getPayload(this->_logger, this->_socket);
-                    } catch (PayloadException &) {
-                        this->_socket.closeSocket();
-                        this->_graphic.serverError();
-                        continue;
-                    }
-                    if (payload.dataId == PayloadType_t::START) {
-                        this->_graphic.switchToGame();
-                        continue;
-                    }
-                    this->_handleMessageFromServer(payload);
                     this->_graphic.serverOK();
                 } catch (const Socket::SocketError &e) {
                     this->_logger.log("Socket read error: " +
                                       std::string(e.what()));
                     this->_graphic.serverError();
+                    this->_auth.resetAuth();
                     this->_socket.closeSocket();
                 } catch (const NetworkException &e) {
                     this->_logger.log("Network error: " +
@@ -148,6 +177,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             this->_logger.log("Error in network thread: " +
                               std::string(e.what()));
             this->_graphic.serverError();
+            this->_auth.resetAuth();
             try {
                 this->_socket.closeSocket();
             } catch (...) {

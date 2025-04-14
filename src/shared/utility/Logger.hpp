@@ -2,8 +2,8 @@
 // Created by roussierenoa on 3/28/25.
 //
 
-#ifndef SRC_CLIENT_LOGGER_HPP_
-#define SRC_CLIENT_LOGGER_HPP_
+#ifndef SRC_SHARED_UTILITY_LOGGER_HPP_
+#define SRC_SHARED_UTILITY_LOGGER_HPP_
 
 #include <iostream>
 #include <mutex>
@@ -27,4 +27,4 @@ class Logger {
 };
 }  // namespace jetpack
 
-#endif  // SRC_CLIENT_LOGGER_HPP_
+#endif  // SRC_SHARED_UTILITY_LOGGER_HPP_

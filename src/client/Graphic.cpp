@@ -78,6 +78,12 @@ void jetpack::Client::Graphic::analyse() {
     }
 }
 
+void jetpack::Client::Graphic::setGameSpeed(size_t value) {
+    this->_posMutex.lock();
+    this->_gameSpeed = value;
+    this->_posMutex.unlock();
+}
+
 void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
                                             bool isTransparent) {
     if (!this->_listPlayers.contains(id))

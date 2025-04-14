@@ -5,10 +5,12 @@
 #ifndef SRC_CLIENT_AUTH_AUTH_HPP_
 #define SRC_CLIENT_AUTH_AUTH_HPP_
 #include <string>
+#include <mutex>
 
 namespace jetpack::Client {
 class Auth {
  private:
+    std::mutex _authMutex;
     bool _isConnected = false;
     size_t _id;
     std::string _username = "default";
@@ -24,7 +26,10 @@ class Auth {
 
     std::string getUsername() const;
 
+    void resetAuth();
+
     Auth();
+
     ~Auth();
 };
 }  // namespace jetpack::Client
