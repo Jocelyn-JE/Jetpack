@@ -60,18 +60,18 @@ void jetpack::server::Server::updateSockets() {
                     playerList += ",";
                 }
             }
-            _clients[i - 1]->sendData(
+            _clients.back()->sendData(
                 createConnectionPacket(_clients.back()->getId(), 1000));
             sendToAllClients(playerList);
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handleCommand(buffer)) {
-                handleDisconnection(i);
                 sendToAllClients("disconnected:" +
                                  std::to_string(_clients[i - 1]->getId()));
-                std::cout << "Client " << _clients[i - 1]->getId()
+                std::cout << "Player id:" << _clients[i - 1]->getId()
                           << " disconnected" << std::endl;
+                handleDisconnection(i);
             } else {
                 sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
                                  ":" + buffer);
