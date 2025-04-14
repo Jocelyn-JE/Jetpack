@@ -6,7 +6,7 @@
 #include <ncurses.h>
 #include <algorithm>
 
-#include "./src/server/parsing/Parser.hpp"
+#include "../parsing/Parser.hpp"
 
 Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr) {}
 
