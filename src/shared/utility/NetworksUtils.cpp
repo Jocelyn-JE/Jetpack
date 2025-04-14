@@ -12,7 +12,8 @@ jetpack::Header_t generateHeader(unsigned char nbrPayload) {
     return header;
 }
 
-jetpack::Payload_t generatePayload(unsigned char dataCount, unsigned char dataId) {
+jetpack::Payload_t generatePayload(unsigned char dataCount,
+    unsigned char dataId) {
     jetpack::Payload_t payload{};
     payload.dataCount = dataCount;
     payload.dataId = dataId;
