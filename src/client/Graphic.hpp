@@ -14,11 +14,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Coin/Coin.hpp"
+#include "Coin/CoinGraphic.hpp"
 #include "Game/Game.hpp"
 #include "Laser/Laser.hpp"
 #include "Menu/Menu.hpp"
-#include "Player/Player.hpp"
+#include "Player/PlayerGraphic.hpp"
 #include "userInteractions.hpp"
 
 namespace jetpack::Client {

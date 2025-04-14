@@ -43,8 +43,8 @@ CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Program.cpp							\
 						./src/client/Auth/Auth.cpp							\
 						./src/client/Parser/ClientParser.cpp				\
-						./src/client/Player/Player.cpp						\
-						./src/client/Coin/Coin.cpp							\
+						./src/client/Player/PlayerGraphic.cpp				\
+						./src/client/Coin/CoinGraphic.cpp					\
 						./src/client/CoinStats/CoinStats.cpp				\
 						./src/client/Laser/Laser.cpp						\
 
