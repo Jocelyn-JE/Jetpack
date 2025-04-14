@@ -6,6 +6,6 @@
 #define SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
 #include "communicationHeader.hpp"
 
-Header_t generateHeader(unsigned char nbrPayload);
-Payload_t generatePayload(unsigned char dataCount, unsigned char dataId);
+jetpack::Header_t generateHeader(unsigned char nbrPayload);
+jetpack::Payload_t generatePayload(unsigned char dataCount, unsigned char dataId);
 #endif  // SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_

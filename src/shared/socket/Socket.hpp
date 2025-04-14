@@ -65,9 +65,11 @@ class Socket {
 
     // Write a string to the socket.
     // May throw a SocketError exception if the write failed.
-    void writeToSocket(std::string) noexcept(false);
+    void writeToSocket(std::string str) noexcept(false);
 
-    void writeToSocket(char) noexcept(false);
+    // Write a character to the socket.
+    // May throw a SocketError exception if the write failed.
+    void writeToSocket(char data) noexcept(false);
 
     // Write a buffer to the socket.
     // May throw a SocketError exception if the write failed.

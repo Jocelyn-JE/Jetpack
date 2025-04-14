@@ -6,6 +6,7 @@
 #define SRC_SHARED_UTILITY_COMMUNICATIONHEADER_HPP_
 #include <arpa/inet.h>
 
+namespace jetpack {
 enum PayloadType_t {
     INT = 1,
     SIZE_T = 2,
@@ -30,22 +31,23 @@ enum PayloadType_t {
 
 union Header_t {
     struct {
-        unsigned char magic1 : 6;
-        unsigned char magic2 : 6;
-        unsigned char nbrPayload : 4;
+        u_int8_t magic1 : 6;
+        u_int8_t magic2 : 6;
+        u_int8_t nbrPayload : 4;
     };
 
-    unsigned int rawData : 16;
+    u_int16_t rawData : 16;
 };
 
 union Payload_t {
     struct {
-        unsigned short dataCount : 10;
-        unsigned char dataId : 6;
+        u_int16_t dataCount : 10;
+            u_int8_t dataId : 6;
     };
 
-    unsigned int rawData : 16;
+    u_int16_t rawData : 16;
 };
+};  // namespace jetpack
 
 #pragma pack(pop)
 

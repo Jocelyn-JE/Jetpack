@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <ranges>
+#include <memory>
 #include <string>
 #include <vector>
 
