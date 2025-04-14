@@ -29,6 +29,7 @@ void jetpack::Client::Program::_setSize_tData(
         value |= static_cast<size_t>(msg[3]);
         this->_logger.log("User ID = " + std::to_string(ntohl(value)));
         this->_auth.setId(ntohl(value));
+        return;
     }
     if (this->_auth.isConnected()) {
         size_t value = 0;
@@ -38,6 +39,7 @@ void jetpack::Client::Program::_setSize_tData(
         value |= static_cast<size_t>(msg[3]);
         this->_logger.log("GameSpeed = " + std::to_string(ntohl(value)));
         this->_graphic.setGameSpeed(ntohl(value));
+        return;
     }
 }
 
