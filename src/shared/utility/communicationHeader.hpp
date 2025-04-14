@@ -42,7 +42,7 @@ union Header_t {
 union Payload_t {
     struct {
         u_int16_t dataCount : 10;
-            u_int8_t dataId : 6;
+        u_int8_t dataId : 6;
     };
 
     u_int16_t rawData : 16;
