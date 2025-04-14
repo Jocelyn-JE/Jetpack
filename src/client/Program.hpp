@@ -12,8 +12,8 @@
 #include <string>
 #include <thread>
 
+#include <CommunicationHeader.hpp>
 #include <Socket.hpp>
-#include <communicationHeader.hpp>
 
 #include "Graphic.hpp"
 #include "Logger.hpp"
