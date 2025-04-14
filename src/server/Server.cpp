@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "CommunicationHeader.hpp"
 #include "Server.hpp"
@@ -59,6 +60,8 @@ void jetpack::server::Server::updateSockets() {
                     playerList += ",";
                 }
             }
+            _clients[i - 1]->sendData(
+                createConnectionPacket(_clients.back()->getId(), 1000));
             sendToAllClients(playerList);
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
@@ -141,4 +144,27 @@ jetpack::Payload_t jetpack::server::Server::createPayloadHeader(
     payload.dataCount = dataCount;
     payload.dataId = dataId;
     return payload;
+}
+
+std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
+    size_t id, size_t gameSpeed) {
+    std::vector<uint8_t> packet;
+    uint16_t headerBigEndian = htons(createPacketHeader(1).rawData);
+    uint16_t payloadBigEndian = htons(createPayloadHeader(2, 2).rawData);
+    size_t idBigEndian = htonl(id);
+    size_t gameSpeedBigEndian = htonl(gameSpeed);
+
+    packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
+    packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
+    packet.push_back(static_cast<uint8_t>(idBigEndian >> 24));
+    packet.push_back(static_cast<uint8_t>(idBigEndian >> 16));
+    packet.push_back(static_cast<uint8_t>(idBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(idBigEndian & 0xFF));
+    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 24));
+    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 16));
+    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian & 0xFF));
+    return packet;
 }

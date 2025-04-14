@@ -38,16 +38,16 @@ int main(int argc, char **argv) {
         return 84;
     }
 
-    if (std::filesystem::exists(gameData->filename)) {
-        std::thread gameThread(gameLoop, gameData);
-        std::thread networkThread(networkLoop, gameData);
+    // if (std::filesystem::exists(gameData->filename)) {
+    //     std::thread gameThread(gameLoop, gameData);
+    //     std::thread networkThread(networkLoop, gameData);
 
-        gameThread.join();
-        networkThread.join();
-    } else {
-        std::cerr << "Error: " << gameData->filename << " not found"
-                  << std::endl;
-        return 1;
-    }
+    //     gameThread.join();
+    //     networkThread.join();
+    // } else {
+    //     std::cerr << "Error: " << gameData->filename << " not found"
+    //               << std::endl;
+    //     return 1;
+    // }
     return jetpack::server::Server::runServer(atoi(argv[1]));
 }

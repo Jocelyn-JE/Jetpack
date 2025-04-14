@@ -39,17 +39,18 @@ class Server {
     void handleDisconnection(int socketIndex);
     bool isClosed();
     template <typename T>
-    void jetpack::server::Server::sendToAllClients(T data) {
+    void sendToAllClients(T data) {
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
     template <typename T>
-    void jetpack::server::Server::sendToAllClients(std::vector<T> data) {
+    void sendToAllClients(std::vector<T> data) {
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
     jetpack::Header_t createPacketHeader(u_int8_t nbrPayload);
     jetpack::Payload_t createPayloadHeader(u_int8_t dataCount, u_int8_t dataId);
+    std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
