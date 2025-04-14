@@ -10,10 +10,13 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <iomanip>
 
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
 #include "Program.hpp"
+
 #include "lib.hpp"
 
 void jetpack::Client::Program::_connectToSocket(const char *ip,
@@ -34,73 +37,117 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
     fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
 }
 
-void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
-    Header_t header;
-    Payload_t payload;
-    int nbrPayload = 0;
-    int indexListCount = 2;
-
-    if (msg.size() <= 4) {
-        throw NetworkException("Message too small");
-    }
-    std::cout << "WORLD" << std::endl;
-    uint16_t dataHeader =
-        (static_cast<uint8_t>(msg[0]) << 8) | static_cast<uint8_t>(msg[1]);
-    header.rawData = ntohs(dataHeader);
-    this->_logger.log("Received: littleEndian" +
-                      std::to_string(header.rawData));
-    this->_logger.log("Received: " + std::to_string(dataHeader));
-    this->_logger.log("magic1: " + std::to_string(header.magic1));
-    this->_logger.log("magic2: " + std::to_string(header.magic2));
-    if (!(header.magic1 == 42 && header.magic2 == 42)) {
-        throw NetworkException("Message not valid no magic number");
-    }
-    nbrPayload = header.nbrPayload;
-    std::cout << "HELLO payload" << std::endl;
+void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
+    int nbrPayload = payload.dataCount;
+    int sizeData = 0;
+    std::vector<unsigned char> msg;
+    sizeData = getPayloadSize(payload.dataId);
+    this->_logger.log("Payload dataId: " +
+        std::to_string(payload.dataId));
+    this->_logger.log("Payload dataCount: "
+        + std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
-        uint16_t dataPayload =
-            (static_cast<uint8_t>(msg[indexListCount]) << 8) |
-            static_cast<uint8_t>(msg[indexListCount + 1]);
-        payload.rawData = ntohs(dataPayload);
-        this->_handlePayload(msg, payload, indexListCount);
-        indexListCount += 2;
+        msg.resize(sizeData);
+        std::cout << "Data: " << i << std::endl;
+        msg = this->_socket.readFromSocket(sizeData);
+        for (const auto &byte : msg) {
+            std::cout << std::hex << std::uppercase << std::setw(2)
+                      << std::setfill('0') << static_cast<int>(byte) << " ";
+        }
+        std::cout << std::dec << std::endl;
+        this->_handlePayload(msg, payload);
+        msg.clear();
     }
 }
 
-void jetpack::Client::Program::_handlePayload(std::string msg,
-                                              Payload_t payload,
-                                              int &indexListCount) {
-    if (payload.dataId == PayloadType_t::NAME) {
-        if (payload.dataCount > 1)
-            throw NetworkException(
-                "There is too much payload for "
-                "   this action expected 1 data currently: " +
-                std::to_string(payload.dataCount));
-        this->_usernameMutex.lock();
-        this->_username = (msg.substr(indexListCount, 20));
-        this->_usernameMutex.unlock();
-        indexListCount += 20;
-    }
+void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
+    Payload_t payload) {
     if (payload.dataId == PayloadType_t::SIZE_T) {
-        for (int i = 0; i < payload.dataCount; ++i) {
-            if (indexListCount + 4 > static_cast<int>(msg.size())) {
-                throw NetworkException("Message size mismatch when parsing"
-                    " SIZE_T payload");
-            }
-            uint32_t value = 0;
-            value |= static_cast<uint32_t>(static_cast<unsigned char>
-                (msg[indexListCount])) << 24;
-            value |= static_cast<uint32_t>(static_cast<unsigned char>
-                (msg[indexListCount + 1])) << 16;
-            value |= static_cast<uint32_t>(static_cast<unsigned char>
-                (msg[indexListCount + 2])) << 8;
-            value |= static_cast<uint32_t>(static_cast<unsigned char>
-                (msg[indexListCount + 3]));
-            size_t convertedValue = ntohl(value);
-            std::cout << "Received size_t: " << convertedValue << std::endl;
-            indexListCount += 4;
-        }
+        size_t value = 0;
+        value |= static_cast<size_t>(msg[0]) << 24;
+        value |= static_cast<size_t>(msg[1]) << 16;
+        value |= static_cast<size_t>(msg[2]) << 8;
+        value |= static_cast<size_t>(msg[3]);
+        std::cout << "Converted size_t value: " << ntohl(value) << std::endl;
     }
+}
+
+jetpack::Payload_t jetpack::Client::Program::_getPayload() {
+    std::vector<unsigned char> payloadBuffer = this->_socket.readFromSocket(2);
+    if (payloadBuffer.empty()) {
+        this->_logger.log("Server disconnected");
+        this->_graphic.serverError();
+        this->_socket.closeSocket();
+        throw PayloadException("Incomplete Payload size = 0");
+    }
+    if (payloadBuffer.size() < 2) {
+        this->_logger.log("Incomplete Payload");
+        this->_graphic.serverError();
+        this->_socket.closeSocket();
+        throw PayloadException("Incomplete Payload size = "
+            + payloadBuffer.size());
+    }
+    this->_logger.log("Packet recieved: ");
+    for (const auto &byte : payloadBuffer) {
+        std::stringstream ss;
+        ss << std::hex << std::uppercase << std::setw(2)
+            << std::setfill('0') << static_cast<int>(byte) << " ";
+        ss << std::dec;
+        this->_logger.log(ss.str());
+    }
+    Payload_t payload = {};
+    uint16_t dataPayload =
+        (static_cast<uint8_t>(payloadBuffer[0]) << 8)
+        | static_cast<uint8_t>(payloadBuffer[1]);
+    payload.rawData = ntohs(dataPayload);
+    this->_logger.log("Received: littleEndian" +
+                      std::to_string(payload.rawData));
+    this->_logger.log("Received: " + std::to_string(dataPayload));
+    this->_logger.log("data count: " + std::to_string(payload.dataCount));
+    this->_logger.log("data id: " + std::to_string(payload.dataId));
+    return payload;
+}
+
+jetpack::Header_t jetpack::Client::Program::_getHeader() {
+    std::vector<unsigned char> headerBuffer = {};
+    headerBuffer.resize(2);
+    headerBuffer = this->_socket.readFromSocket(2);
+    if (headerBuffer.empty() || headerBuffer ==
+        std::vector<unsigned char>(2, 0)) {
+        this->_logger.log("Server disconnected");
+        this->_graphic.serverError();
+        this->_socket.closeSocket();
+        throw HeaderException("Incomplete Header size = 0");
+    }
+    if (headerBuffer.size() < 2) {
+        this->_logger.log("Incomplete Header");
+        this->_graphic.serverError();
+        this->_socket.closeSocket();
+        throw HeaderException("Incomplete Header size = "
+            + headerBuffer.size());
+    }
+    this->_logger.log("Packet recieved: ");
+    for (const auto &byte : headerBuffer) {
+        std::stringstream ss;
+        ss << std::hex << std::uppercase << std::setw(2)
+            << std::setfill('0') << static_cast<int>(byte) << " ";
+        ss << std::dec;
+        this->_logger.log(ss.str());
+    }
+    Header_t header {};
+    uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
+            static_cast<uint16_t>(headerBuffer[1]);
+    header.rawData = ntohs(dataHeader);
+    this->_logger.log("Received: littleEndian" +
+            std::to_string(header.rawData));
+    this->_logger.log("Received: " + std::to_string(dataHeader));
+    this->_logger.log("magic1: " + std::to_string(header.magic1));
+    this->_logger.log("magic2: " + std::to_string(header.magic2));
+    this->_logger.log("nbrPayload: " + std::to_string(header.nbrPayload));
+    if (!(header.magic1 == 42 && header.magic2 == 42)) {
+        throw NetworkException("Message not valid no magic number");
+    }
+    return header;
 }
 
 void jetpack::Client::Program::_sniffANetwork() {
@@ -136,16 +183,18 @@ void jetpack::Client::Program::_sniffANetwork() {
                 this->_sendPlayerInput();
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
-                std::string buffer;
                 try {
-                    buffer = this->_socket.readFromSocket();
-                    if (buffer.empty()) {
-                        this->_logger.log("Server disconnected");
-                        this->_graphic.serverError();
-                        this->_socket.closeSocket();
+                    Header_t header = this->_getHeader();
+                    if (header.nbrPayload == 0) {
+                        this->_logger.log("No payload");
                         continue;
                     }
-                    this->_handleMessageFromServer(buffer);
+                    Payload_t payload = this->_getPayload();
+                    if (payload.dataId == PayloadType_t::START) {
+                        this->_graphic.switchToGame();
+                        continue;
+                    }
+                    this->_handleMessageFromServer(payload);
                     this->_graphic.serverOK();
                 } catch (const Socket::SocketError &e) {
                     this->_logger.log("Socket read error: " +
@@ -225,7 +274,8 @@ void jetpack::Client::Program::_sendNewUsername() {
             this->_logger.log("Cannot send username: not connected to server");
             return;
         }
-        if (!this->_isChangeUsername) return;
+        if (this->_auth.isConnected() && !this->_isChangeUsername)
+            return;
         Header_t header = generateHeader(1);
         auto valueHeaderBigEndian = htons(header.rawData);
         Payload_t payload = generatePayload(1, 8);
@@ -234,10 +284,10 @@ void jetpack::Client::Program::_sendNewUsername() {
         this->_usernameMutex.lock();
         this->_socket.writeToSocket<uint16_t>(valueHeaderBigEndian);
         this->_socket.writeToSocket<uint16_t>(valuePayloadBigEndian);
-        this->_socket.writeToSocket(this->_username);
-        for (size_t i = 0; i < 20 - this->_username.length(); i++)
+        this->_socket.writeToSocket(this->_getUsername());
+        for (size_t i = 0; i < 20 - this->_getUsername().length(); i++)
             this->_socket.writeToSocket('\0');
-        this->_logger.log("Sent Username: " + this->_username);
+        this->_logger.log("Sent Username: " + this->_getUsername());
         this->_isChangeUsername = false;
         this->_usernameMutex.unlock();
         this->_communicationMutex.unlock();

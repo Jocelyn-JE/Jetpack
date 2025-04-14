@@ -20,6 +20,30 @@ class NetworkException : public std::exception {
     ~NetworkException() override = default;
 };
 
+class HeaderException : public std::exception {
+ private:
+    std::string _msg;
+
+ public:
+    const char *what() const noexcept override { return this->_msg.c_str(); }
+
+    explicit HeaderException(const std::string &msg) : _msg(msg) {}
+
+    ~HeaderException() override = default;
+};
+
+class PayloadException : public std::exception {
+ private:
+    std::string _msg;
+
+ public:
+    const char *what() const noexcept override { return this->_msg.c_str(); }
+
+    explicit PayloadException(const std::string &msg) : _msg(msg) {}
+
+    ~PayloadException() override = default;
+};
+
 class ParsingException : public std::exception {
  private:
     std::string _msg;

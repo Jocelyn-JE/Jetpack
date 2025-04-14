@@ -41,6 +41,7 @@ CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Menu/Menu.cpp							\
 						./src/client/Game/Game.cpp							\
 						./src/client/Program.cpp							\
+						./src/client/Auth/Auth.cpp							\
 						./src/client/Parser/ClientParser.cpp				\
 						./src/client/Player/Player.cpp						\
 						./src/client/Coin/Coin.cpp							\

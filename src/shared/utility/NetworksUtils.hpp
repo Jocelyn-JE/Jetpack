@@ -9,4 +9,5 @@
 jetpack::Header_t generateHeader(unsigned char nbrPayload);
 jetpack::Payload_t generatePayload(unsigned char dataCount,
     unsigned char dataId);
+int getPayloadSize(unsigned char dataId);
 #endif  // SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
