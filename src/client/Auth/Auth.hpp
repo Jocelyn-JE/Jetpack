@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/14/25.
 //
 
-#ifndef AUTH_HPP
-#define AUTH_HPP
+#ifndef SRC_CLIENT_AUTH_AUTH_HPP_
+#define SRC_CLIENT_AUTH_AUTH_HPP_
 #include <string>
 
 namespace jetpack::Client {
@@ -14,7 +14,6 @@ class Auth {
     std::string _username = "default";
 
  public:
-
     void setId(size_t id);
 
     void setUsername(std::string username);
@@ -28,6 +27,6 @@ class Auth {
     Auth();
     ~Auth();
 };
-} // jetpack
+}  // namespace jetpack::Client
 
-#endif //AUTH_HPP
+#endif  // SRC_CLIENT_AUTH_AUTH_HPP_

@@ -3,6 +3,7 @@
 //
 
 #include "Auth.hpp"
+#include <string>
 
 void jetpack::Client::Auth::setId(size_t id) {
     this->_isConnected = true;
@@ -25,7 +26,7 @@ std::string jetpack::Client::Auth::getUsername() const {
     return this->_username;
 }
 
-jetpack::Client::Auth::Auth(): _id(0){
+jetpack::Client::Auth::Auth(): _id(0) {
 }
 
 jetpack::Client::Auth::~Auth() {
