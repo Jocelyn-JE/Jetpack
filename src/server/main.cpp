@@ -11,7 +11,7 @@
 #include <thread>
 
 #include "logic/Game.hpp"
-#include "../../../include/GameData.hpp"
+#include "../include/GameData.hpp"
 #include "./parsing/Parser.hpp"
 #include "Server.hpp"
 #include "logic/Game.hpp"

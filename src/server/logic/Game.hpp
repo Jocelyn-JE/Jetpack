@@ -12,10 +12,9 @@
 #include <vector>
 #include <ncurses.h>
 
-#include "../../../include/Coin.hpp"
-#include "../../../include/GameData.hpp"
-#include "../../../include/Obstacle.hpp"
-#include "../../../include/Player.hpp"
+
+#include "../include/GameData.hpp"
+
 #include "Clock.hpp"
 
 class Game {

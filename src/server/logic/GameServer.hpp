@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-#include "../../../include/GameData.hpp"
+#include "../include/GameData.hpp"
 
 class GameServer {
  private:

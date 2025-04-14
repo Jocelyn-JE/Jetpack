@@ -13,9 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "../../../include/Coin.hpp"
-#include "../../../include/GameData.hpp"
-#include "../../../include/Obstacle.hpp"
+
+#include "../include/GameData.hpp"
+
 
 namespace jetpack {
 class Parser {
