@@ -128,7 +128,7 @@ jetpack::Client::Graphic::Graphic(
 	_menu(_changeUsername, _getUsername),
 	_game(sendUserInteraction)
 {
-	this->_windowType = GAME;
+	this->_windowType = MENU;
 	this->_window.setFramerateLimit(144);
 	//Simulation de deux joueurs avec deux piece et deux laser
 	this->addNewPlayer(1, false);

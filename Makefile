@@ -54,6 +54,7 @@ LIB_SRC				=	./src/shared/utility/splitString.cpp				\
 						./src/shared/utility/isNumber.cpp					\
 						./src/shared/sfml/Sprite.cpp						\
 						./src/shared/sfml/SpriteSheet.cpp					\
+						./src/shared/utility/NetworksUtils.cpp					\
 
 LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
 

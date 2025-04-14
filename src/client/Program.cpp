@@ -10,6 +10,9 @@
 #include <string>
 #include <poll.h>
 #include "Program.hpp"
+
+#include <NetworksUtils.hpp>
+
 #include "Exception.hpp"
 #include "lib.hpp"
 
@@ -137,23 +140,10 @@ void jetpack::Client::Program::_sendUpEvent() {
         this->_logger.log("Cannot send username: not connected to server");
         return;
     }
-    Header_t header{};
-    header.magic1 = 42;
-    header.magic2 = 42;
-    header.nbrPayload = 1;
+    Header_t header = generateHeader(1);
     auto valueHeaderBigEndian = htons(header.rawData);
-    this->_logger.log("Header: little endian: " +
-                      std::to_string(header.rawData));
-    this->_logger.log("Header: big endian: " +
-                      std::to_string(valueHeaderBigEndian));
-    Payload_t payload{};
-    payload.dataCount = 1;
-    payload.dataId = 13;
+    Payload_t payload = generatePayload(1, 13);
     auto valuePayloadBigEndian = htons(payload.rawData);
-    this->_logger.log("Payload: little endian: " +
-                      std::to_string(payload.rawData));
-    this->_logger.log("Payload: big endian: " +
-                      std::to_string(valuePayloadBigEndian));
     this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
     this->_socket.writeToSocket<unsigned short>(valuePayloadBigEndian);
     this->_socket.writeToSocket<bool>(true);
@@ -202,26 +192,10 @@ void jetpack::Client::Program::_sendNewUsername() {
         }
         if (!this->_isChangeUsername)
             return;
-        Header_t header{};
-        header.magic1 = 42;
-        header.magic2 = 42;
-        header.nbrPayload = 1;
+        Header_t header = generateHeader(1);
         auto valueHeaderBigEndian = htons(header.rawData);
-        this->_logger.log("Header: little endian: " +
-                          std::to_string(header.rawData));
-        this->_logger.log("Header: big endian: " +
-                          std::to_string(valueHeaderBigEndian));
-        Payload_t payload{};
-
-        payload.dataCount = 1;
-        payload.dataId = 8;
+        Payload_t payload = generatePayload(1, 8);
         auto valuePayloadBigEndian = htons(payload.rawData);
-
-        this->_logger.log("Payload: little endian: " +
-                          std::to_string(payload.rawData));
-        this->_logger.log("Payload: big endian: " +
-                          std::to_string(valuePayloadBigEndian));
-
         this->_communicationMutex.lock();
         this->_usernameMutex.lock();
         this->_socket.writeToSocket<unsigned short>(valueHeaderBigEndian);
