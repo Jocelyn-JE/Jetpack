@@ -71,7 +71,8 @@ class Menu {
 
     Menu(std::function<void(std::string)> &changeUsername,
          std::function<std::string()> &getUsername,
-         std::function<std::pair<std::string, std::string>()> &getSocketSettings,
+         std::function<std::pair<std::string, std::string>()>
+            &getSocketSettings,
          std::function<void(std::pair<std::string, int>)> &sendSocketSettings);
 
     ~Menu() = default;

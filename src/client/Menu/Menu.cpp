@@ -8,7 +8,8 @@
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
-        if (!this->_isSettingsPressed && this->_usernameButton.getGlobalBounds().contains(
+        if (!this->_isSettingsPressed &&
+            this->_usernameButton.getGlobalBounds().contains(
                 static_cast<float>(event.mouseButton.x),
                 static_cast<float>(event.mouseButton.y))) {
             this->_isUserNamePressed = !this->_isUserNamePressed;
@@ -25,10 +26,12 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setFillColor(this->_menuButtonColor);
             }
         }
-        if (!this->_isUserNamePressed && this->_settingsButton.getGlobalBounds().contains(
+        if (!this->_isUserNamePressed &&
+            this->_settingsButton.getGlobalBounds().contains(
             static_cast<float>(event.mouseButton.x),
             static_cast<float>(event.mouseButton.y))) {
-            if (this->_ip.empty() || this->_port.empty() || std::ranges::count(this->_ip, '.') != 3) {
+            if (this->_ip.empty() || this->_port.empty() ||
+                std::ranges::count(this->_ip, '.') != 3) {
                 return;
             }
             this->_isSettingsPressed = !this->_isSettingsPressed;
@@ -37,7 +40,8 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setSize({105, 70});
                 this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
             } else {
-                this->_sendSocketSettings({this->_ip, std::atoi(this->_port.c_str())});
+                this->_sendSocketSettings({this->_ip,
+                    std::atoi(this->_port.c_str())});
                 this->_settingsTextButton.setString("Settings");
                 this->_settingsButton.setSize({140, 70});
                 this->_isPortSelected = false;
@@ -45,13 +49,15 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_usernameButton.setFillColor(this->_menuButtonColor);
             }
         }
-        if (this->_isSettingsPressed && this->_ipField.getGlobalBounds().contains(
+        if (this->_isSettingsPressed &&
+            this->_ipField.getGlobalBounds().contains(
             static_cast<float>(event.mouseButton.x),
             static_cast<float>(event.mouseButton.y))) {
             this->_isIpSelected = true;
             this->_isPortSelected = false;
         }
-        if (this->_isSettingsPressed && this->_portField.getGlobalBounds().contains(
+        if (this->_isSettingsPressed &&
+            this->_portField.getGlobalBounds().contains(
             static_cast<float>(event.mouseButton.x),
             static_cast<float>(event.mouseButton.y))) {
             this->_isIpSelected = false;
@@ -122,7 +128,8 @@ void jetpack::Client::Menu::analyze(const sf::Event &event) {
         this->_usernameBoxContent.setString(this->_username);
     }
     if (event.type == sf::Event::TextEntered && this->_isIpSelected) {
-        if (((event.text.unicode >= '0' && event.text.unicode <= '9') || event.text.unicode == '.'))
+        if (((event.text.unicode >= '0' && event.text.unicode <= '9')
+                || event.text.unicode == '.'))
             this->_ip += static_cast<char>(event.text.unicode);
         else if (event.text.unicode == 8 && !this->_ip.empty())
             this->_ip.pop_back();

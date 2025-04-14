@@ -116,45 +116,34 @@ void Socket::connectSocket(const char *ip_address,
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = inet_addr(ip_address);
-    
-    // Déterminer si le socket est non-bloquant
     int flags = fcntl(this->_socketFd, F_GETFL, 0);
     bool is_nonblocking = (flags & O_NONBLOCK);
-    
-    // Si c'est un socket non-bloquant, passer temporairement en mode bloquant avec timeout
     if (is_nonblocking) {
-        // Mettre en mode bloquant temporairement
         fcntl(this->_socketFd, F_SETFL, flags & ~O_NONBLOCK);
-        
-        // Définir un timeout pour la connexion
         struct timeval tv;
-        tv.tv_sec = 3;  // 3 secondes timeout
+        tv.tv_sec = 3;
         tv.tv_usec = 0;
-        setsockopt(this->_socketFd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-        setsockopt(this->_socketFd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof tv);
+        setsockopt(this->_socketFd, SOL_SOCKET,
+            SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+        setsockopt(this->_socketFd, SOL_SOCKET,
+            SO_SNDTIMEO, (const char*)&tv, sizeof tv);
     }
-    
-    // Tentative de connexion
-    int connect_result = connect(this->_socketFd, (const struct sockaddr *)&address, sizeof(address));
-    
-    // Restaurer le mode non-bloquant si nécessaire
-    if (is_nonblocking) {
+    int connect_result = connect(this->_socketFd,
+        (const struct sockaddr *)&address, sizeof(address));
+    if (is_nonblocking)
         fcntl(this->_socketFd, F_SETFL, flags);
-    }
-    
-    // Gérer les erreurs de connexion
     if (connect_result == -1) {
-        // Si c'est un socket non-bloquant et que l'erreur est EINPROGRESS, c'est normal
         if (is_nonblocking && errno == EINPROGRESS) {
-            std::cout << "Connection in progress on fd: " << this->_socketFd << std::endl;
+            std::cout << "Connection in progress on fd: " <<
+                this->_socketFd << std::endl;
             return;
         }
-        throw Socket::SocketError("Connect failed to " + std::string(ip_address) + 
-                                 ":" + std::to_string(port) + " - " +
-                                  std::string(strerror(errno)));
+        throw Socket::SocketError("Connect failed to " +
+            std::string(ip_address) +
+            ":" + std::to_string(port) + " - " + std::string(strerror(errno)));
     }
-    
-    std::cout << "Successfully connected to " << ip_address << ":" << port << " on fd: " << this->_socketFd << std::endl;
+    std::cout << "Successfully connected to " << ip_address << ":" <<
+        port << " on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::SocketError::SocketError(std::string message) noexcept {

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <utility>
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
@@ -61,14 +62,15 @@ class Program {
         return data;
     });
 
-    std::function<std::pair<std::string, std::string>()> _getSocketSettings = ([this]() -> std::pair<std::string, std::string> {
+    std::function<std::pair<std::string, std::string>()> _getSocketSettings =
+        ([this]() -> std::pair<std::string, std::string> {
         this->_portIpMutex.lock();
         auto data = std::make_pair(this->_ip, std::to_string(this->_port));
         this->_portIpMutex.unlock();
         return data;
     });
 
-    std::function<void(std::pair<std::string, int>)> _setSocketSettings = 
+    std::function<void(std::pair<std::string, int>)> _setSocketSettings =
         ([this](std::pair<std::string, int> data) {
             this->_portIpMutex.lock();
             this->_manualReco = true;

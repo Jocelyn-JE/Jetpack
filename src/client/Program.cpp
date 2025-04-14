@@ -277,10 +277,12 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
     : _ip(ip),
       _logger(logger),
       _graphic(this->_sendUserInteraction, this->_changeUsername,
-               this->_getUsername, this->_getSocketSettings, this->_setSocketSettings),
+        this->_getUsername, this->_getSocketSettings,
+            this->_setSocketSettings),
       _socket(AF_INET, SOCK_STREAM, 0) {
     this->_port = port;
-    this->_logger.log("Connecting to " + this->_ip + " port: " + std::to_string(port));
+    this->_logger.log("Connecting to " + this->_ip + " port: " +
+        std::to_string(port));
     this->_portIpMutex.lock();
     this->_connectToSocket(this->_ip.c_str(), this->_port);
     this->_portIpMutex.unlock();
