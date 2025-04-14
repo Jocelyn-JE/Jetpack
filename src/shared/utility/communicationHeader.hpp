@@ -6,6 +6,7 @@
 #define SRC_SHARED_UTILITY_COMMUNICATIONHEADER_HPP_
 #include <arpa/inet.h>
 
+namespace jetpack {
 enum PayloadType_t {
     INT = 1,
     SIZE_T = 2,
@@ -46,6 +47,7 @@ union Payload_t {
 
     u_int16_t rawData : 16;
 };
+};  // namespace jetpack
 
 #pragma pack(pop)
 
