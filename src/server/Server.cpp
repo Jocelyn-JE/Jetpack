@@ -43,30 +43,8 @@ int jetpack::server::Server::runServer(int port) {
 }
 
 //-----------------------------------------------------------------------------
-
-jetpack::server::Server::Server(int port)
-    : _serverSocket(AF_INET, SOCK_STREAM, 0),
-      _socketPollList(_serverSocket.getSocketFd()),
-      _nextClientId(0) {
-    _serverSocket.bindSocket(port);
-    _serverSocket.listenSocket(LISTEN_BACKLOG);
-    std::cout << "Server started on port " << port << std::endl;
-}
-
-jetpack::server::Server::~Server() {}
-
-int jetpack::server::Server::pollSockets() {
-    int result = poll(_socketPollList.data(), _clients.size() + 1, -1);
-    if (result == -1) {
-        throw Socket::SocketError("Poll failed: " +
-                                  std::string(strerror(errno)));
-    }
-    return result;
-}
-
-bool jetpack::server::Server::isClosed() {
-    return !_serverSocket.closesOnDestroy();
-}
+// The actual important stuff about communication is in this function
+// The rest is helper functions / handling of connection and disconnection
 
 void jetpack::server::Server::updateSockets() {
     std::string buffer;
@@ -97,6 +75,32 @@ void jetpack::server::Server::updateSockets() {
             }
         }
     }
+}
+
+//-----------------------------------------------------------------------------
+
+jetpack::server::Server::Server(int port)
+    : _serverSocket(AF_INET, SOCK_STREAM, 0),
+      _socketPollList(_serverSocket.getSocketFd()),
+      _nextClientId(0) {
+    _serverSocket.bindSocket(port);
+    _serverSocket.listenSocket(LISTEN_BACKLOG);
+    std::cout << "Server started on port " << port << std::endl;
+}
+
+jetpack::server::Server::~Server() {}
+
+int jetpack::server::Server::pollSockets() {
+    int result = poll(_socketPollList.data(), _clients.size() + 1, -1);
+    if (result == -1) {
+        throw Socket::SocketError("Poll failed: " +
+                                  std::string(strerror(errno)));
+    }
+    return result;
+}
+
+bool jetpack::server::Server::isClosed() {
+    return !_serverSocket.closesOnDestroy();
 }
 
 void jetpack::server::Server::handleDisconnection(int socketIndex) {
