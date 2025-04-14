@@ -61,6 +61,21 @@ jobs:
         fi
         rm "$tmpfile"
 
+  check_cpp_linter:
+    name: "Check C++ linter"
+    needs: check_mirror_repo
+    runs-on: ubuntu-latest
+    container: sharaku/cpplint:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      - name: Install cpplint
+        run: apt-get update && apt-get install -y python3-pip && pip install --upgrade pip && pip3 install cpplint
+      - name: Install Make
+        run: apt-get update && apt-get install -y make
+      - name: Run C++ linter
+        run: make linter
+
   check_program_compilation:
     name: "Check program compilation"
     needs:
