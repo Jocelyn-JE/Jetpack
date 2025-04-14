@@ -5,8 +5,8 @@
 ** Parser
 */
 
-#ifndef SRC_SHARED_PARSING_PARSER_HPP_
-#define SRC_SHARED_PARSING_PARSER_HPP_
+#ifndef SRC_SERVER_PARSING_PARSER_HPP_
+#define SRC_SERVER_PARSING_PARSER_HPP_
 
 #include <exception>
 #include <string>
@@ -34,10 +34,12 @@ class Parser {
         std::string _message;
     };
     void parseServerArgs();
-    void parseClientArgs();
     std::string getServerUsage();
+<<<<<<< HEAD:src/shared/parsing/Parser.hpp
     std::string getClientUsage();
     void parseServerFlags(GameData& data);
+=======
+>>>>>>> origin:src/server/parsing/Parser.hpp
 
  private:
     std::vector<std::string> _args;
@@ -60,4 +62,4 @@ class MapParser {
 
 }  // namespace jetpack
 
-#endif  // SRC_SHARED_PARSING_PARSER_HPP_
+#endif  // SRC_SERVER_PARSING_PARSER_HPP_

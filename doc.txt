@@ -1,0 +1,233 @@
+Network Programming Working Group
+Category: Informational
+                                                              April 2025
+
+                   Binary Protocol and Map Format for
+                      Jetpack Epitech Project
+
+Status of This Memo
+
+    This document specifies a Binary Protocol and Map Format for a
+    Jetpack Game.
+
+Table of Contents
+
+    1. Introduction ................................................  2
+    2. Protocol Overview ...........................................  2
+    3. Packet Structure ............................................  2
+        3.1. Magic Number ...........................................  3
+        3.2. Data List Format .......................................  3
+        3.3. Data Types .............................................  3
+    4. Communication Flow ..........................................  5
+        4.1. Connection Procedure ...................................  5
+        4.2. Server Pacing ..........................................  6
+        4.3. Packet Processing ......................................  6
+    5. Map Format .................................................  6
+        5.1. Map Requirements .......................................  7
+        5.2. Map Symbols ............................................  7
+        5.3. Example Map ...........................................   7
+    6. Security Considerations ....................................  7
+
+1. Introduction
+
+    This document defines a binary protocol and map format for the Jetpack
+    Project. The protocol facilitates real-time communication
+    between server and clients in a multiplayer game environment.
+
+    The protocol aims to be lightweight and efficient for transmitting
+    game state updates, player positions, and game events while
+    maintaining responsiveness across the network.
+
+2. Protocol Overview
+
+    The protocol is designed as a binary packet-based system with a
+    specific structure including a magic number identifier, data lists
+    count, and the actual data lists themselves. Each data list contains
+    one or more data elements with specific types.
+
+    Communication occurs at regular intervals (ticks) with the server
+    sending updates to all connected clients. The protocol supports
+    various game elements including player positions, coin locations,
+    hazards, game speed adjustments, and player inputs.
+
+3. Packet Structure
+
+    Each packet consists of a header followed by a payload:
+
+    +-----------------------------------+--------------------+
+    |               Header              |      Payload       |
+    +-----------------+-----------------+--------------------+
+    |      Magic      | Data list Count |  Data list(s)...   |
+    +--------+--------+-----------------+--------------------+
+    |  0x2A  |  0x2A  |     nb lists    |       content      |
+    +--------+--------+-----------------+--------------------+
+    |   42   |   42   |     nb lists    |       content      |
+    +--------+--------+-----------------+--------------------+
+    | 6 bits | 6 bits |      4 bits     |        n bits      |
+    +-----------------+-----------------+--------------------+
+
+3.1. Magic Number
+
+    Every packet begins with a magic number consisting of two consecutive
+    bytes with the value 42 (0x2A in hexadecimal). This serves as a
+    packet identifier and validation mechanism.
+
+3.2. Data List Format
+
+    After the packet header, the payload consists of one or more data
+    lists. Each data list has the following structure:
+
+    +--------------------------------+-----------------------------------+
+    |             Header             |              Payload              |
+    +----------------+---------------+-----------------------------------+
+    |   Data Count   |   Data Type   |            Actual Data            |
+    +----------------+---------------+-----------------------------------+
+    |      0x02      |    Data ID    |   Data 1   |   ...   |   Data n   |
+    +----------------+---------------+-----------------------------------+
+    |     10 bits    |     6 bits    |               n bits              |
+    +----------------+---------------+-----------------------------------+
+
+    - Data Count: Number of data elements in this list
+    - Data Type: Identifier for the data type (see Section 3.3)
+    - Actual Data: The data bytes representing the value(s)
+
+3.3. Data Types
+
+    The protocol supports the following data types:
+
+    +-----+------------------+-------------+----------------------------+
+    | ID  | Data Type        | Size        | Description                |
+    +-----+------------------+-------------+----------------------------+
+    | 0   | Unused/Special   | Variable    | Reserved for special use   |
+    +-----+------------------+-------------+----------------------------+
+    | 1   | int              | 4 bytes     | Signed integer             |
+    +-----+------------------+-------------+----------------------------+
+    | 2   | size_t           | 4 bytes     | Unsigned size type         |
+    +-----+------------------+-------------+----------------------------+
+    | 3   | bool             | 1 byte      | Boolean value              |
+    +-----+------------------+-------------+----------------------------+
+    | 4   | double           | 8 bytes     | Double precision float     |
+    +-----+------------------+-------------+----------------------------+
+    | 5   | float            | 4 bytes     | Single precision float     |
+    +-----+------------------+-------------+----------------------------+
+    | 6   | short            | 2 bytes     | Short integer              |
+    +-----+------------------+-------------+----------------------------+
+    | 7   | struct player    | Variable    | Player information         |
+    |     |                  |             | including Y level, coins   |
+    |     |                  |             | collected, ID, username    |
+    |     |                  |             | and alive status           |
+    +-----+------------------+-------------+----------------------------+
+    | 8   | name             | 20 bytes    | Player username (fixed     |
+    |     | (char[20])       |             | length of 20 characters)   |
+    +-----+------------------+-------------+----------------------------+
+    | 9   | struct           | Variable    | Coin position with X,Y     |
+    |     | coinsPos_s       |             | coordinates                |
+    +-----+------------------+-------------+----------------------------+
+    | 10  | struct           | Variable    | Hazard position with X,Y   |
+    |     | hazPos_s         |             | coordinates                |
+    +-----+------------------+-------------+----------------------------+
+    | 11  | enum command     | Variable    | Command to control race    |
+    |     |                  |             | state (start/end/progress) |
+    +-----+------------------+-------------+----------------------------+
+    | 12  | gamespeed        | 4 bytes     | Game speed in milliseconds |
+    |     |                  |             | per grid unit              |
+    +-----+------------------+-------------+----------------------------+
+    | 13  | Player_input     | 1 byte      | Boolean representing       |
+    |     |                  |             | player input state         |
+    +-----+------------------+-------------+----------------------------+
+    | 14  | start            | 0 bytes     | Valueless type to signal   |
+    |     |                  |             | game start (sent by host)  |
+    +-----+------------------+-------------+----------------------------+
+    | 15  | healthcheck      | 0 bytes     | Valueless type for         |
+    |     |                  |             | connection verification    |
+    +-----+------------------+-------------+----------------------------+
+    | 16  | jetpack_force    | 4 bytes     | Float representing         |
+    |     |                  |             | jetpack thrust force       |
+    +-----+------------------+-------------+----------------------------+
+    | 17  | Velocity_limits  | 8 bytes     | Two floats representing    |
+    |     |                  |             | maximum upward and         |
+    |     |                  |             | downward velocity limits   |
+    +-----+------------------+-------------+----------------------------+
+
+4. Communication Flow
+
+4.1. Connection Procedure
+
+    When a client connects to the server, the server must send an initial
+    connection packet with the following structure:
+
+    +----------------------------------------------------------------------+
+    |                          Connection Packet                           |
+    +--------------+----------+---------+---------+-----------+------------+
+    | Magic Number | nb types | nb data | data ID | player ID | game speed |
+    +--------------+----------+----+----+---------+-----------+------------+
+    | 0x2A | 0x2A  |     1    | 0  |  1 |    2    | Player ID | Game Speed |
+    | (42) | (42)  |          |    |    |         | size_t    | size_t ms  |
+    +------+-------+----------+----+----+---------+-----------+------------+
+
+    If the first packet received by a client does not match this
+    structure, the client must ignore it.
+
+4.2. Server Pacing
+
+    The server must send packets at a tick-based interval of 20 ticks per
+    second (20 Hz). This means the server sends 20 packets per second to
+    all connected clients.
+
+    Clients may interpolate positions of game elements between received
+    packets if smoother animation is desired.
+
+4.3. Packet Processing
+
+    For each server tick, the following processing occurs:
+
+    Ret = Read(buffer, buffsize)
+    Handle(buffer)
+    If (ret == buffsize && read(buffer) > 0)
+    // Continue processing additional data
+
+5. Map Format
+
+5.1. Map Requirements
+
+    Maps are defined in ASCII grid-based files with the following
+    requirements:
+
+    - Any number of columns is allowed as long as all rows have the same
+    length
+    - Each row must end with a newline character
+    - Exactly 10 rows are required (no more, no less)
+
+5.2. Map Symbols
+
+    The map uses the following character symbols:
+
+    - " " (space): Empty/traversable space
+    - "*" (asterisk): Coin
+    - "#" (hash): Electric hazard
+
+5.3. Example Map
+
+    Below is an example of a valid map:
+
+    |          #
+    |          #      ******
+    |          #     *******
+    |          #    **
+    |          #   **      #
+    |             **       #
+    |       *******        #
+    |       ******         #
+    |                      #
+    |                      #
+
+6. Security Considerations
+
+    Implementations should validate all incoming packets by:
+
+    - Verifying the magic number (42, 42)
+    - Checking that data lengths match expected values for declared types
+    - Ignoring malformed packets
+
+    Servers should implement the healthcheck mechanism to detect
+    disconnected clients and remove them from the game state.

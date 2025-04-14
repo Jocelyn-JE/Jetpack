@@ -28,8 +28,13 @@ class Server {
 
  private:
     int pollSockets();
+    // Iterate through all clients with _clients.size() (+ 1 for the server
+    // socket) and update/execute depending on values read from the sockets.
+    // Server socket is _serverSocket polling is _socketPollList[0]
     void updateSockets();
     void handleConnection();
+    // This function does not close the given socket, it only removes it from
+    // the socket list and poll list
     void handleDisconnection(int socketIndex);
     bool isClosed();
     void sendToAllClients(std::string data);
