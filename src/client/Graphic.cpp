@@ -123,14 +123,14 @@ void jetpack::Client::Graphic::serverOK() {
 jetpack::Client::Graphic::Graphic(
     std::function<void(UserInteractions_s)> &sendUserInteraction,
     std::function<void(std::string)> &changeUsername,
-    std::function<std::string()> &getUsername)
-    : _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
-              sf::Style::Close | sf::Style::Titlebar),
-      _sendUserEvent(sendUserInteraction),
-      _changeUsername(changeUsername),
-      _getUsername(getUsername),
-      _menu(_changeUsername, _getUsername),
-      _game(sendUserInteraction) {
+    std::function<std::string()> &getUsername,
+    std::function<std::pair<std::string, std::string>()> &getSocketSettings,
+    std::function<void(std::pair<std::string, int>)> &sendSocketSetting
+):
+    _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
+        sf::Style::Close | sf::Style::Titlebar),
+    _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting),
+    _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
     // Simulation de deux joueurs avec deux piece et deux laser

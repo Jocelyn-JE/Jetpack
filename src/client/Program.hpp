@@ -22,9 +22,11 @@ namespace jetpack::Client {
 class Program {
  private:
     bool _isOpen = true;
-    const char *_ip;
+    std::string _ip;
     unsigned int _port;
+    bool _manualReco = false;
     std::thread _networkThread;
+    std::mutex _portIpMutex;
     std::mutex _communicationMutex;
     std::mutex _usernameMutex;
     std::mutex _userInteractionMutex;
@@ -32,12 +34,17 @@ class Program {
         UserInteractions_s::NO_INTERACTION;
     bool _isChangeUsername = false;
 
+    Auth _auth;
+    jetpack::Logger &_logger;
+    Graphic _graphic;
+    Socket _socket;
+
     std::function<void(UserInteractions_s)> _sendUserInteraction =
         ([this](UserInteractions_s data) {
             this->_userInteractionMutex.lock();
             this->_lastUserInteraction = data;
             this->_userInteractionMutex.unlock();
-        });
+    });
 
     std::function<void(std::string)> _changeUsername =
         ([this](std::string username) {
@@ -45,7 +52,7 @@ class Program {
             this->_auth.setUsername(username);
             this->_isChangeUsername = true;
             this->_usernameMutex.unlock();
-        });
+    });
 
     std::function<std::string()> _getUsername = ([this]() -> std::string {
         this->_usernameMutex.lock();
@@ -54,10 +61,21 @@ class Program {
         return data;
     });
 
-    Auth _auth;
-    jetpack::Logger &_logger;
-    Graphic _graphic;
-    Socket _socket;
+    std::function<std::pair<std::string, std::string>()> _getSocketSettings = ([this]() -> std::pair<std::string, std::string> {
+        this->_portIpMutex.lock();
+        auto data = std::make_pair(this->_ip, std::to_string(this->_port));
+        this->_portIpMutex.unlock();
+        return data;
+    });
+
+    std::function<void(std::pair<std::string, int>)> _setSocketSettings = 
+        ([this](std::pair<std::string, int> data) {
+            this->_portIpMutex.lock();
+            this->_manualReco = true;
+            this->_ip = data.first;
+            this->_port = data.second;
+            this->_portIpMutex.unlock();
+    });
 
     void _setSize_tData(std::vector<unsigned char> msg);
 

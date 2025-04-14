@@ -127,11 +127,13 @@ void jetpack::Client::Program::_sniffANetwork() {
         try {
             int socketFd = this->_socket.getSocketFd();
 
-            if (socketFd == -1) {
+            if (socketFd == -1 || this->_manualReco) {
+                this->_manualReco = false;
+                this->_socket.closeSocket();
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
                 try {
-                    this->_connectToSocket(this->_ip, this->_port);
+                    this->_connectToSocket(this->_ip.c_str(), this->_port);
                     std::this_thread::sleep_for(std::chrono::seconds(2));
                 } catch (...) {
                     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -272,15 +274,16 @@ void jetpack::Client::Program::_sendNewUsername() {
 
 jetpack::Client::Program::Program(const char *ip, unsigned int port,
                                   jetpack::Logger &logger)
-    : _logger(logger),
+    : _ip(ip),
+      _logger(logger),
       _graphic(this->_sendUserInteraction, this->_changeUsername,
-               this->_getUsername),
+               this->_getUsername, this->_getSocketSettings, this->_setSocketSettings),
       _socket(AF_INET, SOCK_STREAM, 0) {
-    this->_ip = ip;
     this->_port = port;
-    this->_logger.log("Connecting to " + std::string(ip) +
-                      " port: " + std::to_string(port));
-    this->_connectToSocket(ip, port);
+    this->_logger.log("Connecting to " + this->_ip + " port: " + std::to_string(port));
+    this->_portIpMutex.lock();
+    this->_connectToSocket(this->_ip.c_str(), this->_port);
+    this->_portIpMutex.unlock();
     this->_networkThread = std::thread([this] {
         pthread_setname_np(pthread_self(), "Network thread");
         try {
