@@ -43,6 +43,7 @@ void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
     if (msg.size() <= 4) {
         throw NetworkException("Message too small");
     }
+    std::cout << "WORLD" << std::endl;
     uint16_t dataHeader =
         (static_cast<uint8_t>(msg[0]) << 8) | static_cast<uint8_t>(msg[1]);
     header.rawData = ntohs(dataHeader);
@@ -55,6 +56,7 @@ void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
         throw NetworkException("Message not valid no magic number");
     }
     nbrPayload = header.nbrPayload;
+    std::cout << "HELLO payload" << std::endl;
     for (int i = 0; i < nbrPayload; ++i) {
         uint16_t dataPayload =
             (static_cast<uint8_t>(msg[indexListCount]) << 8) |
@@ -74,10 +76,25 @@ void jetpack::Client::Program::_handlePayload(std::string msg,
                 "There is too much payload for "
                 "   this action expected 1 data currently: " +
                 std::to_string(payload.dataCount));
-        this->_communicationMutex.lock();
+        this->_usernameMutex.lock();
         this->_username = (msg.substr(indexListCount, 20));
         this->_usernameMutex.unlock();
         indexListCount += 20;
+    }
+    if (payload.dataId == PayloadType_t::SIZE_T) {
+        for (int i = 0; i < payload.dataCount; ++i) {
+            if (indexListCount + 4 > static_cast<int>(msg.size())) {
+                throw NetworkException("Message size mismatch when parsing SIZE_T payload");
+            }
+            uint32_t value = 0;
+            value |= static_cast<uint32_t>(static_cast<unsigned char>(msg[indexListCount])) << 24;
+            value |= static_cast<uint32_t>(static_cast<unsigned char>(msg[indexListCount + 1])) << 16;
+            value |= static_cast<uint32_t>(static_cast<unsigned char>(msg[indexListCount + 2])) << 8;
+            value |= static_cast<uint32_t>(static_cast<unsigned char>(msg[indexListCount + 3]));
+            size_t convertedValue = ntohl(value);
+            std::cout << "Received size_t: " << convertedValue << std::endl;
+            indexListCount += 4;
+        }
     }
 }
 
