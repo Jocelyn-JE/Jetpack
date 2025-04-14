@@ -2,58 +2,58 @@
 // Created by roussierenoa on 4/10/25.
 //
 
-#ifndef MENU_HPP
-#define MENU_HPP
+#ifndef SRC_CLIENT_MENU_MENU_HPP_
+#define SRC_CLIENT_MENU_MENU_HPP_
 #include <functional>
+#include <string>
+
 #include <SFML/Graphics.hpp>
 
 namespace jetpack::Client {
 
 class Menu {
-private:
-	bool _isUserNamePressed = false;
-	std::string _username;
+ private:
+    bool _isUserNamePressed = false;
+    std::string _username;
 
-	sf::Texture _menuBackgroundTexture;
-	sf::Font _jetpackFont;
-	sf::Color _menuTextColor;
-	sf::Color _menuButtonColor;
-	sf::Color _menuButtonTextColor;
-	sf::Color _menuUsernameBoxColor;
-	sf::Sprite _menuBackground;
-	sf::Shader _blurShader;
-	sf::Text _menuCountdown;
-	sf::Text _usernameTextButton;
-	sf::RectangleShape _usernameButton;
-	sf::RectangleShape _usernameField;
-	sf::RectangleShape _usernameBox;
-	sf::Text _usernameBoxTitle;
-	sf::Text _usernameBoxContent;
-	sf::Text _serverStateText;
-	std::string _serverStateString = "OK";
+    sf::Texture _menuBackgroundTexture;
+    sf::Font _jetpackFont;
+    sf::Color _menuTextColor;
+    sf::Color _menuButtonColor;
+    sf::Color _menuButtonTextColor;
+    sf::Color _menuUsernameBoxColor;
+    sf::Sprite _menuBackground;
+    sf::Shader _blurShader;
+    sf::Text _menuCountdown;
+    sf::Text _usernameTextButton;
+    sf::RectangleShape _usernameButton;
+    sf::RectangleShape _usernameField;
+    sf::RectangleShape _usernameBox;
+    sf::Text _usernameBoxTitle;
+    sf::Text _usernameBoxContent;
+    sf::Text _serverStateText;
+    std::string _serverStateString = "OK";
 
-	void _handleMousePressed(const sf::Event &event);
-	std::function<void(std::string)> _changeUsername;
-	std::function<std::string()> _getUsername;
+    void _handleMousePressed(const sf::Event &event);
+    std::function<void(std::string)> _changeUsername;
+    std::function<std::string()> _getUsername;
 
-public:
-	void setServerStateError();
+ public:
+    void setServerStateError();
 
-	void setServerStateOk();
+    void setServerStateOk();
 
-	void display(sf::RenderWindow &window);
+    void display(sf::RenderWindow &window);
 
-	void compute();
+    void compute();
 
-	void analyze(const sf::Event &event);
+    void analyze(const sf::Event &event);
 
-	Menu(
-		std::function<void(std::string)> &changeUsername,
-		std::function<std::string()> &getUsername
-	);
+    Menu(std::function<void(std::string)> &changeUsername,
+         std::function<std::string()> &getUsername);
 
-	~Menu() = default;
+    ~Menu() = default;
 };
-} // jetpack
+}  // namespace jetpack::Client
 
-#endif //MENU_HPP
+#endif  // SRC_CLIENT_MENU_MENU_HPP_

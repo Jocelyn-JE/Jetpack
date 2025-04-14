@@ -13,9 +13,7 @@
 #include <string>
 #include <vector>
 
-
 #include "../include/GameData.hpp"
-
 
 namespace jetpack {
 class Parser {

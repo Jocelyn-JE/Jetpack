@@ -4,6 +4,9 @@
 
 #include "SpriteSheet.hpp"
 
+#include <string>
+#include <utility>
+
 void SpriteSheet::display(sf::RenderWindow &window) {
     window.draw(this->_sprite);
 }
@@ -25,17 +28,15 @@ void SpriteSheet::setSpriteType(int line) {
 }
 
 void SpriteSheet::nextSprite() {
-    if (this->_nbrColumns == (this->_rect.left + this->_sizeElements.x) / this->_sizeElements.x) {
+    if (this->_nbrColumns ==
+        (this->_rect.left + this->_sizeElements.x) / this->_sizeElements.x)
         this->_rect.left = 0;
-    } else {
+    else
         this->_rect.left += this->_sizeElements.x;
-    }
     this->_sprite.setTextureRect(this->_rect);
 }
 
-void SpriteSheet::setPos(sf::Vector2f pos) {
-    this->_sprite.setPosition(pos);
-}
+void SpriteSheet::setPos(sf::Vector2f pos) { this->_sprite.setPosition(pos); }
 
 void SpriteSheet::setTransparency() {
     sf::Color color = this->_sprite.getColor();
@@ -44,22 +45,19 @@ void SpriteSheet::setTransparency() {
 }
 
 std::pair<int, int> SpriteSheet::getRectPosition() const {
-    return std::make_pair<int, int>(
-        this->_rect.left / this->_sizeElements.x + 1,
-        this->_rect.top / this->_sizeElements.y + 1
-    );
+    return {this->_rect.left / this->_sizeElements.x + 1,
+            this->_rect.top / this->_sizeElements.y + 1};
 }
 
 sf::Vector2f SpriteSheet::getSpritePosition() const {
     return this->_sprite.getPosition();
 }
 
-SpriteSheet::SpriteSheet(const std::string &path, sf::Vector2i sizeElements, int nbrLines, int nbrColumns, sf::Vector2f scale
-) :
-    _sizeElements(sizeElements),
-    _nbrLines(nbrLines),
-    _nbrColumns(nbrColumns)
-{
+SpriteSheet::SpriteSheet(const std::string &path, sf::Vector2i sizeElements,
+                         int nbrLines, int nbrColumns, sf::Vector2f scale)
+    : _sizeElements(sizeElements),
+      _nbrLines(nbrLines),
+      _nbrColumns(nbrColumns) {
     this->_sizeElements = sizeElements;
     this->_texture = sf::Texture();
     if (!this->_texture.loadFromFile(path))

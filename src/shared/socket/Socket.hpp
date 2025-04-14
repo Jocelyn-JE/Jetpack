@@ -10,13 +10,14 @@
 
 #include <netinet/in.h>
 #include <unistd.h>
+
 #include <cstring>
 #include <exception>
 #include <string>
 #include <vector>
 
 class Socket {
-public:
+ public:
     // Default constructor is deleted.
     // You must either open a new socket on a new file descriptor or
     // open a new socket on an existing file descriptor.
@@ -74,7 +75,7 @@ public:
 
     // Write a buffer to the socket.
     // May throw a SocketError exception if the write failed.
-    template<typename T>
+    template <typename T>
     void writeToSocket(T buffer) noexcept(false) {
         if (write(this->_socketFd, &buffer, sizeof(buffer)) == -1) {
             throw Socket::SocketError(
@@ -85,7 +86,7 @@ public:
 
     // Write a vector of a buffer to the socket.
     // May throw a SocketError exception if the write failed.
-    template<typename T>
+    template <typename T>
     void writeToSocket(std::vector<T> bufferVector) noexcept(false) {
         if (write(this->_socketFd, bufferVector.data(),
                   bufferVector.size() * sizeof(T)) == -1) {
@@ -105,7 +106,7 @@ public:
 
     // Read a buffer from the socket.
     // May throw a SocketError exception if the read failed.
-    template<typename T>
+    template <typename T>
     T readFromSocket() noexcept(false) {
         T buffer;
         if (read(_socketFd, &buffer, sizeof(buffer)) == -1) {
@@ -118,7 +119,7 @@ public:
 
     // Read a vector of a buffer from the socket.
     // May throw a SocketError exception if the read failed.
-    template<typename T>
+    template <typename T>
     std::vector<T> readFromSocket(size_t size) noexcept(false) {
         std::vector<T> buffer(size);
         if (read(_socketFd, buffer.data(), size * sizeof(T)) == -1) {
@@ -141,18 +142,18 @@ public:
 
     // Exception class for Socket.
     class SocketError : public std::exception {
-    public:
+     public:
         explicit SocketError(std::string message) noexcept;
 
         ~SocketError() noexcept;
 
         const char *what() const noexcept override;
 
-    private:
+     private:
         std::string _message;
     };
 
-private:
+ private:
     // Whether the socket (fd) will be closed on destruction.
     bool _closeSocketOnDestruction;
     int _socketFd = -1;

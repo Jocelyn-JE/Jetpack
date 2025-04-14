@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "Coin.hpp"
-#include "Obstacle.hpp"
 #include "GamePlayer.hpp"
+#include "Obstacle.hpp"
 
 struct GameData {
     std::mutex dataMutex;
@@ -14,7 +14,7 @@ struct GameData {
     std::vector<std::shared_ptr<coinsPos_t>> coins;
     std::vector<std::shared_ptr<obstacle_t>> obstacles;
     double advancement = 0;
-    size_t gameSpeed  = 1000;
+    size_t gameSpeed = 1000;
     bool isRunning;
     bool debug;
     int port;

@@ -10,7 +10,6 @@
 #include <memory>
 #include <thread>
 
-#include "logic/Game.hpp"
 #include "../include/GameData.hpp"
 #include "./parsing/Parser.hpp"
 #include "Server.hpp"

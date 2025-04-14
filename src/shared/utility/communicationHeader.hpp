@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/3/25.
 //
 
-#ifndef COMMUNICATIONHEADER_HPP
-#define COMMUNICATIONHEADER_HPP
+#ifndef SRC_SHARED_UTILITY_COMMUNICATIONHEADER_HPP_
+#define SRC_SHARED_UTILITY_COMMUNICATIONHEADER_HPP_
 #include <arpa/inet.h>
 
 enum PayloadType_t {
@@ -30,23 +30,23 @@ enum PayloadType_t {
 
 union Header_t {
     struct {
-        unsigned char magic1: 6;
-        unsigned char magic2: 6;
-        unsigned char nbrPayload: 4;
+        unsigned char magic1 : 6;
+        unsigned char magic2 : 6;
+        unsigned char nbrPayload : 4;
     };
 
-    unsigned int rawData: 16;
+    unsigned int rawData : 16;
 };
 
 union Payload_t {
     struct {
-        unsigned short dataCount: 10;
-        unsigned char dataId: 6;
+        unsigned short dataCount : 10;
+        unsigned char dataId : 6;
     };
 
-    unsigned int rawData: 16;
+    unsigned int rawData : 16;
 };
 
 #pragma pack(pop)
 
-#endif //COMMUNICATIONHEADER_HPP
+#endif  // SRC_SHARED_UTILITY_COMMUNICATIONHEADER_HPP_

@@ -2,32 +2,34 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#ifndef COIN_HPP
-#define COIN_HPP
+#ifndef SRC_CLIENT_COIN_COIN_HPP_
+#define SRC_CLIENT_COIN_COIN_HPP_
 #include <mutex>
-#include <SpriteSheet.hpp>
+
 #include <SFML/Graphics.hpp>
+#include <SpriteSheet.hpp>
 
 namespace jetpack::Client {
-	class Coin {
-	private:
-		std::mutex _coinMutex;
-		sf::Vector2f _pos;
+class Coin {
+ private:
+    std::mutex _coinMutex;
+    sf::Vector2f _pos;
 
-		sf::Clock _clock;
-		SpriteSheet _coinSheet;
-	public:
-		void display(sf::RenderWindow &window);
+    sf::Clock _clock;
+    SpriteSheet _coinSheet;
 
-		void compute();
+ public:
+    void display(sf::RenderWindow &window);
 
-		void changePosValue(const sf::Vector2f &pos);
+    void compute();
 
-		sf::Vector2f getPos() const;
+    void changePosValue(const sf::Vector2f &pos);
 
-		Coin();
-		~Coin() = default;
-	};
-} // jetpack
+    sf::Vector2f getPos() const;
 
-#endif //COIN_HPP
+    Coin();
+    ~Coin() = default;
+};
+}  // namespace jetpack::Client
+
+#endif  // SRC_CLIENT_COIN_COIN_HPP_

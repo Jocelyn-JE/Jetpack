@@ -8,9 +8,9 @@
 #include <iostream>
 #include <string>
 
+#include "Exception.hpp"
 #include "Logger.hpp"
 #include "Parser/ClientParser.hpp"
-#include "Exception.hpp"
 #include "Program.hpp"
 
 int main(int argc, char **argv) {

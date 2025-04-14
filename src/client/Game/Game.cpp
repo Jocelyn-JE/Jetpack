@@ -6,55 +6,53 @@
 
 #include <iostream>
 
-namespace jetpack::Client {
-	void Game::display(sf::RenderWindow &window) {
-		this->_background.display(window);
-		this->_background2.display(window);
-		this->_coinStats.display(window);
-	}
+void jetpack::Client::Game::display(sf::RenderWindow &window) {
+    this->_background.display(window);
+    this->_background2.display(window);
+    this->_coinStats.display(window);
+}
 
-	void Game::compute() {
-		if (this->_clock.getElapsedTime().asMilliseconds() >= 15) {
-			this->_clock.restart();
-			auto pos1 = this->_background.getPos();
-			auto pos2 = this->_background2.getPos();
-			
-			this->_background.changePos({pos1.x - 5, pos1.y});
-			this->_background2.changePos({pos2.x - 5, pos2.y});
-			float bgWidth = 3444;
-			float completelyOutPosition = -3452;
-			if (pos1.x < completelyOutPosition)
-				this->_background.changePos({pos2.x + bgWidth - 5, pos1.y});
-			if (pos2.x < completelyOutPosition)
-				this->_background2.changePos({pos1.x + bgWidth - 5, pos2.y});
-		}
-		this->_coinStats.compute();
-	}
+void jetpack::Client::Game::compute() {
+    if (this->_clock.getElapsedTime().asMilliseconds() >= 15) {
+        this->_clock.restart();
+        auto pos1 = this->_background.getPos();
+        auto pos2 = this->_background2.getPos();
 
-	void Game::setCoinsAmount(unsigned int coinsAmount) {
-		this->_coinStats.setCoinsAmount(coinsAmount);
-	}
+        this->_background.changePos({pos1.x - 5, pos1.y});
+        this->_background2.changePos({pos2.x - 5, pos2.y});
+        float bgWidth = 3444;
+        float completelyOutPosition = -3452;
+        if (pos1.x < completelyOutPosition)
+            this->_background.changePos({pos2.x + bgWidth - 5, pos1.y});
+        if (pos2.x < completelyOutPosition)
+            this->_background2.changePos({pos1.x + bgWidth - 5, pos2.y});
+    }
+    this->_coinStats.compute();
+}
 
-	void Game::_handleKeyPressed(const sf::Event &event) {
-		if (event.key.code == sf::Keyboard::Up) {
-			this->_sendUserInteraction(UserInteractions_s::UP);
-		}
-		// TODO(noa) : demander les autres interaction possible entre le server et le client
-	}
+void jetpack::Client::Game::setCoinsAmount(unsigned int coinsAmount) {
+    this->_coinStats.setCoinsAmount(coinsAmount);
+}
 
-	void Game::analyze(const sf::Event &event) {
-		if (event.type == sf::Event::KeyPressed)
-			this->_handleKeyPressed(event);
-	}
+void jetpack::Client::Game::_handleKeyPressed(const sf::Event &event) {
+    if (event.key.code == sf::Keyboard::Up) {
+        this->_sendUserInteraction(UserInteractions_s::UP);
+    }
+    // TODO(noa) : demander les autres interaction possible entre le
+    // server et le client
+}
 
-	Game::Game(std::function<void(UserInteractions_s)> &sendUserInteraction) :
-		_sendUserInteraction(sendUserInteraction),
-		_background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15}),
-		_background2("src/client/assets/GameBackground.png", {3444, 0}, {2, 2.15})
-	{
-		this->_clock = sf::Clock();
-	}
+void jetpack::Client::Game::analyze(const sf::Event &event) {
+    if (event.type == sf::Event::KeyPressed) this->_handleKeyPressed(event);
+}
 
-	Game::~Game() {
-	}
-} // jetpack
+jetpack::Client::Game::Game(std::function<void(UserInteractions_s)>
+    &sendUserInteraction):
+    _sendUserInteraction(sendUserInteraction),
+    _background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15}),
+    _background2("src/client/assets/GameBackground.png", {3444, 0},
+    {2, 2.15}) {
+    this->_clock = sf::Clock();
+}
+
+jetpack::Client::Game::~Game() {}

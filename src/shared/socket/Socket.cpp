@@ -7,6 +7,7 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -39,13 +40,11 @@ Socket::~Socket() noexcept(false) {
         std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
     }
     std::cout << "Removed socket on fd " << this->_socketFd << " from server"
-            << std::endl;
+              << std::endl;
 }
 
-void Socket::resetSocket(int domain, int type, int protocol)
-{
-    if (this->_socketFd != -1)
-        return;
+void Socket::resetSocket(int domain, int type, int protocol) {
+    if (this->_socketFd != -1) return;
     this->_socketFd = socket(domain, type, protocol);
     if (this->_socketFd == -1) {
         throw Socket::SocketError("Socket creation failed: " +
@@ -75,13 +74,14 @@ void Socket::bindSocket(uint16_t port) noexcept(false) {
     this->_address.sin_family = AF_INET;
     this->_address.sin_port = htons(port);
     this->_address.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(this->_socketFd, (const struct sockaddr *) &this->_address, sizeof(this->_address)) ==
-        -1) {
+    if (bind(this->_socketFd, (const struct sockaddr *)&this->_address,
+             sizeof(this->_address)) == -1) {
         throw Socket::SocketError("Bind failed: " +
                                   std::string(strerror(errno)));
     }
     socklen_t len = sizeof(this->_address);
-    if (getsockname(this->_socketFd, (struct sockaddr *) &this->_address, &len) == -1) {
+    if (getsockname(this->_socketFd, (struct sockaddr *)&this->_address,
+                    &len) == -1) {
         throw Socket::SocketError("Getsockname failed: " +
                                   std::string(strerror(errno)));
     }
@@ -110,7 +110,7 @@ void Socket::connectSocket(const char *ip_address,
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = inet_addr(ip_address);
-    if (connect(this->_socketFd, (const struct sockaddr *) &address,
+    if (connect(this->_socketFd, (const struct sockaddr *)&address,
                 sizeof(address)) == -1) {
         throw Socket::SocketError("Connect failed: " +
                                   std::string(strerror(errno)));
@@ -121,8 +121,7 @@ Socket::SocketError::SocketError(std::string message) noexcept {
     this->_message = message;
 }
 
-Socket::SocketError::~SocketError() noexcept {
-}
+Socket::SocketError::~SocketError() noexcept {}
 
 const char *Socket::SocketError::what() const noexcept {
     return this->_message.c_str();

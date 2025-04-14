@@ -7,10 +7,10 @@
 
 #include <arpa/inet.h>
 
-#include <ranges>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -118,7 +118,6 @@ void jetpack::Parser::parseServerFlags(GameData& data) {
     } else if (idx < _args.size()) {
         throw ParsingError("Missing port number after -p flag");
     }
-
 
     /// FAKE PLAYER
     data.players[0] = std::make_shared<gameplayer_t>(0, "Player1");

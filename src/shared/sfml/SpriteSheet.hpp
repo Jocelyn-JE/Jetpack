@@ -2,13 +2,16 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#ifndef SPRITESHEET_HPP
-#define SPRITESHEET_HPP
+#ifndef SRC_SHARED_SFML_SPRITESHEET_HPP_
+#define SRC_SHARED_SFML_SPRITESHEET_HPP_
+
+#include <string>
+#include <utility>
 
 #include <SFML/Graphics.hpp>
 
 class SpriteSheet {
-private:
+ private:
     sf::Vector2i _sizeElements;
     int _nbrLines;
     int _nbrColumns;
@@ -16,8 +19,9 @@ private:
     sf::IntRect _rect;
     sf::Texture _texture;
     sf::Sprite _sprite;
-public:
-       void display(sf::RenderWindow &window);
+
+ public:
+    void display(sf::RenderWindow &window);
 
     void setSprite(int col, int line);
 
@@ -33,10 +37,9 @@ public:
 
     void setTransparency();
 
-    SpriteSheet(const std::string &path, sf::Vector2i sizeElements, int nbrLines, int nbrColumns, sf::Vector2f scale = {1, 1});
+    SpriteSheet(const std::string &path, sf::Vector2i sizeElements,
+                int nbrLines, int nbrColumns, sf::Vector2f scale = {1, 1});
     ~SpriteSheet() = default;
 };
 
-
-
-#endif //IMAGE_HPP
+#endif  // SRC_SHARED_SFML_SPRITESHEET_HPP_

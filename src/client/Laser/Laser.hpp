@@ -2,32 +2,35 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#ifndef LASER_HPP
-#define LASER_HPP
+#ifndef SRC_CLIENT_LASER_LASER_HPP_
+#define SRC_CLIENT_LASER_LASER_HPP_
 #include <mutex>
+
 #include <SFML/Graphics.hpp>
+
 #include "SpriteSheet.hpp"
 
 namespace jetpack::Client {
-	class Laser {
-	private:
-		std::mutex _laserMutex;
-		sf::Vector2f _pos;
+class Laser {
+ private:
+    std::mutex _laserMutex;
+    sf::Vector2f _pos;
 
-		sf::Clock _clock;
-		SpriteSheet _laserSheet;
-	public:
-		void display(sf::RenderWindow &window);
+    sf::Clock _clock;
+    SpriteSheet _laserSheet;
 
-		void compute();
+ public:
+    void display(sf::RenderWindow &window);
 
-		void changePosValue(const sf::Vector2f &pos);
+    void compute();
 
-		sf::Vector2f getPos() const;
+    void changePosValue(const sf::Vector2f &pos);
 
-		Laser();
-		~Laser() = default;
-	};
-} // jetpack
+    sf::Vector2f getPos() const;
 
-#endif //LASER_HPP
+    Laser();
+    ~Laser() = default;
+};
+}  // namespace jetpack::Client
+
+#endif  // SRC_CLIENT_LASER_LASER_HPP_

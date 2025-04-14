@@ -4,17 +4,13 @@
 
 #include "Sprite.hpp"
 
-void Sprite::display(sf::RenderWindow &window) {
-    window.draw(this->_sprite);
-}
+#include <string>
 
-void Sprite::changePos(sf::Vector2f pos) {
-    this->_sprite.setPosition(pos);
-}
+void Sprite::display(sf::RenderWindow &window) { window.draw(this->_sprite); }
 
-sf::Vector2f Sprite::getPos() {
-    return this->_sprite.getPosition();
-}
+void Sprite::changePos(sf::Vector2f pos) { this->_sprite.setPosition(pos); }
+
+sf::Vector2f Sprite::getPos() { return this->_sprite.getPosition(); }
 
 Sprite::Sprite(const std::string &path, sf::Vector2f pos, sf::Vector2f scale) {
     this->_texture = sf::Texture();

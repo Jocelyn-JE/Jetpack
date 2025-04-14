@@ -2,43 +2,44 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#ifndef GAME_HPP
-#define GAME_HPP
+#ifndef SRC_CLIENT_GAME_GAME_HPP_
+#define SRC_CLIENT_GAME_GAME_HPP_
 #include <functional>
-#include <SpriteSheet.hpp>
+
 #include <SFML/Graphics.hpp>
-#include "Sprite.hpp"
-#include "../userInteractions.hpp"
+#include <SpriteSheet.hpp>
+
 #include "../CoinStats/CoinStats.hpp"
+#include "../userInteractions.hpp"
+#include "Sprite.hpp"
 
 namespace jetpack::Client {
 class Game {
-private:
-   std::function<void(UserInteractions_s)> &_sendUserInteraction;
+ private:
+    std::function<void(UserInteractions_s)> &_sendUserInteraction;
 
-   bool _isBg1 = true;
-   sf::Clock _clock;
+    bool _isBg1 = true;
+    sf::Clock _clock;
 
-   Sprite _background;
-   Sprite _background2;
-   CoinStats _coinStats;
+    Sprite _background;
+    Sprite _background2;
+    CoinStats _coinStats;
 
-   void _handleKeyPressed(const sf::Event &event);
-public:
+    void _handleKeyPressed(const sf::Event &event);
 
-   void setCoinsAmount(unsigned int coinsAmount);
+ public:
+    void setCoinsAmount(unsigned int coinsAmount);
 
-   void display(sf::RenderWindow &window);
+    void display(sf::RenderWindow &window);
 
-   void compute();
+    void compute();
 
-   void analyze(const sf::Event &event);
+    void analyze(const sf::Event &event);
 
-   Game(std::function<void(UserInteractions_s)> &sendUserInteraction);
+    explicit Game(std::function<void(UserInteractions_s)> &sendUserInteraction);
 
-   ~Game();
+    ~Game();
 };
+}  // namespace jetpack::Client
 
-} // jetpack
-
-#endif //GAME_HPP
+#endif  // SRC_CLIENT_GAME_GAME_HPP_
