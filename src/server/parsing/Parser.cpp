@@ -118,6 +118,13 @@ void jetpack::Parser::parseServerFlags(GameData& data) {
     } else if (idx < _args.size()) {
         throw ParsingError("Missing port number after -p flag");
     }
+
+
+    /// FAKE PLAYER
+    data.players[0] = std::make_shared<player_t>(0, "Player1");
+    data.players[1] = std::make_shared<player_t>(1, "Player2");
+    data.players[0]->is_jetpack_on = true;
+    data.players[1]->is_jetpack_on = true;
 }
 
 jetpack::Parser::ParsingError::ParsingError(std::string message) {
