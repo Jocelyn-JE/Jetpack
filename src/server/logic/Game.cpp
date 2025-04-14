@@ -1,10 +1,10 @@
 #include "Game.hpp"
+#include <ncurses.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <thread>
-#include <ncurses.h>
-#include <algorithm>
 
 #include "../parsing/Parser.hpp"
 
@@ -28,7 +28,7 @@ void Game::start(const std::string& mapFile) {
 }
 
 void Game::pollInput() {
-    int ch = getch(); // Non-blocking input
+    int ch = getch();  // Non-blocking input
     if (ch == 'w' || ch == 'W') {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
         if (!gameData->players.empty()) {
@@ -53,7 +53,6 @@ void Game::gameLoop() {
         std::cerr << "Game loop iteration" << std::endl;
         auto startTime = std::chrono::high_resolution_clock::now();
 
-
         float deltaTime = clock.tick();
         update(deltaTime);
 
@@ -72,7 +71,6 @@ void Game::gameLoop() {
 }
 
 void Game::update(float deltaTime) {
-
     std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
     {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
@@ -82,9 +80,11 @@ void Game::update(float deltaTime) {
         for (auto& [_, player] : gameData->players) {
             if (player->is_dead) continue;
 
-            //float verticalForce = player->is_jetpack_on ? -JETPACK_FORCE : GRAVITY;
-            player->velocity += player->is_jetpack_on ? -JETPACK_FORCE * deltaTime  : 0;
-            player->velocity += GRAVITY * deltaTime ;
+            // float verticalForce = player->is_jetpack_on ? -JETPACK_FORCE :
+            // GRAVITY;
+            player->velocity +=
+                player->is_jetpack_on ? -JETPACK_FORCE * deltaTime : 0;
+            player->velocity += GRAVITY * deltaTime;
             if (player->velocity > VMIN) {
                 player->velocity = VMIN;
             } else if (player->velocity < VMAX) {
@@ -113,10 +113,14 @@ void Game::checkCollisions() {
 
         for (auto it = gameData->coins.begin(); it != gameData->coins.end();) {
             auto& coin = *it;
-            if (std::abs(player->y_pos - static_cast<double>(coin->y_pos)) < 0.5f &&
-                std::abs(static_cast<double>(coin->x_pos) - gameData->advancement) < 0.5f) {
+            if (std::abs(player->y_pos - static_cast<double>(coin->y_pos)) <
+                    0.5f &&
+                std::abs(static_cast<double>(coin->x_pos) -
+                         gameData->advancement) < 0.5f) {
                 std::cerr << "Player " << player->username
-                          << " collected a coin!#######################################" << std::endl;
+                          << " collected a "
+                             "coin!#######################################"
+                          << std::endl;
                 player->coins_collected++;
                 it = gameData->coins.erase(it);
             } else {
@@ -125,10 +129,14 @@ void Game::checkCollisions() {
         }
 
         for (const auto& obstacle : gameData->obstacles) {
-            if (std::abs(player->y_pos - static_cast<double>(obstacle->y_pos)) < 0.5f &&
-                std::abs(static_cast<double>(obstacle->x_pos) - gameData->advancement) < 0.5f) {
+            if (std::abs(player->y_pos - static_cast<double>(obstacle->y_pos)) <
+                    0.5f &&
+                std::abs(static_cast<double>(obstacle->x_pos) -
+                         gameData->advancement) < 0.5f) {
                 std::cerr << "Player " << player->username
-                          << " collided with an obstacle! player y: " << player->y_pos << " obstacle y: " << obstacle->y_pos << std::endl;
+                          << " collided with an obstacle! player y: "
+                          << player->y_pos << " obstacle y: " << obstacle->y_pos
+                          << std::endl;
                 player->is_dead = true;
                 break;
             }
@@ -139,8 +147,8 @@ void Game::checkCollisions() {
 void Game::stop() {
     gameData->isRunning = false;
     if (mapWin) {
-        delwin(mapWin); // Delete the ncurses window
-        endwin();       // End ncurses mode
+        delwin(mapWin);  // Delete the ncurses window
+        endwin();        // End ncurses mode
         mapWin = nullptr;
     }
 }
@@ -154,7 +162,6 @@ void Game::printServerData() const {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
     std::cerr << "\n=== Server Data ===" << std::endl;
-
 
     std::cerr << "Advancement: " << gameData->advancement << std::endl;
     std::cerr << "Game Speed: " << gameData->gameSpeed << std::endl;
@@ -171,39 +178,40 @@ void Game::printServerData() const {
     }
 
     //// Print Coins
-    //std::cerr << "\nCoins (" << gameData->coins.size() << "):" << std::endl;
-    //for (const auto& coin : gameData->coins) {
-    //    std::cerr << "Coin at position (" << coin->x_pos << ", " << coin->y_pos
-    //              << ")" << std::endl;
-    //}
+    // std::cerr << "\nCoins (" << gameData->coins.size() << "):" << std::endl;
+    // for (const auto& coin : gameData->coins) {
+    //     std::cerr << "Coin at position (" << coin->x_pos << ", " <<
+    //     coin->y_pos
+    //               << ")" << std::endl;
+    // }
 
     //// Print Obstacles
-    //std::cerr << "\nObstacles (" << gameData->obstacles.size()
-    //          << "):" << std::endl;
-    //for (const auto& obstacle : gameData->obstacles) {
-    //    std::cerr << "Obstacle at position (" << obstacle->x_pos << ", "
-    //              << obstacle->y_pos << ")" << std::endl;
-    //}
+    // std::cerr << "\nObstacles (" << gameData->obstacles.size()
+    //           << "):" << std::endl;
+    // for (const auto& obstacle : gameData->obstacles) {
+    //     std::cerr << "Obstacle at position (" << obstacle->x_pos << ", "
+    //               << obstacle->y_pos << ")" << std::endl;
+    // }
 
     std::cerr << "\n=================" << std::endl;
 }
 
 void Game::initNcursesMap() {
-    initscr(); // Initialize ncurses
-    noecho();  // Disable echoing of typed characters
-    curs_set(0); // Hide the cursor
-    nodelay(stdscr, TRUE); // Make getch() non-blocking
+    initscr();              // Initialize ncurses
+    noecho();               // Disable echoing of typed characters
+    curs_set(0);            // Hide the cursor
+    nodelay(stdscr, TRUE);  // Make getch() non-blocking
 
-    mapWin = newwin(11, 120, 0, 0); // Create a 10x120 window
-    box(mapWin, 0, 0); // Draw a border around the window
-    wrefresh(mapWin); // Refresh the window to show the border
+    mapWin = newwin(11, 120, 0, 0);  // Create a 10x120 window
+    box(mapWin, 0, 0);               // Draw a border around the window
+    wrefresh(mapWin);                // Refresh the window to show the border
 }
 
 void Game::displayNcursesMap() {
-    if (!mapWin) return; // Ensure the window is initialized
+    if (!mapWin) return;  // Ensure the window is initialized
 
-    werase(mapWin); // Clear the window
-    box(mapWin, 0, 0); // Redraw the border
+    werase(mapWin);     // Clear the window
+    box(mapWin, 0, 0);  // Redraw the border
 
     {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
@@ -238,19 +246,19 @@ void Game::displayNcursesMap() {
         }
     }
 
-    wrefresh(mapWin); // Refresh the window to show changes
+    wrefresh(mapWin);  // Refresh the window to show changes
 
     // Display velocity and position of the first two players below the map
-    int row = 12; // Start below the map window
+    int row = 12;  // Start below the map window
     int col = 0;
     int playerCount = 0;
 
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
     for (const auto& [_, player] : gameData->players) {
-        if (playerCount >= 2) break; // Only display for the first two players
+        if (playerCount >= 2) break;  // Only display for the first two players
         mvprintw(row++, col, "Player %s: Position Y = %.2f, Velocity = %.2f",
                  player->username, player->y_pos, player->velocity);
         playerCount++;
     }
-    refresh(); // Refresh the standard screen to show the text
+    refresh();  // Refresh the standard screen to show the text
 }

@@ -12,7 +12,7 @@ typedef struct gameplayer {
     bool is_jetpack_on;
     bool host;
 
-    gameplayer(int _id = 0, const std::string& _username = "")
+    gameplayer(int _id = 0, const std::string &_username = "")
         : id(_id),
           y_pos(0.0),
           velocity(0.0),

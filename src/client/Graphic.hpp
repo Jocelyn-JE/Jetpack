@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <string>
 #include <utility>
 
 #include <SFML/Graphics.hpp>
@@ -16,61 +17,57 @@
 #include "userInteractions.hpp"
 
 namespace jetpack::Client {
-	class Graphic {
-	private:
-		enum WindowType {
-			GAME,
-			MENU,
-			TYPE_COUNT
-		};
+class Graphic {
+ private:
+    enum WindowType { GAME, MENU, TYPE_COUNT };
 
-		WindowType _windowType;
-		sf::RenderWindow _window;
-		std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> > _listPlayers;
-		std::mutex _posMutex;
-		std::function<void(UserInteractions_s)> &_sendUserEvent;
-		std::function<void()> _sendChangeUserName;
+    WindowType _windowType;
+    sf::RenderWindow _window;
+    std::map<unsigned int, std::pair<sf::RectangleShape, sf::Vector2f> >
+        _listPlayers;
+    std::mutex _posMutex;
+    std::function<void(UserInteractions_s)> &_sendUserEvent;
+    std::function<void()> _sendChangeUserName;
 
-		Menu _menu;
+    Menu _menu;
 
-		void _handleKeyPressed(const sf::Event &);
-		void _handleMousePressed(const sf::Event &);
+    void _handleKeyPressed(const sf::Event &);
+    void _handleMousePressed(const sf::Event &);
 
-	public:
-		void display();
+ public:
+    void display();
 
-		bool isOpen() const { return this->_window.isOpen(); }
+    bool isOpen() const { return this->_window.isOpen(); }
 
-		void compute();
+    void compute();
 
-		void close() { return this->_window.close(); }
+    void close() { return this->_window.close(); }
 
-		void setPosRectangle(unsigned int id, sf::Vector2f pos);
+    void setPosRectangle(unsigned int id, sf::Vector2f pos);
 
-		void setUsername(const std::string &name);
+    void setUsername(const std::string &name);
 
-		std::string getUsername();
+    std::string getUsername();
 
-		void analyse();
+    void analyse();
 
-		void addNewPlayer(unsigned int id, bool isCurrent);
+    void addNewPlayer(unsigned int id, bool isCurrent);
 
-		void switchToGame();
+    void switchToGame();
 
-		void switchToMenu();
+    void switchToMenu();
 
-		void serverError();
+    void serverError();
 
-		void serverOK();
+    void serverOK();
 
-		explicit Graphic(
-			std::function<void(UserInteractions_s)> &sendUserInteraction,
-			std::function<void()> &sendChangeUserName
-		);
+    explicit Graphic(
+        std::function<void(UserInteractions_s)> &sendUserInteraction,
+        std::function<void()> &sendChangeUserName);
 
-		~Graphic() = default;
-	};
-} // namespace jetpack::Client
+    ~Graphic() = default;
+};
+}  // namespace jetpack::Client
 
 // jetpack
 
