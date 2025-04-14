@@ -80,7 +80,9 @@ class Graphic {
     explicit Graphic(
         std::function<void(UserInteractions_s)> &sendUserInteraction,
         std::function<void(std::string)> &changeUsername,
-        std::function<std::string()> &getUsername);
+        std::function<std::string()> &getUsername,
+        std::function<int()> &getIdWithAuth,
+        std::function<bool()> &getIsConnectedWithAuth);
 
     ~Graphic() = default;
 };

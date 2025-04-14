@@ -16,18 +16,26 @@ void jetpack::Client::Auth::setUsername(std::string username) {
     this->_username = username;
 }
 
-bool jetpack::Client::Auth::isConnected() const {
-    return this->_isConnected;
+bool jetpack::Client::Auth::isConnected() {
+    this->_authMutex.lock();
+    auto data = this->_isConnected;
+    this->_authMutex.unlock();
+    return data;
 }
 
-int jetpack::Client::Auth::getId() const {
-    return this->_id;
+int jetpack::Client::Auth::getId() {
+    this->_authMutex.lock();
+    auto data = this->_id;
+    this->_authMutex.unlock();
+    return data;
 }
 
 void jetpack::Client::Auth::resetAuth() {
+    this->_authMutex.lock();
     this->_username = "default";
     this->_id = 0;
     this->_isConnected = false;
+    this->_authMutex.unlock();
 }
 
 std::string jetpack::Client::Auth::getUsername() const {

@@ -32,6 +32,7 @@ void jetpack::Client::Menu::display(sf::RenderWindow &window) {
     else
         window.draw(this->_menuBackground, &this->_blurShader);
     window.draw(this->_menuCountdown);
+    window.draw(this->_menuIDText);
     window.draw(this->_serverStateText);
     window.draw(this->_usernameButton);
     window.draw(this->_usernameTextButton);
@@ -43,7 +44,16 @@ void jetpack::Client::Menu::display(sf::RenderWindow &window) {
     }
 }
 
-void jetpack::Client::Menu::compute() {}
+void jetpack::Client::Menu::compute() {
+    if (this->_authIsConnected()) {
+        this->_menuIDText.setFillColor(this->_menuTextColor);
+        this->_menuIDText.setString("ID: " +
+            std::to_string(this->_authGetId()));
+    } else {
+        this->_menuIDText.setFillColor(sf::Color::Red);
+        this->_menuIDText.setString("ID: none");
+    }
+}
 
 void jetpack::Client::Menu::analyze(const sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed)
@@ -75,10 +85,15 @@ void jetpack::Client::Menu::setServerStateOk() {
 }
 
 jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
-           std::function<std::string()> &getUsername)
-    : _changeUsername(changeUsername), _getUsername(getUsername) {
-    this->_menuBackgroundTexture = sf::Texture();
-    this->_jetpackFont = sf::Font();
+           std::function<std::string()> &getUsername,
+           std::function<int()> &getIdWithAuth,
+           std::function<bool()> &getIsConnectedWithAuth
+):
+    _changeUsername(changeUsername),
+    _getUsername(getUsername),
+    _authIsConnected(getIsConnectedWithAuth),
+    _authGetId(getIdWithAuth)
+{
     if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
                                                    "MenuBackground.png")) {
         throw std::runtime_error(
@@ -100,12 +115,6 @@ jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
     this->_menuButtonColor = sf::Color(255, 197, 84, 255);
     this->_menuButtonTextColor = sf::Color(219, 218, 214, 255);
     this->_menuUsernameBoxColor = sf::Color(255, 156, 58, 255);
-    this->_menuCountdown = sf::Text();
-    this->_usernameTextButton = sf::Text();
-    this->_usernameBoxContent = sf::Text();
-    this->_serverStateText = sf::Text();
-    this->_usernameButton = sf::RectangleShape();
-    this->_usernameBox = sf::RectangleShape();
 
     this->_menuCountdown.setFont(this->_jetpackFont);
     this->_menuCountdown.setString("2 Player Required");
@@ -114,6 +123,14 @@ jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
     this->_menuCountdown.setOutlineThickness(3);
     this->_menuCountdown.setOutlineColor(sf::Color::Black);
     this->_menuCountdown.setPosition({1120, 20});
+
+    this->_menuIDText.setFont(this->_jetpackFont);
+    this->_menuIDText.setString("ID: none");
+    this->_menuIDText.setCharacterSize(40);
+    this->_menuIDText.setFillColor(sf::Color::Red);
+    this->_menuIDText.setOutlineThickness(3);
+    this->_menuIDText.setOutlineColor(sf::Color::Black);
+    this->_menuIDText.setPosition({1300, 120});
 
     this->_serverStateText.setFont(this->_jetpackFont);
     this->_serverStateText.setString("Server: " + this->_serverStateString);
