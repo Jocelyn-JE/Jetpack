@@ -35,24 +35,24 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
 }
 
 void jetpack::Client::Program::_handleMessageFromServer(std::string msg) {
-	Header_t header;
-	Payload_t payload;
-	int nbrPayload = 0;
+    Header_t header;
+    Payload_t payload;
+    int nbrPayload = 0;
     int indexListCount = 2;
 
-	if (msg.size() <= 4) {
+    if (msg.size() <= 4) {
         throw NetworkException("Message too small");
     }
-	uint16_t dataHeader = (static_cast<uint8_t>(msg[0]) << 8) | static_cast<uint8_t>(msg[1]);
-	header.rawData = ntohs(dataHeader);
+    uint16_t dataHeader = (static_cast<uint8_t>(msg[0]) << 8) | static_cast<uint8_t>(msg[1]);
+    header.rawData = ntohs(dataHeader);
     this->_logger.log("Received: littleEndian" + std::to_string(header.rawData));
     this->_logger.log("Received: " + std::to_string(dataHeader));
     this->_logger.log("magic1: " + std::to_string(header.magic1));
     this->_logger.log("magic2: " + std::to_string(header.magic2));
-	if (!(header.magic1 == 42 && header.magic2 == 42)) {
+    if (!(header.magic1 == 42 && header.magic2 == 42)) {
         throw NetworkException("Message not valid no magic number");
     }
-	nbrPayload = header.nbrPayload;
+    nbrPayload = header.nbrPayload;
     for (int i = 0; i < nbrPayload; ++i) {
         uint16_t dataPayload = (static_cast<uint8_t>(msg[indexListCount]) << 8) | static_cast<uint8_t>(msg[indexListCount + 1]);
         payload.rawData = ntohs(dataPayload);

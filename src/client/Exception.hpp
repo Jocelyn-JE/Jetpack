@@ -10,35 +10,35 @@
 
 class NetworkException : public std::exception {
 private:
-	std::string _msg;
+    std::string _msg;
 
 public:
-	const char *what() const noexcept override { return this->_msg.c_str(); }
+    const char *what() const noexcept override { return this->_msg.c_str(); }
 
-	explicit NetworkException(const std::string &msg) : _msg(msg) {
-	}
+    explicit NetworkException(const std::string &msg) : _msg(msg) {
+    }
 
-	~NetworkException() override = default;
+    ~NetworkException() override = default;
 };
 
 class ParsingException : public std::exception {
 private:
-	std::string _msg;
+    std::string _msg;
 
 public:
-	const char *what() const noexcept override { return this->_msg.c_str(); }
+    const char *what() const noexcept override { return this->_msg.c_str(); }
 
-	explicit ParsingException(const std::string &msg) : _msg(msg) {
-	}
+    explicit ParsingException(const std::string &msg) : _msg(msg) {
+    }
 
-	~ParsingException() override = default;
+    ~ParsingException() override = default;
 };
 
 class HelpException : public std::exception {
 public:
-	HelpException() = default;
+    HelpException() = default;
 
-	~HelpException() override = default;
+    ~HelpException() override = default;
 };
 
 #endif  // SRC_CLIENT_EXCEPTION_HPP_
