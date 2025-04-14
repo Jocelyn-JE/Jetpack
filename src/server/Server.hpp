@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Client.hpp"
+#include "CommunicationHeader.hpp"
 #include "PollFdList.hpp"
 #include "Socket.hpp"
 #define LISTEN_BACKLOG 128
@@ -38,6 +39,7 @@ class Server {
     void handleDisconnection(int socketIndex);
     bool isClosed();
     void sendToAllClients(std::string data);
+    jetpack::Header_t createPacketHeader(u_int8_t nbrPayload);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
