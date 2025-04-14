@@ -118,6 +118,8 @@ jobs:
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker:latest
     steps:
+    - name: Install ncurses
+      run: apt install -y libncurses5-dev
     - name: Checkout
       uses: actions/checkout@v4.1.1
     - name: Run tests
