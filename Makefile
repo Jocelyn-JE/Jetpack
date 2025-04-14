@@ -58,7 +58,7 @@ TESTS_SRC			=
 # Flags -----------------------------------------------------------------------
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
-						-I ./src/server/client
+						-I ./src/server/client  -I ./src/shared/include
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g
