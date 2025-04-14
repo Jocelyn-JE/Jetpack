@@ -6,17 +6,20 @@
 
 #include "Coin.hpp"
 #include "Obstacle.hpp"
-#include "Player.hpp"
+#include "GamePlayer.hpp"
 
 struct GameData {
     std::mutex dataMutex;
-    std::map<int, std::shared_ptr<player_t>> players;
+    std::map<int, std::shared_ptr<gameplayer_t>> players;
     std::vector<std::shared_ptr<coinsPos_t>> coins;
     std::vector<std::shared_ptr<obstacle_t>> obstacles;
+    double advancement = 0;
+    size_t gameSpeed  = 1000;
     bool isRunning;
     bool debug;
     int port;
     std::string filename;
 
-    GameData() : isRunning(true), debug(false), port(4242), filename("map.joy") {}
+    GameData()
+        : isRunning(true), debug(false), port(4242), filename("map.joy") {}
 };

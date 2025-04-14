@@ -24,6 +24,9 @@ SERVER_SRC			=	./src/server/client/Client.cpp						\
 						./src/server/pollfdlist/PollFdList.cpp				\
 						./src/server/Server.cpp								\
 						./src/server/parsing/Parser.cpp						\
+						./src/server/logic/Game.cpp							\
+						./src/server/logic/GameServer.cpp					\
+						./src/server/logic/Clock.cpp						\
 
 SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
@@ -58,10 +61,11 @@ TESTS_SRC			=
 # Flags -----------------------------------------------------------------------
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
-						-I ./src/server/client  -I ./src/shared/include
+						-I ./src/server/client  -I ./src/shared/include		\
+						-I ./src/server/include
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
- 						-L./ -ljetpack -O2 -g
+ 						-L./ -ljetpack -O2 -g  -lstdc++
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 
@@ -93,7 +97,7 @@ all: server client
 $(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
 	g++ $(CPPFLAGS) -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
-$(MAIN_SERVER_OBJ) $(SHARED_OBJ)
+$(MAIN_SERVER_OBJ) $(SHARED_OBJ) -lncurses
 
 $(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
