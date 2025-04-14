@@ -24,6 +24,9 @@ SERVER_SRC			=	./src/server/client/Client.cpp						\
 						./src/server/pollfdlist/PollFdList.cpp				\
 						./src/server/Server.cpp								\
 						./src/server/parsing/Parser.cpp						\
+						./src/server/logic/Game.cpp							\
+						./src/server/logic/GameServer.cpp					\
+						./src/server/logic/Clock.cpp						\
 
 SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
@@ -56,12 +59,11 @@ LIB_NAME			=	libjetpack.a
 TESTS_SRC			=
 
 # Flags -----------------------------------------------------------------------
-INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
-						-I ./src/shared/utility -I ./src/server/pollfdlist	\
-						-I ./src/server/client
+INCLUDES			=	-I ./src/shared/socket -I ./ -I ./src/shared/utility\
+						-I ./src/server/pollfdlist -I ./src/server/client	\
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
- 						-L./ -ljetpack -O2 -g
+ 						-L./ -ljetpack -O2 -g  -lstdc++
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 

@@ -12,8 +12,10 @@
 
 #include "logic/Game.hpp"
 #include "../../../include/GameData.hpp"
+#include "./parsing/Parser.hpp"
+#include "Server.hpp"
+#include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
-#include "../shared/parsing/Parser.hpp"
 
 void gameLoop(std::shared_ptr<GameData> gameData) {
     Game game(gameData);
@@ -44,9 +46,9 @@ int main(int argc, char **argv) {
         gameThread.join();
         networkThread.join();
     } else {
-        std::cerr << "Error: " << gameData->filename << " not found" << std::endl;
+        std::cerr << "Error: " << gameData->filename << " not found"
+                  << std::endl;
         return 1;
     }
-
-    return 0;
+    return jetpack::server::Server::runServer(atoi(argv[1]));
 }

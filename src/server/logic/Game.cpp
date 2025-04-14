@@ -1,10 +1,10 @@
 #include "Game.hpp"
 
 #include <iostream>
-#include <thread>
 #include <string>
+#include <thread>
 
-#include "MapParser.hpp"
+#include "./src/server/parsing/Parser.hpp"
 
 Game::Game(std::shared_ptr<GameData> data) : gameData(data) {}
 
@@ -69,7 +69,8 @@ void Game::checkCollisions() {
 void Game::stop() { gameData->isRunning = false; }
 
 bool Game::loadMap(const std::string& filename) {
-    return MapParser::parseMap(filename, gameData->coins, gameData->obstacles);
+    return jetpack::MapParser::parseMap(filename, gameData->coins,
+                                        gameData->obstacles);
 }
 
 void Game::printServerData() const {

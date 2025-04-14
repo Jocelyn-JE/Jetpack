@@ -1,6 +1,7 @@
 #include "GameServer.hpp"
-#include <string>
+
 #include <memory>
+#include <string>
 
 GameServer::GameServer(int portParam, std::shared_ptr<GameData> data)
     : port(portParam), gameData(data) {

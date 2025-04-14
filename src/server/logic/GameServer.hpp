@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 
 #include "../../../include/GameData.hpp"
 
@@ -8,7 +9,7 @@ class GameServer {
     int port;
     std::shared_ptr<GameData> gameData;
     void handleNewConnection();
-    void handleMessage(const std::string& message);
+    void handleMessage(const std::string &message);
 
  public:
     GameServer(int port, std::shared_ptr<GameData> data);
