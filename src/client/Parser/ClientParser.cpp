@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "../Exception.hpp"
+#include "Exception.hpp"
 #include "ClientParser.hpp"
 #include "lib.hpp"
 

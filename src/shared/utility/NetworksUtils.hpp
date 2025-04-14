@@ -4,10 +4,14 @@
 
 #ifndef SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
 #define SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
+#include "Logger.hpp"
+#include "Socket.hpp"
 #include "communicationHeader.hpp"
 
 jetpack::Header_t generateHeader(unsigned char nbrPayload);
 jetpack::Payload_t generatePayload(unsigned char dataCount,
     unsigned char dataId);
 int getPayloadSize(unsigned char dataId);
+jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket);
+jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket);
 #endif  // SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_

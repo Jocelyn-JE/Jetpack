@@ -72,84 +72,6 @@ void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
     }
 }
 
-jetpack::Payload_t jetpack::Client::Program::_getPayload() {
-    std::vector<unsigned char> payloadBuffer = this->_socket.readFromSocket(2);
-    if (payloadBuffer.empty()) {
-        this->_logger.log("Server disconnected");
-        this->_graphic.serverError();
-        this->_socket.closeSocket();
-        throw PayloadException("Incomplete Payload size = 0");
-    }
-    if (payloadBuffer.size() < 2) {
-        this->_logger.log("Incomplete Payload");
-        this->_graphic.serverError();
-        this->_socket.closeSocket();
-        throw PayloadException("Incomplete Payload size = "
-            + payloadBuffer.size());
-    }
-    this->_logger.log("Packet recieved: ");
-    for (const auto &byte : payloadBuffer) {
-        std::stringstream ss;
-        ss << std::hex << std::uppercase << std::setw(2)
-            << std::setfill('0') << static_cast<int>(byte) << " ";
-        ss << std::dec;
-        this->_logger.log(ss.str());
-    }
-    Payload_t payload = {};
-    uint16_t dataPayload =
-        (static_cast<uint8_t>(payloadBuffer[0]) << 8)
-        | static_cast<uint8_t>(payloadBuffer[1]);
-    payload.rawData = ntohs(dataPayload);
-    this->_logger.log("Received: littleEndian" +
-                      std::to_string(payload.rawData));
-    this->_logger.log("Received: " + std::to_string(dataPayload));
-    this->_logger.log("data count: " + std::to_string(payload.dataCount));
-    this->_logger.log("data id: " + std::to_string(payload.dataId));
-    return payload;
-}
-
-jetpack::Header_t jetpack::Client::Program::_getHeader() {
-    std::vector<unsigned char> headerBuffer = {};
-    headerBuffer.resize(2);
-    headerBuffer = this->_socket.readFromSocket(2);
-    if (headerBuffer.empty() || headerBuffer ==
-        std::vector<unsigned char>(2, 0)) {
-        this->_logger.log("Server disconnected");
-        this->_graphic.serverError();
-        this->_socket.closeSocket();
-        throw HeaderException("Incomplete Header size = 0");
-    }
-    if (headerBuffer.size() < 2) {
-        this->_logger.log("Incomplete Header");
-        this->_graphic.serverError();
-        this->_socket.closeSocket();
-        throw HeaderException("Incomplete Header size = "
-            + headerBuffer.size());
-    }
-    this->_logger.log("Packet recieved: ");
-    for (const auto &byte : headerBuffer) {
-        std::stringstream ss;
-        ss << std::hex << std::uppercase << std::setw(2)
-            << std::setfill('0') << static_cast<int>(byte) << " ";
-        ss << std::dec;
-        this->_logger.log(ss.str());
-    }
-    Header_t header {};
-    uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
-            static_cast<uint16_t>(headerBuffer[1]);
-    header.rawData = ntohs(dataHeader);
-    this->_logger.log("Received: littleEndian" +
-            std::to_string(header.rawData));
-    this->_logger.log("Received: " + std::to_string(dataHeader));
-    this->_logger.log("magic1: " + std::to_string(header.magic1));
-    this->_logger.log("magic2: " + std::to_string(header.magic2));
-    this->_logger.log("nbrPayload: " + std::to_string(header.nbrPayload));
-    if (!(header.magic1 == 42 && header.magic2 == 42)) {
-        throw NetworkException("Message not valid no magic number");
-    }
-    return header;
-}
-
 void jetpack::Client::Program::_sniffANetwork() {
     while (this->_isOpen) {
         try {
@@ -184,12 +106,27 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
                 try {
-                    Header_t header = this->_getHeader();
+                    std::cout << "DATA RECEIVED" << std::endl;
+                    Header_t header{};
+                    try {
+                         header = getHeader(this->_logger, this->_socket);
+                    } catch (HeaderException &) {
+                        this->_socket.closeSocket();
+                        this->_graphic.serverError();
+                        continue;
+                    }
                     if (header.nbrPayload == 0) {
                         this->_logger.log("No payload");
                         continue;
                     }
-                    Payload_t payload = this->_getPayload();
+                    Payload_t payload {};
+                    try {
+                        payload = getPayload(this->_logger, this->_socket);
+                    } catch (PayloadException &) {
+                        this->_socket.closeSocket();
+                        this->_graphic.serverError();
+                        continue;
+                    }
                     if (payload.dataId == PayloadType_t::START) {
                         this->_graphic.switchToGame();
                         continue;

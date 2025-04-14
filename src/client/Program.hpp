@@ -65,10 +65,6 @@ class Program {
 
     void _handlePayload(std::vector<unsigned char> msg, Payload_t payload);
 
-    Payload_t _getPayload();
-
-    Header_t _getHeader();
-
     void _sniffANetwork();
 
     void _sendUpEvent();
