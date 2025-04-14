@@ -40,6 +40,7 @@ class Server {
     bool isClosed();
     void sendToAllClients(std::string data);
     jetpack::Header_t createPacketHeader(u_int8_t nbrPayload);
+    jetpack::Payload_t createPayloadHeader(u_int8_t dataCount, u_int8_t dataId);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;

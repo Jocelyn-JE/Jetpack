@@ -136,3 +136,11 @@ jetpack::Header_t jetpack::server::Server::createPacketHeader(
     header.nbrPayload = nbrPayload;
     return header;
 }
+
+jetpack::Payload_t jetpack::server::Server::createPayloadHeader(
+    u_int8_t dataCount, u_int8_t dataId) {
+    Payload_t payload;
+    payload.dataCount = dataCount;
+    payload.dataId = dataId;
+    return payload;
+}
