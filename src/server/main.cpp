@@ -10,11 +10,11 @@
 #include <memory>
 #include <thread>
 
-#include "../include/GameData.hpp"
-#include "./parsing/Parser.hpp"
 #include "Server.hpp"
+#include "include/GameData.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
+#include "parsing/Parser.hpp"
 
 void gameLoop(std::shared_ptr<GameData> gameData) {
     Game game(gameData);

@@ -54,27 +54,27 @@ void jetpack::server::Server::updateSockets() {
         if (_socketPollList[i].revents & POLLIN && i == 0) {
             std::string playerList = "player_list:";
             handleConnection();
-            for (size_t i = 0; i < _clients.size(); i++) {
-                playerList += std::to_string(_clients[i]->getId());
-                if (i < _clients.size() - 1) {
-                    playerList += ",";
-                }
-            }
+            // for (size_t i = 0; i < _clients.size(); i++) {
+            //     playerList += std::to_string(_clients[i]->getId());
+            //     if (i < _clients.size() - 1) {
+            //         playerList += ",";
+            //     }
+            // }
             _clients.back()->sendData(
                 createConnectionPacket(_clients.back()->getId(), 1000));
-            sendToAllClients(playerList);
+            // sendToAllClients(playerList);
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handleCommand(buffer)) {
-                sendToAllClients("disconnected:" +
-                                 std::to_string(_clients[i - 1]->getId()));
-                std::cout << "Player id:" << _clients[i - 1]->getId()
-                          << " disconnected" << std::endl;
+                // sendToAllClients("disconnected:" +
+                //                  std::to_string(_clients[i - 1]->getId()));
+                // std::cout << "Player id:" << _clients[i - 1]->getId()
+                //           << " disconnected" << std::endl;
                 handleDisconnection(i);
             } else {
-                sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
-                                 ":" + buffer);
+                // sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
+                //                  ":" + buffer);
             }
         }
     }
@@ -125,8 +125,8 @@ void jetpack::server::Server::handleConnection() {
     std::cout << inet_ntoa(client_addr.sin_addr) << ":"
               << ntohs(client_addr.sin_port)
               << " connected fd: " << client_socket << std::endl;
-    this->_clients.back()->_controlSocket.writeToSocket(
-        "id:" + std::to_string(this->_clients.back()->getId()));
+    // this->_clients.back()->_controlSocket.writeToSocket(
+    //    "id:" + std::to_string(this->_clients.back()->getId()));
 }
 
 jetpack::Header_t jetpack::server::Server::createPacketHeader(
@@ -166,5 +166,11 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 16));
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 8));
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian & 0xFF));
+    std::cout << "Packet created: " << std::endl;
+    for (const auto &byte : packet) {
+        std::cout << std::hex << std::uppercase << std::setw(2)
+                  << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cout << std::dec << std::endl;
     return packet;
 }
