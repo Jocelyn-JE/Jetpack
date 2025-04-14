@@ -48,13 +48,15 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
         + std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
-        std::cout << "Data: " << i << std::endl;
+        this->_logger.log("Data: " + std::to_string(i));
         msg = this->_socket.readFromSocket(sizeData);
+        std::stringstream ss;
         for (const auto &byte : msg) {
-            std::cout << std::hex << std::uppercase << std::setw(2)
-                      << std::setfill('0') << static_cast<int>(byte) << " ";
+            ss << std::hex << std::uppercase << std::setw(2)
+                << std::setfill('0') << static_cast<int>(byte) << " ";
+            ss << std::dec;
         }
-        std::cout << std::dec << std::endl;
+        this->_logger.log(ss.str());
         this->_handlePayload(msg, payload);
         msg.clear();
     }
@@ -68,7 +70,7 @@ void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
         value |= static_cast<size_t>(msg[1]) << 16;
         value |= static_cast<size_t>(msg[2]) << 8;
         value |= static_cast<size_t>(msg[3]);
-        std::cout << "Converted size_t value: " << ntohl(value) << std::endl;
+        this->_logger.log("Converted size_t value: " + std::to_string(ntohl(value)));
     }
 }
 
@@ -89,7 +91,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             struct pollfd pfd;
             pfd.fd = socketFd;
-            pfd.events = POLLIN | POLLOUT;
+            pfd.events = POLLIN;
             int pollResult = poll(&pfd, 1, 100);
 
             if (pollResult < 0) {
@@ -106,7 +108,6 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
                 try {
-                    std::cout << "DATA RECEIVED" << std::endl;
                     Header_t header{};
                     try {
                          header = getHeader(this->_logger, this->_socket);

@@ -91,13 +91,13 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
             + headerBuffer.size());
     }
     logger.log("Packet recieved: ");
+    std::stringstream ss;
     for (const auto &byte : headerBuffer) {
-        std::stringstream ss;
         ss << std::hex << std::uppercase << std::setw(2)
             << std::setfill('0') << static_cast<int>(byte) << " ";
         ss << std::dec;
-        logger.log(ss.str());
     }
+    logger.log(ss.str());
     jetpack::Header_t header {};
     uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
             static_cast<uint16_t>(headerBuffer[1]);
@@ -126,13 +126,13 @@ jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
             + payloadBuffer.size());
     }
     logger.log("Packet recieved: ");
+    std::stringstream ss;
     for (const auto &byte : payloadBuffer) {
-        std::stringstream ss;
         ss << std::hex << std::uppercase << std::setw(2)
             << std::setfill('0') << static_cast<int>(byte) << " ";
         ss << std::dec;
-        logger.log(ss.str());
     }
+    logger.log(ss.str());
     jetpack::Payload_t payload = {};
     uint16_t dataPayload =
         (static_cast<uint8_t>(payloadBuffer[0]) << 8)
