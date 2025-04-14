@@ -274,7 +274,8 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
                                   jetpack::Logger &logger)
     : _logger(logger),
       _graphic(this->_sendUserInteraction, this->_changeUsername,
-               this->_getUsername, this->_getIdWithAuth, this->_getIsConnectedWithAuth),
+               this->_getUsername, this->_getIdWithAuth,
+               this->_getIsConnectedWithAuth),
       _socket(AF_INET, SOCK_STREAM, 0) {
     this->_ip = ip;
     this->_port = port;

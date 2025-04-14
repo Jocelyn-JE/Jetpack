@@ -92,8 +92,7 @@ jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
     _changeUsername(changeUsername),
     _getUsername(getUsername),
     _authIsConnected(getIsConnectedWithAuth),
-    _authGetId(getIdWithAuth)
-{
+    _authGetId(getIdWithAuth) {
     if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
                                                    "MenuBackground.png")) {
         throw std::runtime_error(

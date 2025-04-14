@@ -131,7 +131,8 @@ jetpack::Client::Graphic::Graphic(
       _sendUserEvent(sendUserInteraction),
       _changeUsername(changeUsername),
       _getUsername(getUsername),
-      _menu(_changeUsername, _getUsername, getIdWithAuth, getIsConnectedWithAuth),
+      _menu(_changeUsername, _getUsername,
+        getIdWithAuth, getIsConnectedWithAuth),
       _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
