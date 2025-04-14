@@ -30,10 +30,6 @@ jetpack::server::Client::~Client() {
 
 unsigned int jetpack::server::Client::getId() const { return _id; }
 
-void jetpack::server::Client::sendData(std::string data) {
-    _controlSocket.writeToSocket(data);
-}
-
 bool jetpack::server::Client::handleCommand(std::string commandLine) {
     if (commandLine == "") {
         return clientDisconnect(*this);

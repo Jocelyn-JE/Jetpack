@@ -126,12 +126,6 @@ void jetpack::server::Server::handleConnection() {
         "id:" + std::to_string(this->_clients.back()->getId()));
 }
 
-void jetpack::server::Server::sendToAllClients(std::string data) {
-    for (size_t i = 0; i < this->_clients.size(); i++) {
-        this->_clients[i]->sendData(data);
-    }
-}
-
 jetpack::Header_t jetpack::server::Server::createPacketHeader(
     u_int8_t nbrPayload) {
     Header_t header;

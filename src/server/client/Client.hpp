@@ -26,7 +26,14 @@ class Client {
     Socket _controlSocket;
     // handleCommand returns true if the client should be disconnected
     bool handleCommand(std::string commandLine);
-    void sendData(std::string data);
+    template <typename T>
+    void sendData(T data) {
+        _controlSocket.writeToSocket(data);
+    }
+    template <typename T>
+    void sendData(std::vector<T> data) {
+        _controlSocket.writeToSocket(data);
+    }
     unsigned int getId() const;
 
  private:
