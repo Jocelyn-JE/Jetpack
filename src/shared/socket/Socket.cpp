@@ -7,6 +7,7 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <iostream>
 #include <string>
@@ -58,6 +59,11 @@ bool Socket::closesOnDestroy() const noexcept {
 }
 
 void Socket::closeSocket() noexcept(false) {
+    if (this->_socketFd == -1) {
+        std::cout << "Socket already closed on fd: " << this->_socketFd
+                  << std::endl;
+        return;
+    }
     if (close(this->_socketFd) == -1) {
         throw Socket::SocketError("Failed to close socket: " +
                                   std::string(strerror(errno)));
@@ -110,11 +116,34 @@ void Socket::connectSocket(const char *ip_address,
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = inet_addr(ip_address);
-    if (connect(this->_socketFd, (const struct sockaddr *)&address,
-                sizeof(address)) == -1) {
-        throw Socket::SocketError("Connect failed: " +
-                                  std::string(strerror(errno)));
+    int flags = fcntl(this->_socketFd, F_GETFL, 0);
+    bool is_nonblocking = (flags & O_NONBLOCK);
+    if (is_nonblocking) {
+        fcntl(this->_socketFd, F_SETFL, flags & ~O_NONBLOCK);
+        struct timeval tv;
+        tv.tv_sec = 3;
+        tv.tv_usec = 0;
+        setsockopt(this->_socketFd, SOL_SOCKET,
+            SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+        setsockopt(this->_socketFd, SOL_SOCKET,
+            SO_SNDTIMEO, (const char*)&tv, sizeof tv);
     }
+    int connect_result = connect(this->_socketFd,
+        (const struct sockaddr *)&address, sizeof(address));
+    if (is_nonblocking)
+        fcntl(this->_socketFd, F_SETFL, flags);
+    if (connect_result == -1) {
+        if (is_nonblocking && errno == EINPROGRESS) {
+            std::cout << "Connection in progress on fd: " <<
+                this->_socketFd << std::endl;
+            return;
+        }
+        throw Socket::SocketError("Connect failed to " +
+            std::string(ip_address) +
+            ":" + std::to_string(port) + " - " + std::string(strerror(errno)));
+    }
+    std::cout << "Successfully connected to " << ip_address << ":" <<
+        port << " on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::SocketError::SocketError(std::string message) noexcept {

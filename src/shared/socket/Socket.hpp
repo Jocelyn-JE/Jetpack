@@ -158,7 +158,7 @@ class Socket {
  private:
     // Whether the socket (fd) will be closed on destruction.
     bool _closeSocketOnDestruction;
-    int _socketFd;
+    int _socketFd = -1;
     struct sockaddr_in _address;
 };
 
