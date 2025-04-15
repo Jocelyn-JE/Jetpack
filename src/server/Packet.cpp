@@ -1,7 +1,15 @@
+/*
+** EPITECH PROJECT, 2025
+** Jetpack
+** File description:
+** Packet
+*/
+
 #include "Packet.hpp"
 
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 namespace jetpack::server {
 

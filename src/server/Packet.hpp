@@ -1,5 +1,12 @@
-#ifndef PACKET_HPP
-#define PACKET_HPP
+/*
+** EPITECH PROJECT, 2025
+** Jetpack
+** File description:
+** Packet
+*/
+
+#ifndef SRC_SERVER_PACKET_HPP_
+#define SRC_SERVER_PACKET_HPP_
 
 #include <netinet/in.h>
 
@@ -12,7 +19,7 @@ namespace jetpack::server {
 
 class Packet {
  public:
-    Packet(uint8_t nbrPayload);
+    explicit Packet(uint8_t nbrPayload);
     void addPayloadHeader(uint8_t dataCount, uint8_t dataId);
     void addData(uint32_t data);
     void addData(uint16_t data);
@@ -33,4 +40,4 @@ class Packet {
 
 }  // namespace jetpack::server
 
-#endif  // PACKET_HPP
+#endif  // SRC_SERVER_PACKET_HPP_
