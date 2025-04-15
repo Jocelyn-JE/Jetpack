@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <thread>
 
@@ -24,7 +25,7 @@ void Game::start(const std::string& mapFile) {
     }
     std::cerr << "Map loaded successfully" << std::endl;
 
-    //initNcursesMap();
+    // initNcursesMap();
     printServerData();
 }
 
@@ -72,7 +73,7 @@ void Game::gameLoop() {
 }
 
 void Game::update(float deltaTime) {
-    //std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
+    // std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
     {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
@@ -106,7 +107,7 @@ void Game::update(float deltaTime) {
     }
     pollInput();
     printServerData();
-    //displayNcursesMap();
+    // displayNcursesMap();
 }
 
 void Game::checkCollisions() {
@@ -274,8 +275,16 @@ void Game::displayNcursesMap() {
 
 void Game::addPlayer(const std::string& username) {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
-    int id = gameData->players.empty() ? 1 : gameData->players.rbegin()->first + 1;
+    int id =
+        gameData->players.empty() ? 1 : gameData->players.rbegin()->first + 1;
     auto player = std::make_shared<gameplayer_t>(id, username);
+    gameData->players[id] = player;
+}
+
+void Game::addPlayer(int id) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    auto player =
+        std::make_shared<gameplayer_t>(id, "Player" + std::to_string(id));
     gameData->players[id] = player;
 }
 
@@ -287,7 +296,8 @@ void Game::addPlayer(int id, const std::string& username) {
 
 void Game::delPlayer(const std::string& username) {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
-    for (auto it = gameData->players.begin(); it != gameData->players.end(); ++it) {
+    for (auto it = gameData->players.begin(); it != gameData->players.end();
+         ++it) {
         if (it->second->username == username) {
             gameData->players.erase(it);
             break;

@@ -62,12 +62,15 @@ void jetpack::server::Server::updateSockets() {
     std::string buffer;
 
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
-        if (_socketPollList[i].revents & POLLIN && i == 0)
+        if (_socketPollList[i].revents & POLLIN && i == 0) {
             this->handleConnection();
+            this->_game->addPlayer(_clients[i - 1]->getId());
+        }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handlePayload(buffer)) {
                 this->handleDisconnection(i);
+                this->_game->delPlayer(_clients[i - 1]->getId());
             } else {
                 // Data received from client, handle it here
                 std::cerr << "Payload received from client "
@@ -87,7 +90,6 @@ jetpack::server::Server::Server(Parser &parser)
       _gameData(std::make_shared<GameData>()),
       _game(std::make_shared<Game>(_gameData)) {
     parser.parseServerFlags(*_gameData);
-    _game->start(_gameData->filename);
     _serverSocket.bindSocket(_gameData->port);
     _serverSocket.listenSocket(LISTEN_BACKLOG);
     std::cerr << "Server started on port " << _gameData->port << std::endl;
