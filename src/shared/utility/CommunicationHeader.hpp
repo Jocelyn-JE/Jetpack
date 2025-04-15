@@ -31,21 +31,21 @@ enum PayloadType_t {
 
 union Header_t {
     struct {
-        u_int8_t magic1 : 6;
-        u_int8_t magic2 : 6;
-        u_int8_t nbrPayload : 4;
+        uint8_t magic1 : 6;
+        uint8_t magic2 : 6;
+        uint8_t nbrPayload : 4;
     };
 
-    u_int16_t rawData : 16;
+    uint16_t rawData : 16;
 };
 
 union Payload_t {
     struct {
-        u_int16_t dataCount : 10;
-        u_int8_t dataId : 6;
+        uint16_t dataCount : 10;
+        uint8_t dataId : 6;
     };
 
-    u_int16_t rawData : 16;
+    uint16_t rawData : 16;
 };
 };  // namespace jetpack
 

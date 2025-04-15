@@ -20,7 +20,7 @@ namespace jetpack::server {
 class Packet {
  public:
     explicit Packet(uint8_t nbrPayload);
-    void addPayloadHeader(uint8_t dataCount, uint8_t dataId);
+    void addPayloadHeader(uint16_t dataCount, uint8_t dataId);
     void addData(uint32_t data);
     void addData(uint16_t data);
     void addData(uint8_t data);
@@ -31,8 +31,8 @@ class Packet {
     void add(std::vector<uint16_t> data, PayloadType_t type);
     void add(std::vector<uint8_t> data, PayloadType_t type);
     const std::vector<uint8_t>& getPacket() const;
-    Payload_t createPayloadHeader(u_int8_t dataCount, u_int8_t dataId);
-    Header_t createPacketHeader(u_int8_t nbrPayload);
+    Payload_t createPayloadHeader(uint16_t dataCount, uint8_t dataId);
+    Header_t createPacketHeader(uint8_t nbrPayload);
 
  private:
     std::vector<uint8_t> _packet;

@@ -13,7 +13,7 @@
 
 namespace jetpack::server {
 
-Header_t Packet::createPacketHeader(u_int8_t nbrPayload) {
+Header_t Packet::createPacketHeader(uint8_t nbrPayload) {
     Header_t header;
     header.magic1 = 42;
     header.magic2 = 42;
@@ -21,7 +21,7 @@ Header_t Packet::createPacketHeader(u_int8_t nbrPayload) {
     return header;
 }
 
-Payload_t Packet::createPayloadHeader(u_int16_t dataCount, u_int8_t dataId) {
+Payload_t Packet::createPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload;
     payload.dataCount = dataCount;
     payload.dataId = dataId;
@@ -34,7 +34,7 @@ Packet::Packet(uint8_t nbrPayload) {
     _packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
 }
 
-void Packet::addPayloadHeader(uint8_t dataCount, uint8_t dataId) {
+void Packet::addPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     uint16_t payload = htons(createPayloadHeader(dataCount, dataId).rawData);
     _packet.push_back(static_cast<uint8_t>(payload >> 8));
     _packet.push_back(static_cast<uint8_t>(payload & 0xFF));
