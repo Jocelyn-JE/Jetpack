@@ -271,3 +271,36 @@ void Game::displayNcursesMap() {
     }
     refresh();  // Refresh the standard screen to show the text
 }
+
+void Game::addPlayer(const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    int id = gameData->players.empty() ? 1 : gameData->players.rbegin()->first + 1;
+    auto player = std::make_shared<gameplayer_t>(id, username);
+    gameData->players[id] = player;
+}
+
+void Game::addPlayer(int id, const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    auto player = std::make_shared<gameplayer_t>(id, username);
+    gameData->players[id] = player;
+}
+
+void Game::delPlayer(const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    for (auto it = gameData->players.begin(); it != gameData->players.end(); ++it) {
+        if (it->second->username == username) {
+            gameData->players.erase(it);
+            break;
+        }
+    }
+}
+
+void Game::delPlayer(int id) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    gameData->players.erase(id);
+}
+
+size_t Game::nbPlayer() const {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    return gameData->players.size();
+}

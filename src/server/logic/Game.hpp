@@ -41,4 +41,9 @@ class Game {
     void stop();
     void gameLoop();
     void displayNcursesMap();  // Display the current map
+    void addPlayer(const std::string& username);
+    void addPlayer(int id, const std::string& username);
+    void delPlayer(int id);
+    void delPlayer(const std::string& username);
+    size_t nbPlayer() const;
 };
