@@ -314,3 +314,7 @@ size_t Game::nbPlayer() const {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
     return gameData->players.size();
 }
+
+bool Game::isStarted() const {
+    return gameData->isRunning;
+}
