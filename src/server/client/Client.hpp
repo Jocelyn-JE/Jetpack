@@ -44,6 +44,7 @@ class Client {
     unsigned int getId() const;
 
  private:
+    bool closeAndDisconnect();
     unsigned int _id;
 };
 }  // namespace server
