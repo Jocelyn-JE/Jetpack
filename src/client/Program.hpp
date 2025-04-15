@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <utility>
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
@@ -22,15 +23,22 @@ namespace jetpack::Client {
 class Program {
  private:
     bool _isOpen = true;
-    const char *_ip;
+    std::string _ip;
     unsigned int _port;
+    bool _manualReco = false;
     std::thread _networkThread;
+    std::mutex _portIpMutex;
     std::mutex _communicationMutex;
     std::mutex _usernameMutex;
     std::mutex _userInteractionMutex;
     UserInteractions_s _lastUserInteraction =
         UserInteractions_s::NO_INTERACTION;
     bool _isChangeUsername = false;
+
+    Auth _auth;
+    jetpack::Logger &_logger;
+    Graphic _graphic;
+    Socket _socket;
 
     std::function<void(UserInteractions_s)> _sendUserInteraction =
         ([this](UserInteractions_s data) {
@@ -54,6 +62,23 @@ class Program {
         return data;
     });
 
+    std::function<std::pair<std::string, std::string>()> _getSocketSettings =
+        ([this]() -> std::pair<std::string, std::string> {
+        this->_portIpMutex.lock();
+        auto data = std::make_pair(this->_ip, std::to_string(this->_port));
+        this->_portIpMutex.unlock();
+        return data;
+    });
+
+    std::function<void(std::pair<std::string, int>)> _setSocketSettings =
+        ([this](std::pair<std::string, int> data) {
+            this->_portIpMutex.lock();
+            this->_manualReco = true;
+            this->_ip = data.first;
+            this->_port = data.second;
+            this->_portIpMutex.unlock();
+    });
+
     std::function<int()> _getIdWithAuth = ([this]() -> int {
         return this->_auth.getId();
     });
@@ -61,11 +86,6 @@ class Program {
     std::function<bool()> _getIsConnectedWithAuth = ([this]() -> bool {
         return this->_auth.isConnected();
     });
-
-    Auth _auth;
-    jetpack::Logger &_logger;
-    Graphic _graphic;
-    Socket _socket;
 
     void _setSize_tData(std::vector<unsigned char> msg);
 
