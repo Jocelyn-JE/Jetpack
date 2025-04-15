@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#ifndef SRC_CLIENT_PLAYER_PLAYER_HPP_
-#define SRC_CLIENT_PLAYER_PLAYER_HPP_
+#ifndef SRC_CLIENT_PLAYER_PLAYERGRAPHIC_HPP_
+#define SRC_CLIENT_PLAYER_PLAYERGRAPHIC_HPP_
 #include <mutex>
 #include <string>
 
@@ -51,4 +51,4 @@ class Player {
 
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_PLAYER_PLAYER_HPP_
+#endif  // SRC_CLIENT_PLAYER_PLAYERGRAPHIC_HPP_

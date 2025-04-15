@@ -79,7 +79,21 @@ class Program {
             this->_portIpMutex.unlock();
     });
 
+    std::function<int()> _getIdWithAuth = ([this]() -> int {
+        return this->_auth.getId();
+    });
+
+    std::function<bool()> _getIsConnectedWithAuth = ([this]() -> bool {
+        return this->_auth.isConnected();
+    });
+
     void _setSize_tData(std::vector<unsigned char> msg);
+
+    void _setPlayerData(std::vector<unsigned char> msg);
+
+    void _setCoinData(std::vector<unsigned char> msg);
+
+    void _setLaserData(std::vector<unsigned char> msg);
 
     void _getServerMessage();
 

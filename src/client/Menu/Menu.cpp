@@ -27,43 +27,6 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setFillColor(this->_menuButtonColor);
             }
         }
-        if (!this->_isUserNamePressed &&
-            this->_settingsButton.getGlobalBounds().contains(
-            static_cast<float>(event.mouseButton.x),
-            static_cast<float>(event.mouseButton.y))) {
-            if (this->_ip.empty() || this->_port.empty() ||
-                std::ranges::count(this->_ip, '.') != 3) {
-                return;
-            }
-            this->_isSettingsPressed = !this->_isSettingsPressed;
-            if (this->_isSettingsPressed) {
-                this->_settingsTextButton.setString("Close");
-                this->_settingsButton.setSize({105, 70});
-                this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
-            } else {
-                this->_sendSocketSettings({this->_ip,
-                    std::atoi(this->_port.c_str())});
-                this->_settingsTextButton.setString("Settings");
-                this->_settingsButton.setSize({140, 70});
-                this->_isPortSelected = false;
-                this->_isIpSelected = false;
-                this->_usernameButton.setFillColor(this->_menuButtonColor);
-            }
-        }
-        if (this->_isSettingsPressed &&
-            this->_ipField.getGlobalBounds().contains(
-            static_cast<float>(event.mouseButton.x),
-            static_cast<float>(event.mouseButton.y))) {
-            this->_isIpSelected = true;
-            this->_isPortSelected = false;
-        }
-        if (this->_isSettingsPressed &&
-            this->_portField.getGlobalBounds().contains(
-            static_cast<float>(event.mouseButton.x),
-            static_cast<float>(event.mouseButton.y))) {
-            this->_isIpSelected = false;
-            this->_isPortSelected = true;
-        }
     }
 }
 
@@ -73,6 +36,7 @@ void jetpack::Client::Menu::display(sf::RenderWindow &window) {
     else
         window.draw(this->_menuBackground, &this->_blurShader);
     window.draw(this->_menuCountdown);
+    window.draw(this->_menuIDText);
     window.draw(this->_serverStateText);
     window.draw(this->_usernameButton);
     window.draw(this->_usernameTextButton);
@@ -97,6 +61,14 @@ void jetpack::Client::Menu::display(sf::RenderWindow &window) {
 }
 
 void jetpack::Client::Menu::compute() {
+    if (this->_authIsConnected()) {
+        this->_menuIDText.setFillColor(this->_menuTextColor);
+        this->_menuIDText.setString("ID: " +
+            std::to_string(this->_authGetId()));
+    } else {
+        this->_menuIDText.setFillColor(sf::Color::Red);
+        this->_menuIDText.setString("ID: none");
+    }
     if (this->_isIpSelected)
         this->_ipField.setOutlineColor(sf::Color::Green);
     else
@@ -164,14 +136,16 @@ void jetpack::Client::Menu::setServerStateOk() {
 jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
     std::function<std::string()> &getUsername,
     std::function<std::pair<std::string, std::string>()> &getSocketSettings,
-    std::function<void(std::pair<std::string, int>)> &sendSocketSettings
+    std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
+    std::function<int()> &getIdWithAuth,
+    std::function<bool()> &getIsConnectedWithAuth
 ):
-_changeUsername(changeUsername),
-_getUsername(getUsername),
-_getSocketSettings(getSocketSettings),
-_sendSocketSettings(sendSocketSettings) {
-    this->_menuBackgroundTexture = sf::Texture();
-    this->_jetpackFont = sf::Font();
+    _changeUsername(changeUsername),
+    _getUsername(getUsername),
+    _authIsConnected(getIsConnectedWithAuth),
+    _authGetId(getIdWithAuth),
+    _getSocketSettings(getSocketSettings),
+    _sendSocketSettings(sendSocketSettings) {
     if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
                                                    "MenuBackground.png")) {
         throw std::runtime_error(
@@ -193,12 +167,6 @@ _sendSocketSettings(sendSocketSettings) {
     this->_menuButtonColor = sf::Color(255, 197, 84, 255);
     this->_menuButtonTextColor = sf::Color(219, 218, 214, 255);
     this->_menuUsernameBoxColor = sf::Color(255, 156, 58, 255);
-    this->_menuCountdown = sf::Text();
-    this->_usernameTextButton = sf::Text();
-    this->_usernameBoxContent = sf::Text();
-    this->_serverStateText = sf::Text();
-    this->_usernameButton = sf::RectangleShape();
-    this->_usernameBox = sf::RectangleShape();
 
     this->_menuCountdown.setFont(this->_jetpackFont);
     this->_menuCountdown.setString("2 Player Required");
@@ -207,6 +175,14 @@ _sendSocketSettings(sendSocketSettings) {
     this->_menuCountdown.setOutlineThickness(3);
     this->_menuCountdown.setOutlineColor(sf::Color::Black);
     this->_menuCountdown.setPosition({1120, 20});
+
+    this->_menuIDText.setFont(this->_jetpackFont);
+    this->_menuIDText.setString("ID: none");
+    this->_menuIDText.setCharacterSize(40);
+    this->_menuIDText.setFillColor(sf::Color::Red);
+    this->_menuIDText.setOutlineThickness(3);
+    this->_menuIDText.setOutlineColor(sf::Color::Black);
+    this->_menuIDText.setPosition({1300, 120});
 
     this->_serverStateText.setFont(this->_jetpackFont);
     this->_serverStateText.setString("Server: " + this->_serverStateString);

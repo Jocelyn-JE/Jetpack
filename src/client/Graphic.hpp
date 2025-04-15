@@ -14,11 +14,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Coin/Coin.hpp"
+#include "Coin/CoinGraphic.hpp"
 #include "Game/Game.hpp"
 #include "Laser/Laser.hpp"
 #include "Menu/Menu.hpp"
-#include "Player/Player.hpp"
+#include "Player/PlayerGraphic.hpp"
 #include "userInteractions.hpp"
 
 namespace jetpack::Client {
@@ -79,7 +79,9 @@ class Graphic {
         std::function<void(std::string)> &changeUsername,
         std::function<std::string()> &getUsername,
         std::function<std::pair<std::string, std::string>()> &getSocketSettings,
-        std::function<void(std::pair<std::string, int>)> &sendSocketSetting);
+        std::function<void(std::pair<std::string, int>)> &sendSocketSetting,
+        std::function<int()> &getIdWithAuth,
+        std::function<bool()> &getIsConnectedWithAuth);
 
     ~Graphic() = default;
 };

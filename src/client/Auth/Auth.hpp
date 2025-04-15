@@ -20,9 +20,9 @@ class Auth {
 
     void setUsername(std::string username);
 
-    bool isConnected() const;
+    bool isConnected();
 
-    int getId() const;
+    int getId();
 
     std::string getUsername() const;
 

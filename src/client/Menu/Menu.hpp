@@ -31,6 +31,7 @@ class Menu {
     sf::Sprite _menuBackground;
     sf::Shader _blurShader;
     sf::Text _menuCountdown;
+    sf::Text _menuIDText;
 
     sf::Text _usernameTextButton;
     sf::RectangleShape _usernameButton;
@@ -54,8 +55,11 @@ class Menu {
     std::string _serverStateString = "OK";
 
     void _handleMousePressed(const sf::Event &event);
+
     std::function<void(std::string)> &_changeUsername;
     std::function<std::string()> &_getUsername;
+    std::function<bool()> &_authIsConnected;
+    std::function<int()> &_authGetId;
     std::function<std::pair<std::string, std::string>()> &_getSocketSettings;
     std::function<void(std::pair<std::string, int>)> &_sendSocketSettings;
 
@@ -74,7 +78,9 @@ class Menu {
          std::function<std::string()> &getUsername,
          std::function<std::pair<std::string, std::string>()>
             &getSocketSettings,
-         std::function<void(std::pair<std::string, int>)> &sendSocketSettings);
+         std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
+         std::function<int()> &getIdWithAuth,
+         std::function<bool()> &getIsConnectedWithAuth);
 
     ~Menu() = default;
 };
