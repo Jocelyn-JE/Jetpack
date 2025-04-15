@@ -27,6 +27,36 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setFillColor(this->_menuButtonColor);
             }
         }
+        if (!this->_isUserNamePressed &&
+            this->_settingsButton.getGlobalBounds().contains(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y))) {
+            this->_isSettingsPressed = !this->_isSettingsPressed;
+            if (this->_isSettingsPressed) {
+                this->_settingsTextButton.setString("Close");
+                this->_settingsButton.setSize({105, 70});
+                this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
+            } else {
+                this->_sendSocketSettings({this->_ipBoxContent.getString(), std::stoi(this->_portBoxContent.getString().toAnsiString())});
+                this->_settingsTextButton.setString("Settings");
+                this->_settingsButton.setSize({140, 70});
+                this->_usernameButton.setFillColor(this->_menuButtonColor);
+            }
+        }
+        if (this->_isSettingsPressed &&
+            this->_ipField.getGlobalBounds().contains(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y))) {
+            this->_isIpSelected = true;
+            this->_isPortSelected = false;
+        }
+        if (this->_isSettingsPressed &&
+            this->_portField.getGlobalBounds().contains(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y))) {
+            this->_isPortSelected = true;
+            this->_isIpSelected = false;
+        }
     }
 }
 
