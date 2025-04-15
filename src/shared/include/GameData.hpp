@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "./include/GamePlayer.hpp"
 #include "Coin.hpp"
-#include "GamePlayer.hpp"
 #include "Obstacle.hpp"
 
 struct GameData {

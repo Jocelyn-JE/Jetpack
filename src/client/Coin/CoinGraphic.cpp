@@ -2,7 +2,7 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#include "Coin.hpp"
+#include "CoinGraphic.hpp"
 
 #include <iostream>
 

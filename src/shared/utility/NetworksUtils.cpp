@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Coin.hpp"
+#include "CommunicationHeader.hpp"
 #include "Exception.hpp"
 #include "Logger.hpp"
 #include "Obstacle.hpp"
@@ -79,7 +80,7 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     headerBuffer = socket.readFromSocket(2);
     if (headerBuffer.empty() ||
         headerBuffer == std::vector<unsigned char>(2, 0)) {
-        logger.log("Server disconnected");
+        logger.log("Header Error or Server disconnected");
         throw HeaderException("Incomplete Header size = 0");
     }
     if (headerBuffer.size() < 2) {
@@ -113,7 +114,7 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
 jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
     std::vector<unsigned char> payloadBuffer = socket.readFromSocket(2);
     if (payloadBuffer.empty()) {
-        logger.log("Server disconnected");
+        logger.log("Payload Error or Server disconnected");
         throw PayloadException("Incomplete Payload size = 0");
     }
     if (payloadBuffer.size() < 2) {

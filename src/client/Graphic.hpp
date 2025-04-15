@@ -14,11 +14,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Coin/Coin.hpp"
+#include "Coin/CoinGraphic.hpp"
 #include "Game/Game.hpp"
 #include "Laser/Laser.hpp"
 #include "Menu/Menu.hpp"
-#include "Player/Player.hpp"
+#include "Player/PlayerGraphic.hpp"
 #include "userInteractions.hpp"
 
 namespace jetpack::Client {
@@ -27,7 +27,7 @@ class Graphic {
     enum WindowType { GAME, MENU, TYPE_COUNT };
 
     WindowType _windowType;
-    size_t _gameSpeed;
+    size_t _gameSpeed = 0;
 
     sf::RenderWindow _window;
     std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> >
@@ -37,9 +37,6 @@ class Graphic {
     std::map<unsigned int, std::pair<std::unique_ptr<Laser>, sf::Vector2f> >
         _listLasers;
     std::mutex _posMutex;
-    std::function<void(UserInteractions_s)> &_sendUserEvent;
-    std::function<void(std::string)> &_changeUsername;
-    std::function<std::string()> &_getUsername;
 
     Menu _menu;
     Game _game;
@@ -80,7 +77,11 @@ class Graphic {
     explicit Graphic(
         std::function<void(UserInteractions_s)> &sendUserInteraction,
         std::function<void(std::string)> &changeUsername,
-        std::function<std::string()> &getUsername);
+        std::function<std::string()> &getUsername,
+        std::function<std::pair<std::string, std::string>()> &getSocketSettings,
+        std::function<void(std::pair<std::string, int>)> &sendSocketSetting,
+        std::function<int()> &getIdWithAuth,
+        std::function<bool()> &getIsConnectedWithAuth);
 
     ~Graphic() = default;
 };
