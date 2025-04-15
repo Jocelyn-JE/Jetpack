@@ -86,22 +86,28 @@ void jetpack::Client::Graphic::setGameSpeed(size_t value) {
 
 void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
                                             bool isTransparent) {
+    this->_posMutex.lock();
     if (!this->_listPlayers.contains(id))
         this->_listPlayers.emplace(
             id, std::make_pair(std::make_unique<Player>(isTransparent),
                                sf::Vector2f(0, 0)));
+    this->_posMutex.unlock();
 }
 
 void jetpack::Client::Graphic::addNewCoin(unsigned int id) {
+    this->_posMutex.lock();
     if (!this->_listCoins.contains(id))
         this->_listCoins.emplace(
             id, std::make_pair(std::make_unique<Coin>(), sf::Vector2f(0, 0)));
+    this->_posMutex.unlock();
 }
 
 void jetpack::Client::Graphic::addNewLaser(unsigned int id) {
+    this->_posMutex.lock();
     if (!this->_listLasers.contains(id))
         this->_listLasers.emplace(
             id, std::make_pair(std::make_unique<Laser>(), sf::Vector2f(0, 0)));
+    this->_posMutex.unlock();
 }
 
 void jetpack::Client::Graphic::switchToGame() { this->_windowType = GAME; }
