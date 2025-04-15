@@ -24,7 +24,7 @@ void Game::start(const std::string& mapFile) {
     }
     std::cerr << "Map loaded successfully" << std::endl;
 
-    initNcursesMap();
+    //initNcursesMap();
     printServerData();
 }
 
@@ -72,7 +72,7 @@ void Game::gameLoop() {
 }
 
 void Game::update(float deltaTime) {
-    std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
+    //std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
     {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
@@ -106,7 +106,7 @@ void Game::update(float deltaTime) {
     }
     pollInput();
     printServerData();
-    displayNcursesMap();
+    //displayNcursesMap();
 }
 
 void Game::checkCollisions() {
@@ -203,7 +203,7 @@ void Game::printServerData() const {
     //               << obstacle->y_pos << ")" << std::endl;
     // }
 
-    std::cerr << "\n=================" << std::endl;
+    // std::cerr << "\n=================" << std::endl;
 }
 
 void Game::initNcursesMap() {
