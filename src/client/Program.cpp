@@ -194,7 +194,7 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
         + std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
-        this->_logger.log("Data: " + std::to_string(i));
+        this->_logger.log("Payload n°: " + std::to_string(i));
         msg = this->_socket.readFromSocket(sizeData);
         std::stringstream ss;
         for (const auto &byte : msg) {
