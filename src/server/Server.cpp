@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "CommunicationHeader.hpp"
+#include "Packet.hpp"
 #include "Server.hpp"
 #include "Socket.hpp"
 
@@ -131,60 +132,24 @@ void jetpack::server::Server::handleConnection() {
         this->createConnectionPacket(_clients.back()->getId(), 1000));
 }
 
-jetpack::Header_t jetpack::server::Server::createPacketHeader(
-    u_int8_t nbrPayload) {
-    Header_t header;
-    header.magic1 = 42;
-    header.magic2 = 42;
-    header.nbrPayload = nbrPayload;
-    return header;
-}
-
-jetpack::Payload_t jetpack::server::Server::createPayloadHeader(
-    u_int8_t dataCount, u_int8_t dataId) {
-    Payload_t payload;
-    payload.dataCount = dataCount;
-    payload.dataId = dataId;
-    return payload;
-}
-
 std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     size_t id, size_t gameSpeed) {
-    std::vector<uint8_t> packet;
-    uint16_t headerBigEndian = htons(createPacketHeader(1).rawData);
-    uint16_t payloadBigEndian = htons(createPayloadHeader(2, 2).rawData);
-    size_t idBigEndian = htonl(id);
-    size_t gameSpeedBigEndian = htonl(gameSpeed);
+    jetpack::server::Packet packet(1);
+    packet.add(std::vector<uint32_t>{static_cast<uint32_t>(id),
+                                     static_cast<uint32_t>(gameSpeed)},
+               PayloadType_t::SIZE_T);
 
-    packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
-    packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
-    packet.push_back(static_cast<uint8_t>(idBigEndian >> 24));
-    packet.push_back(static_cast<uint8_t>(idBigEndian >> 16));
-    packet.push_back(static_cast<uint8_t>(idBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(idBigEndian & 0xFF));
-    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 24));
-    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 16));
-    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian & 0xFF));
+    const auto &packetData = packet.getPacket();
     std::cerr << "Packet created: " << std::endl;
-    for (const auto &byte : packet) {
+    for (const auto &byte : packetData) {
         std::cerr << std::hex << std::uppercase << std::setw(2)
                   << std::setfill('0') << static_cast<int>(byte) << " ";
     }
     std::cerr << std::dec << std::endl;
-    return packet;
+    return packetData;
 }
 
 std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
-    std::vector<uint8_t> packet;
-    uint16_t headerBigEndian = htons(createPacketHeader(1).rawData);
-    uint16_t payloadBigEndian = htons(createPayloadHeader(0, 14).rawData);
-
-    packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
-    packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));
-    packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
-    return packet;
+    jetpack::server::Packet packet(1);
+    return packet.getPacket();
 }

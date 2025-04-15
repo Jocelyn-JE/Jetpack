@@ -4,19 +4,22 @@
 
 #include "Graphic.hpp"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "Program.hpp"
 
 void jetpack::Client::Graphic::display() {
     this->_window.clear();
-    if (this->_windowType == MENU) {
-        this->_menu.display(this->_window);
-    }
+    if (this->_windowType == MENU) this->_menu.display(this->_window);
     if (this->_windowType == GAME) {
-        for (auto &s : this->_listPlayers) {
-            this->_window.draw(s.second.first);
-        }
+        this->_game.display(this->_window);
+        for (auto &s : this->_listPlayers)
+            s.second.first->display(this->_window);
+        for (auto &s : this->_listCoins) s.second.first->display(this->_window);
+        for (auto &s : this->_listLasers)
+            s.second.first->display(this->_window);
     }
     this->_window.display();
 }
@@ -24,67 +27,81 @@ void jetpack::Client::Graphic::display() {
 void jetpack::Client::Graphic::compute() {
     this->_posMutex.lock();
     if (this->_windowType == MENU) {
-        // TODO(noa) : add menu
+        this->_menu.compute();
     }
     if (this->_windowType == GAME) {
+        this->_game.compute();
         for (auto &s : this->_listPlayers) {
-            s.second.first.setPosition(s.second.second);
+            s.second.first->compute();
+            if (s.second.first->isHost())
+                this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
+        }
+        for (auto &s : this->_listCoins) {
+            s.second.first->compute();
+        }
+        for (auto &s : this->_listLasers) {
+            s.second.first->compute();
         }
     }
     this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setPosRectangle(unsigned int id,
-                                               sf::Vector2f pos) {
+void jetpack::Client::Graphic::setPosPlayer(unsigned int id, sf::Vector2f pos) {
     this->_posMutex.lock();
-    for (auto s : this->_listPlayers) this->_listPlayers.at(id).second = pos;
+    this->_listPlayers.at(id).second = pos;
+    this->_listPlayers.at(id).first->changePosValue(pos);
     this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setUsername(const std::string &name) {
+void jetpack::Client::Graphic::setPosCoin(unsigned int id, sf::Vector2f pos) {
     this->_posMutex.lock();
-    this->_menu.setUsername(name);
+    this->_listCoins.at(id).second = pos;
+    this->_listCoins.at(id).first->changePosValue(pos);
     this->_posMutex.unlock();
 }
 
-std::string jetpack::Client::Graphic::getUsername() {
+void jetpack::Client::Graphic::setPosLaser(unsigned int id, sf::Vector2f pos) {
     this->_posMutex.lock();
-    auto data = this->_menu.getUsername();
+    this->_listLasers.at(id).second = pos;
+    this->_listLasers.at(id).first->changePosValue(pos);
     this->_posMutex.unlock();
-    return data;
-}
-
-void jetpack::Client::Graphic::_handleKeyPressed(const sf::Event &event) {
-    // TODO(noa) : A mettre dans le analyze Game
-    if (event.key.code == sf::Keyboard::Up) {
-        this->_sendUserEvent(UserInteractions_s::UP);
-    }
-    // TODO(noa) : demander les autres interaction possible entre le
-    // server et le client
-    if (event.key.code == sf::Keyboard::Escape) {
-        this->_sendUserEvent(UserInteractions_s::ESCAPE);
-    }
 }
 
 void jetpack::Client::Graphic::analyse() {
     sf::Event event{};
     while (this->_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) this->_window.close();
-        if (event.type == sf::Event::KeyPressed) this->_handleKeyPressed(event);
-        if (this->_windowType == MENU) this->_menu.analyze(event);
+        if (this->_windowType == MENU)
+            this->_menu.analyze(event);
+        else
+            this->_game.analyze(event);
     }
 }
 
-void jetpack::Client::Graphic::addNewPlayer(unsigned int id, bool isCurrent) {
-    (void)isCurrent;
-    // Is current == is the player that is playing
-    if (!this->_listPlayers.contains(id)) {
-        sf::RectangleShape rect;
-        rect.setSize({50.0f, 50.0f});
-        rect.setFillColor(sf::Color::Red);
-        sf::Vector2f pos = rect.getPosition();
-        this->_listPlayers.insert({id, {rect, pos}});
-    }
+void jetpack::Client::Graphic::setGameSpeed(size_t value) {
+    this->_posMutex.lock();
+    this->_gameSpeed = value;
+    this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
+                                            bool isTransparent) {
+    if (!this->_listPlayers.contains(id))
+        this->_listPlayers.emplace(
+            id, std::make_pair(std::make_unique<Player>(isTransparent),
+                               sf::Vector2f(0, 0)));
+}
+
+void jetpack::Client::Graphic::addNewCoin(unsigned int id) {
+    if (!this->_listCoins.contains(id))
+        this->_listCoins.emplace(
+            id, std::make_pair(std::make_unique<Coin>(), sf::Vector2f(0, 0)));
+}
+
+void jetpack::Client::Graphic::addNewLaser(unsigned int id) {
+    if (!this->_listLasers.contains(id))
+        this->_listLasers.emplace(
+            id, std::make_pair(std::make_unique<Laser>(), sf::Vector2f(0, 0)));
 }
 
 void jetpack::Client::Graphic::switchToGame() { this->_windowType = GAME; }
@@ -105,12 +122,28 @@ void jetpack::Client::Graphic::serverOK() {
 
 jetpack::Client::Graphic::Graphic(
     std::function<void(UserInteractions_s)> &sendUserInteraction,
-    std::function<void()> &sendChangeUserName)
+    std::function<void(std::string)> &changeUsername,
+    std::function<std::string()> &getUsername)
     : _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
               sf::Style::Close | sf::Style::Titlebar),
       _sendUserEvent(sendUserInteraction),
-      _sendChangeUserName(sendChangeUserName),
-      _menu(sendChangeUserName) {
+      _changeUsername(changeUsername),
+      _getUsername(getUsername),
+      _menu(_changeUsername, _getUsername),
+      _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
+    // Simulation de deux joueurs avec deux piece et deux laser
+    this->addNewPlayer(1, false);
+    this->addNewPlayer(2, true);
+    this->addNewCoin(1);
+    this->addNewCoin(2);
+    this->addNewLaser(1);
+    this->addNewLaser(2);
+    this->setPosCoin(1, {1000, 400});
+    this->setPosCoin(2, {1050, 400});
+    this->setPosPlayer(1, {10, 400});
+    this->setPosPlayer(2, {10, 200});
+    this->setPosLaser(1, {500, 400});
+    this->setPosLaser(2, {200, 200});
 }

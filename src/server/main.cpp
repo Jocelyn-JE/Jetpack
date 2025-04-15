@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);
 
     try {
-        //parser.parseServerFlags(*gameData);
+        // parser.parseServerFlags(*gameData);
     } catch (const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
         std::cerr << parser.getServerUsage() << std::endl;

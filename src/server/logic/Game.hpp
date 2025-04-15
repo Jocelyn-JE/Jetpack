@@ -33,8 +33,8 @@ class Game {
     void printServerData() const;
     void initNcursesMap();  // Initialize ncurses map
     void pollInput();       // Poll for user input to control the jetpack
-    
-    public:
+
+ public:
     void update(float deltaTime);
     explicit Game(std::shared_ptr<GameData> data);
     void start(const std::string& mapFile);

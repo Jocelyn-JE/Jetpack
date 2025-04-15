@@ -6,8 +6,7 @@
 
 #include <string>
 
-namespace jetpack::Client {
-void Menu::_handleMousePressed(const sf::Event &event) {
+void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
         if (this->_usernameButton.getGlobalBounds().contains(
                 static_cast<float>(event.mouseButton.x),
@@ -17,7 +16,9 @@ void Menu::_handleMousePressed(const sf::Event &event) {
                 this->_usernameTextButton.setString("Close");
                 this->_usernameButton.setSize({105, 70});
             } else {
-                if (!this->_username.empty()) this->_sendChangeUserName();
+                if (!this->_username.empty() &&
+                    this->_getUsername() != this->_username)
+                    this->_changeUsername(this->_username);
                 this->_usernameTextButton.setString("Change Username");
                 this->_usernameButton.setSize({250, 70});
             }
@@ -25,7 +26,7 @@ void Menu::_handleMousePressed(const sf::Event &event) {
     }
 }
 
-void Menu::display(sf::RenderWindow &window) {
+void jetpack::Client::Menu::display(sf::RenderWindow &window) {
     if (!this->_isUserNamePressed)
         window.draw(this->_menuBackground);
     else
@@ -42,9 +43,9 @@ void Menu::display(sf::RenderWindow &window) {
     }
 }
 
-void Menu::compute() {}
+void jetpack::Client::Menu::compute() {}
 
-void Menu::analyze(const sf::Event &event) {
+void jetpack::Client::Menu::analyze(const sf::Event &event) {
     if (event.type == sf::Event::MouseButtonPressed)
         this->_handleMousePressed(event);
     if (event.type == sf::Event::TextEntered && this->_isUserNamePressed) {
@@ -57,9 +58,7 @@ void Menu::analyze(const sf::Event &event) {
     }
 }
 
-std::string Menu::getUsername() const { return this->_username; }
-
-void Menu::setServerStateError() {
+void jetpack::Client::Menu::setServerStateError() {
     this->_serverStateString = "KO";
     this->_serverStateText.setFillColor(sf::Color::Red);
     this->_serverStateText.setOutlineColor(sf::Color::Black);
@@ -67,7 +66,7 @@ void Menu::setServerStateError() {
     this->_serverStateText.setString("Server: " + this->_serverStateString);
 }
 
-void Menu::setServerStateOk() {
+void jetpack::Client::Menu::setServerStateOk() {
     this->_serverStateString = "OK";
     this->_serverStateText.setFillColor(this->_menuTextColor);
     this->_serverStateText.setOutlineColor(sf::Color::Black);
@@ -75,28 +74,27 @@ void Menu::setServerStateOk() {
     this->_serverStateText.setString("Server: " + this->_serverStateString);
 }
 
-void Menu::setUsername(const std::string &name) {
-    this->_username = name;
-    this->_usernameBoxContent.setString(this->_username);
-}
-
-Menu::Menu(std::function<void()> &sendChangeUserName)
-: _sendChangeUserName(sendChangeUserName) {
+jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
+                            std::function<std::string()> &getUsername)
+    : _changeUsername(changeUsername), _getUsername(getUsername) {
     this->_menuBackgroundTexture = sf::Texture();
     this->_jetpackFont = sf::Font();
-    if (!this->_menuBackgroundTexture.loadFromFile(
-            "src/client/assets/MenuBackground.png")) {
+    if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
+                                                   "MenuBackground.png")) {
         throw std::runtime_error(
             "Erreur : Impossible de charger MenuBackground.png");
     }
     if (!this->_blurShader.loadFromFile("src/client/assets/blur.frag",
                                         sf::Shader::Fragment)) {
         throw std::runtime_error(
-            "Erreur : Impossible de charger le shader blur.frag");
+            "Erreur : Impossible de charger"
+            " le shader blur.frag");
     }
-    if (!this->_jetpackFont.loadFromFile("src/client/assets/JetpackFont.ttf")) {
+    if (!this->_jetpackFont.loadFromFile("src/client/assets/"
+                                         "JetpackFont.ttf")) {
         throw std::runtime_error(
-            "Erreur : Impossible de charger la police JetpackFont.ttf");
+            "Erreur : Impossible de charger la police"
+            " JetpackFont.ttf");
     }
     this->_menuTextColor = sf::Color(255, 197, 84, 255);
     this->_menuButtonColor = sf::Color(255, 197, 84, 255);
@@ -176,5 +174,3 @@ Menu::Menu(std::function<void()> &sendChangeUserName)
 
     this->_menuBackground = sf::Sprite(this->_menuBackgroundTexture);
 }
-
-}  // namespace jetpack::Client

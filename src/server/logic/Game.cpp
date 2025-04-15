@@ -8,8 +8,7 @@
 
 #include "../parsing/Parser.hpp"
 
-Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr)
-{
+Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr) {
     std::cerr << "Game constructor called" << std::endl;
 }
 
@@ -93,9 +92,10 @@ void Game::update(float deltaTime) {
                 player->velocity = VMAX;
             }
             player->y_pos += player->velocity * deltaTime;
-            std::cerr << "Player " << player->username
-                      << " position: " << player->y_pos
-                      << " velocity: " << player->velocity << std::endl;
+            /*             std::cerr << "Player " << player->username
+                                  << " position: " << player->y_pos
+                                  << " velocity: " << player->velocity <<
+               std::endl; */
             if (player->y_pos < 0.0) {
                 player->y_pos = 0.0;
             } else if (player->y_pos > 8.0) {
@@ -115,15 +115,16 @@ void Game::checkCollisions() {
 
         for (auto it = gameData->coins.begin(); it != gameData->coins.end();) {
             auto& coin = *it;
-            if (static_cast<double>(coin->y_pos) <= player->y_pos + 1.0f
-            && (static_cast<double>(coin->y_pos) + 1.0f >= player->y_pos)
-            && (static_cast<double>(coin->x_pos) <= gameData->advancement + 1.0f)
-            && (static_cast<double>(coin->x_pos) + 1.0f >= gameData->advancement)
-            )   {
-                std::cerr << "Player " << player->username
-                          << " collected a "
-                             "coin!"
-                          << std::endl;
+            if (static_cast<double>(coin->y_pos) <= player->y_pos + 1.0f &&
+                (static_cast<double>(coin->y_pos) + 1.0f >= player->y_pos) &&
+                (static_cast<double>(coin->x_pos) <=
+                 gameData->advancement + 1.0f) &&
+                (static_cast<double>(coin->x_pos) + 1.0f >=
+                 gameData->advancement)) {
+                /*                 std::cerr << "Player " << player->username
+                                          << " collected a "
+                                             "coin!"
+                                          << std::endl; */
                 player->coins_collected++;
                 it = gameData->coins.erase(it);
             } else {
@@ -132,15 +133,19 @@ void Game::checkCollisions() {
         }
 
         for (const auto& obstacle : gameData->obstacles) {
-            if (static_cast<double>(obstacle->y_pos) + 1.0f >= player->y_pos
-            && (static_cast<double>(obstacle->y_pos) <= player->y_pos + 1.0f)
-            && (static_cast<double>(obstacle->x_pos) <= gameData->advancement + 1.0f)
-            && (static_cast<double>(obstacle->x_pos) + 1.0f >= gameData->advancement)
-            )   {
-                std::cerr << "Player " << player->username
-                          << " collided with an obstacle! player y: "
-                          << player->y_pos << " obstacle y: " << obstacle->y_pos
-                          << std::endl;
+            if (static_cast<double>(obstacle->y_pos) + 1.0f >= player->y_pos &&
+                (static_cast<double>(obstacle->y_pos) <=
+                 player->y_pos + 1.0f) &&
+                (static_cast<double>(obstacle->x_pos) <=
+                 gameData->advancement + 1.0f) &&
+                (static_cast<double>(obstacle->x_pos) + 1.0f >=
+                 gameData->advancement)) {
+                /*                 std::cerr << "Player " << player->username
+                                          << " collided with an obstacle! player
+                   y: "
+                                          << player->y_pos << " obstacle y: " <<
+                   obstacle->y_pos
+                                          << std::endl; */
                 player->is_dead = true;
                 break;
             }
@@ -165,21 +170,22 @@ bool Game::loadMap(const std::string& filename) {
 void Game::printServerData() const {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
-    std::cerr << "\n=== Server Data ===" << std::endl;
+    /*     std::cerr << "\n=== Server Data ===" << std::endl;
 
-    std::cerr << "Advancement: " << gameData->advancement << std::endl;
-    std::cerr << "Game Speed: " << gameData->gameSpeed << std::endl;
+        std::cerr << "Advancement: " << gameData->advancement << std::endl;
+        std::cerr << "Game Speed: " << gameData->gameSpeed << std::endl;
 
-    // DEBUUG Print Players
-    std::cerr << "\nPlayers (" << gameData->players.size() << "):" << std::endl;
-    for (const auto& [id, player] : gameData->players) {
-        std::cerr << "Player ID: " << id << "\n  Username: " << player->username
-                  << "\n  Position Y: " << player->y_pos
-                  << "\n  Coins: " << player->coins_collected
-                  << "\n  Status: " << (player->is_dead ? "Dead" : "Alive")
-                  << "\n  Jetpack: " << (player->is_jetpack_on ? "On" : "Off")
-                  << std::endl;
-    }
+        // DEBUUG Print Players
+        std::cerr << "\nPlayers (" << gameData->players.size() << "):" <<
+       std::endl; for (const auto& [id, player] : gameData->players) { std::cerr
+       << "Player ID: " << id << "\n  Username: " << player->username
+                      << "\n  Position Y: " << player->y_pos
+                      << "\n  Coins: " << player->coins_collected
+                      << "\n  Status: " << (player->is_dead ? "Dead" : "Alive")
+                      << "\n  Jetpack: " << (player->is_jetpack_on ? "On" :
+       "Off")
+                      << std::endl;
+        } */
 
     //// Print Coins
     // std::cerr << "\nCoins (" << gameData->coins.size() << "):" << std::endl;

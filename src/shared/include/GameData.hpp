@@ -15,7 +15,7 @@ struct GameData {
     std::vector<std::shared_ptr<coinsPos_t>> coins;
     std::vector<std::shared_ptr<obstacle_t>> obstacles;
     double advancement = 0;
-    size_t gameSpeed = 1000;
+    size_t gameSpeed = 500;
     bool isRunning;
     bool debug;
     int port;

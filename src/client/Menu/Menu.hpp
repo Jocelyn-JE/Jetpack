@@ -35,13 +35,10 @@ class Menu {
     std::string _serverStateString = "OK";
 
     void _handleMousePressed(const sf::Event &event);
-    std::function<void()> _sendChangeUserName;
+    std::function<void(std::string)> _changeUsername;
+    std::function<std::string()> _getUsername;
 
  public:
-    void setUsername(const std::string &data);
-
-    std::string getUsername() const;
-
     void setServerStateError();
 
     void setServerStateOk();
@@ -52,7 +49,8 @@ class Menu {
 
     void analyze(const sf::Event &event);
 
-    explicit Menu(std::function<void()> &sendChangeUserName);
+    Menu(std::function<void(std::string)> &changeUsername,
+         std::function<std::string()> &getUsername);
 
     ~Menu() = default;
 };

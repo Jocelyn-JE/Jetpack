@@ -15,9 +15,8 @@
 #include "Client.hpp"
 #include "CommunicationHeader.hpp"
 #include "PollFdList.hpp"
-#include "Socket.hpp"
-
 #include "Server.hpp"
+#include "Socket.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
 #include "parsing/Parser.hpp"
@@ -54,8 +53,7 @@ class Server {
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
-    jetpack::Header_t createPacketHeader(u_int8_t nbrPayload);
-    jetpack::Payload_t createPayloadHeader(u_int8_t dataCount, u_int8_t dataId);
+
     std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
     std::vector<uint8_t> createStartGamePacket(void);
     std::vector<std::unique_ptr<Client>> _clients;

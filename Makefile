@@ -27,6 +27,7 @@ SERVER_SRC			=	./src/server/client/Client.cpp						\
 						./src/server/logic/Game.cpp							\
 						./src/server/logic/GameServer.cpp					\
 						./src/server/logic/Clock.cpp						\
+						./src/server/Packet.cpp								\
 
 SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
@@ -39,8 +40,14 @@ MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
 CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Menu/Menu.cpp							\
+						./src/client/Game/Game.cpp							\
 						./src/client/Program.cpp							\
+						./src/client/Auth/Auth.cpp							\
 						./src/client/Parser/ClientParser.cpp				\
+						./src/client/Player/Player.cpp						\
+						./src/client/Coin/Coin.cpp							\
+						./src/client/CoinStats/CoinStats.cpp				\
+						./src/client/Laser/Laser.cpp						\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
@@ -50,6 +57,9 @@ MAIN_CLIENT_OBJ		=	$(MAIN_CLIENT_SRC:.cpp=.o)
 # Library files ---------------------------------------------------------------
 LIB_SRC				=	./src/shared/utility/splitString.cpp				\
 						./src/shared/utility/isNumber.cpp					\
+						./src/shared/sfml/Sprite.cpp						\
+						./src/shared/sfml/SpriteSheet.cpp					\
+						./src/shared/utility/NetworksUtils.cpp				\
 
 LIB_OBJ				=	$(LIB_SRC:.cpp=.o)
 
@@ -62,8 +72,10 @@ TESTS_SRC			=
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client  -I ./src/shared/include		\
-						-I ./src/server/include -I ./src/server				\
+						-I ./src/server/include								\
+						-I ./src/shared/sfml -I ./src/server				\
 						-I ./src/client		    -I ./src/shared				\
+						-I ./src/server										\
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g  -lstdc++
