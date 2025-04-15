@@ -13,8 +13,11 @@
 #include <string>
 #include <vector>
 
+#include "Coin.hpp"
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
+#include "Obstacle.hpp"
+#include "Player.hpp"
 #include "Program.hpp"
 #include "lib.hpp"
 
@@ -41,6 +44,89 @@ void jetpack::Client::Program::_setSize_tData(std::vector<unsigned char> msg) {
     }
 }
 
+void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
+    if (msg.size() < sizeof(player_t)) {
+        this->_logger.log("Invalid player data size: " +
+                          std::to_string(msg.size()));
+        return;
+    }
+    player_t player;
+    uint32_t idInt = (msg[0] << 24) | (msg[1] << 16) | (msg[2] << 8) | msg[3];
+    player.id = ntohl(idInt);
+    std::string username;
+    for (int i = 0; i < 20; i++) {
+        if (msg[4 + i] != 0)
+            username += static_cast<char>(msg[4 + i]);
+        else
+            break;
+    }
+    std::strncpy(player.username, username.c_str(),
+                 sizeof(player.username) - 1);
+    player.username[sizeof(player.username) - 1] = '\0';
+    uint32_t yPosInt =
+        (msg[24] << 24) | (msg[25] << 16) | (msg[26] << 8) | msg[27];
+    player.y_pos = ntohl(yPosInt);
+    uint32_t coinsInt =
+        (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
+    player.coins_collected = ntohl(coinsInt);
+    player.is_dead = msg[32] != 0;
+    player.is_jetpack_on = msg[33] != 0;
+    player.host = msg[34] != 0;
+    this->_logger.log("Player ID: " + std::to_string(player.id));
+    this->_logger.log("Player Username: " + std::string(player.username));
+    this->_logger.log("Player Y Position: " + std::to_string(player.y_pos));
+    this->_logger.log("Player Coins: " +
+                      std::to_string(player.coins_collected));
+    this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
+    this->_graphic.setPosPlayer(player.id, sf::Vector2f(0, player.y_pos));
+}
+
+void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
+    if (msg.size() < sizeof(coinsPos_s)) {
+        this->_logger.log("Invalid coin data size: " +
+                          std::to_string(msg.size()));
+        return;
+    }
+    coinsPos_s coin;
+    uint32_t xPosInt = (msg[0] << 24) | (msg[1] << 16) | (msg[2] << 8) | msg[3];
+    coin.x_pos = ntohl(xPosInt);
+    uint32_t yPosInt = (msg[4] << 24) | (msg[5] << 16) | (msg[6] << 8) | msg[7];
+    coin.y_pos = ntohl(yPosInt);
+    coin.coinId = (msg[8] << 24) | (msg[9] << 16) | (msg[10] << 8) | msg[11];
+    coin.coinId = ntohl(coin.coinId);
+    this->_logger.log("Coin Position: X=" + std::to_string(coin.x_pos) +
+                      ", Y=" + std::to_string(coin.y_pos));
+    this->_logger.log("Coin ID: " + std::to_string(coin.coinId));
+    this->_graphic.addNewCoin(coin.coinId);
+    this->_graphic.setPosCoin(coin.coinId,
+                              sf::Vector2f(coin.x_pos, coin.y_pos));
+}
+
+void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
+    if (msg.size() < sizeof(obstacle_t)) {
+        this->_logger.log("Invalid obstacle data size: " +
+                          std::to_string(msg.size()));
+        return;
+    }
+    obstacle_t obstacle;
+    uint32_t xPosInt = (msg[0] << 24) | (msg[1] << 16) | (msg[2] << 8) | msg[3];
+    obstacle.x_pos = ntohl(xPosInt);
+    uint32_t yPosInt = (msg[4] << 24) | (msg[5] << 16) | (msg[6] << 8) | msg[7];
+    obstacle.y_pos = ntohl(yPosInt);
+    int obstacleId = 0;
+    if (msg.size() >= 12) {
+        uint32_t idInt =
+            (msg[8] << 24) | (msg[9] << 16) | (msg[10] << 8) | msg[11];
+        obstacleId = ntohl(idInt);
+    }
+    this->_logger.log("Obstacle Position: X=" + std::to_string(obstacle.x_pos) +
+                      ", Y=" + std::to_string(obstacle.y_pos));
+    this->_logger.log("Obstacle ID: " + std::to_string(obstacleId));
+    this->_graphic.addNewLaser(obstacleId);
+    this->_graphic.setPosLaser(obstacleId,
+                               sf::Vector2f(obstacle.x_pos, obstacle.y_pos));
+}
+
 void jetpack::Client::Program::_getServerMessage() {
     Header_t header{};
     try {
@@ -55,19 +141,21 @@ void jetpack::Client::Program::_getServerMessage() {
         this->_logger.log("No payload");
         throw GetMessageException("Header error");
     }
-    Payload_t payload{};
-    try {
-        payload = getPayload(this->_logger, this->_socket);
-    } catch (PayloadException &) {
-        this->_socket.closeSocket();
-        this->_graphic.serverError();
-        this->_auth.resetAuth();
-        throw GetMessageException("Payload error");
+    for (int i = 0; i < header.nbrPayload; ++i) {
+        Payload_t payload{};
+        try {
+            payload = getPayload(this->_logger, this->_socket);
+        } catch (PayloadException &) {
+            this->_socket.closeSocket();
+            this->_graphic.serverError();
+            this->_auth.resetAuth();
+            throw GetMessageException("Payload error");
+        }
+        if (payload.dataId == PayloadType_t::START)
+            this->_graphic.switchToGame();
+        else
+            this->_handleMessageFromServer(payload);
     }
-    if (payload.dataId == PayloadType_t::START)
-        this->_graphic.switchToGame();
-    else
-        this->_handleMessageFromServer(payload);
 }
 
 void jetpack::Client::Program::_connectToSocket(const char *ip,
@@ -99,7 +187,7 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
                       std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
-        this->_logger.log("Data: " + std::to_string(i));
+        this->_logger.log("Payload n°: " + std::to_string(i));
         msg = this->_socket.readFromSocket(sizeData);
         std::stringstream ss;
         for (const auto &byte : msg) {
@@ -116,6 +204,9 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
 void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
                                               Payload_t payload) {
     if (payload.dataId == SIZE_T) this->_setSize_tData(msg);
+    if (payload.dataId == PLAYER) this->_setPlayerData(msg);
+    if (payload.dataId == COIN_POS) this->_setCoinData(msg);
+    if (payload.dataId == HAZARD_POS) this->_setLaserData(msg);
 }
 
 void jetpack::Client::Program::_sniffANetwork() {
@@ -123,11 +214,13 @@ void jetpack::Client::Program::_sniffANetwork() {
         try {
             int socketFd = this->_socket.getSocketFd();
 
-            if (socketFd == -1) {
+            if (socketFd == -1 || this->_manualReco) {
+                this->_manualReco = false;
+                this->_socket.closeSocket();
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
                 try {
-                    this->_connectToSocket(this->_ip, this->_port);
+                    this->_connectToSocket(this->_ip.c_str(), this->_port);
                     std::this_thread::sleep_for(std::chrono::seconds(2));
                 } catch (...) {
                     std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -267,15 +360,19 @@ void jetpack::Client::Program::_sendNewUsername() {
 
 jetpack::Client::Program::Program(const char *ip, unsigned int port,
                                   jetpack::Logger &logger)
-    : _logger(logger),
+    : _ip(ip),
+      _logger(logger),
       _graphic(this->_sendUserInteraction, this->_changeUsername,
-               this->_getUsername),
+               this->_getUsername, this->_getSocketSettings,
+               this->_setSocketSettings, this->_getIdWithAuth,
+               this->_getIsConnectedWithAuth),
       _socket(AF_INET, SOCK_STREAM, 0) {
-    this->_ip = ip;
     this->_port = port;
-    this->_logger.log("Connecting to " + std::string(ip) +
+    this->_logger.log("Connecting to " + this->_ip +
                       " port: " + std::to_string(port));
-    this->_connectToSocket(ip, port);
+    this->_portIpMutex.lock();
+    this->_connectToSocket(this->_ip.c_str(), this->_port);
+    this->_portIpMutex.unlock();
     this->_networkThread = std::thread([this] {
         pthread_setname_np(pthread_self(), "Network thread");
         try {

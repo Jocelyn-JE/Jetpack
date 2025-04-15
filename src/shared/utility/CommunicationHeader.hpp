@@ -25,6 +25,7 @@ enum PayloadType_t {
     HEALTHCHECK = 15,
     JETPACK_FORCE = 16,
     VELOCITY_LIMITS = 17,
+    INVALID
 };
 
 #pragma pack(push, 1)

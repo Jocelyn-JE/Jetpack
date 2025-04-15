@@ -315,6 +315,4 @@ size_t Game::nbPlayer() const {
     return gameData->players.size();
 }
 
-bool Game::isStarted() const {
-    return gameData->isRunning;
-}
+bool Game::isStarted() const { return gameData->isRunning; }

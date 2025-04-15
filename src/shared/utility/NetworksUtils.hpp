@@ -4,6 +4,7 @@
 
 #ifndef SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
 #define SRC_SHARED_UTILITY_NETWORKSUTILS_HPP_
+
 #include "CommunicationHeader.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"

@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <CommunicationHeader.hpp>
 
@@ -37,21 +38,29 @@ bool jetpack::server::Client::handlePayload(std::string commandLine) {
         return clientDisconnect(*this);
     }
     if (commandLine == "QUIT\r\n") {
-        _controlSocket.closeSocket();
-        return true;
+        return this->closeAndDisconnect();
     }
     return false;
 }
 
+bool jetpack::server::Client::closeAndDisconnect() {
+    _controlSocket.closeSocket();
+    return true;
+}
+
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload) {
     Header_t header;
+    Payload_t payloadHeader;
+    std::vector<uint8_t> payloadData;
 
     if (payload.size() == 0) return clientDisconnect(*this);
     header.rawData = (static_cast<uint16_t>(payload[0]) << 8) |
                      (static_cast<uint16_t>(payload[1]));
-    if (header.magic1 != 42 || header.magic2 != 42) {
-        _controlSocket.closeSocket();
-        return true;
-    }
+    if (header.magic1 != 42 || header.magic2 != 42)
+        return this->closeAndDisconnect();
+    payloadData = this->_controlSocket.readFromSocket(2);
+    payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
+                            (static_cast<uint16_t>(payloadData[1]));
+    if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
     return false;
 }

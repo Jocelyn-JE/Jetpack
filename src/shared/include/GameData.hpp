@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "./include/GamePlayer.hpp"
 #include "Coin.hpp"
-#include "GamePlayer.hpp"
 #include "Obstacle.hpp"
 
 struct GameData {
@@ -22,5 +22,5 @@ struct GameData {
     std::string filename;
 
     GameData()
-        : isRunning(true), debug(false), port(4242), filename("map.joy") {}
+        : isRunning(false), debug(false), port(4242), filename("map.joy") {}
 };

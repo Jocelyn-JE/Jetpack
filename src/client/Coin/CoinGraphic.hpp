@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#ifndef SRC_CLIENT_COIN_COIN_HPP_
-#define SRC_CLIENT_COIN_COIN_HPP_
+#ifndef SRC_CLIENT_COIN_COINGRAPHIC_HPP_
+#define SRC_CLIENT_COIN_COINGRAPHIC_HPP_
 #include <mutex>
 
 #include <SFML/Graphics.hpp>
@@ -32,4 +32,4 @@ class Coin {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_COIN_COIN_HPP_
+#endif  // SRC_CLIENT_COIN_COINGRAPHIC_HPP_

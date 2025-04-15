@@ -2,7 +2,7 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#include "Player.hpp"
+#include "PlayerGraphic.hpp"
 
 #include <iostream>
 
