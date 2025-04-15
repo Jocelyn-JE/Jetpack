@@ -19,7 +19,7 @@ class Logger {
     void log(const std::string &message) {
         if (!this->_isDebugMode) return;
         this->_mutex.lock();
-        std::cout << "[DEBUG] " << message << std::endl;
+        std::cerr << "[DEBUG] " << message << std::endl;
         this->_mutex.unlock();
     }
 

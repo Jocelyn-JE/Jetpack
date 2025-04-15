@@ -49,7 +49,7 @@ std::string jetpack::Parser::getClientUsage() {
 
 void jetpack::Parser::parseServerArgs() {
     if (this->_argc == 2 && this->_args[1] == "-help") {
-        std::cout << getServerUsage() << std::endl;
+        std::cerr << getServerUsage() << std::endl;
         exit(0);
     }
     if (this->_argc < 2) {
@@ -65,7 +65,7 @@ void jetpack::Parser::parseServerArgs() {
 
 void jetpack::Parser::parseClientArgs() {
     if (this->_argc == 2 && this->_args[1] == "-help") {
-        std::cout << getClientUsage() << std::endl;
+        std::cerr << getClientUsage() << std::endl;
         exit(0);
     }
     if (this->_argc < 3) {
@@ -89,7 +89,7 @@ size_t jetpack::Parser::findFlagIndex(const std::string& flag) const {
 
 void jetpack::Parser::parseServerFlags(GameData& data) {
     if (this->_argc == 2 && this->_args[1] == "-help") {
-        std::cout << getServerUsage() << std::endl;
+        std::cerr << getServerUsage() << std::endl;
         exit(0);
     }
 

@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
                                      logger);
         app.loop();
     } catch (HelpException &e) {
-        std::cout << "HELP" << std::endl;
+        std::cerr << "HELP" << std::endl;
     } catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 84;

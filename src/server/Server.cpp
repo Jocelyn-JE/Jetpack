@@ -8,10 +8,12 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <unistd.h>
+#include <chrono>
 
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
 
 #include "CommunicationHeader.hpp"
 #include "Server.hpp"
@@ -21,7 +23,7 @@ volatile sig_atomic_t stopFlag = 0;
 
 static void handler(int signum) { stopFlag = signum; }
 
-int jetpack::server::Server::runServer(int port) {
+int jetpack::server::Server::runServer(Parser &parser) {
     int poll_result = 0;
     struct sigaction sa;
 
@@ -30,11 +32,18 @@ int jetpack::server::Server::runServer(int port) {
     sa.sa_flags = SA_RESTART;
     sigaction(SIGINT, &sa, NULL);
     try {
-        jetpack::server::Server server(port);
+        jetpack::server::Server server(parser);
 
-        while (poll_result != -1 && !stopFlag) {
+        auto previousTime = std::chrono::high_resolution_clock::now();
+
+        while (poll_result >= -1 && !stopFlag) {
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<float> deltaTimeDuration = currentTime - previousTime;
+            server._game->update(deltaTimeDuration.count());
+            previousTime = currentTime;
             poll_result = server.pollSockets();
             server.updateSockets();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -66,10 +75,12 @@ void jetpack::server::Server::updateSockets() {
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
+            std::cerr << "Payload received from client " 
+            << _clients[i - 1]->getId() << ": " << buffer << std::endl;
             if (_clients[i - 1]->handleCommand(buffer)) {
                 // sendToAllClients("disconnected:" +
                 //                  std::to_string(_clients[i - 1]->getId()));
-                // std::cout << "Player id:" << _clients[i - 1]->getId()
+                // std::cerr << "Player id:" << _clients[i - 1]->getId()
                 //           << " disconnected" << std::endl;
                 handleDisconnection(i);
             } else {
@@ -82,20 +93,25 @@ void jetpack::server::Server::updateSockets() {
 
 //-----------------------------------------------------------------------------
 
-jetpack::server::Server::Server(int port)
+jetpack::server::Server::Server(Parser &parser)
     : _serverSocket(AF_INET, SOCK_STREAM, 0),
       _socketPollList(_serverSocket.getSocketFd()),
-      _nextClientId(0) {
-    _serverSocket.bindSocket(port);
+      _nextClientId(0),
+      _gameData(std::make_shared<GameData>()),
+      _game(std::make_shared<Game>(_gameData)) {
+    parser.parseServerFlags(*_gameData);
+    _game->start(_gameData->filename);
+    _serverSocket.bindSocket(_gameData->port);
     _serverSocket.listenSocket(LISTEN_BACKLOG);
-    std::cout << "Server started on port " << port << std::endl;
+    std::cerr << "Server started on port " << _gameData->port << std::endl;
 }
 
 jetpack::server::Server::~Server() {}
 
 int jetpack::server::Server::pollSockets() {
-    int result = poll(_socketPollList.data(), _clients.size() + 1, -1);
+    int result = poll(_socketPollList.data(), _clients.size() + 1, 1);
     if (result == -1) {
+        _game->stop();
         throw Socket::SocketError("Poll failed: " +
                                   std::string(strerror(errno)));
     }
@@ -122,7 +138,7 @@ void jetpack::server::Server::handleConnection() {
         client_socket, client_addr, this->_nextClientId));
     this->_nextClientId++;
     this->_socketPollList.addSocket(client_socket, POLLIN);
-    std::cout << inet_ntoa(client_addr.sin_addr) << ":"
+    std::cerr << inet_ntoa(client_addr.sin_addr) << ":"
               << ntohs(client_addr.sin_port)
               << " connected fd: " << client_socket << std::endl;
     // this->_clients.back()->_controlSocket.writeToSocket(
@@ -166,12 +182,12 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 16));
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian >> 8));
     packet.push_back(static_cast<uint8_t>(gameSpeedBigEndian & 0xFF));
-    std::cout << "Packet created: " << std::endl;
+    std::cerr << "Packet created: " << std::endl;
     for (const auto &byte : packet) {
-        std::cout << std::hex << std::uppercase << std::setw(2)
+        std::cerr << std::hex << std::uppercase << std::setw(2)
                   << std::setfill('0') << static_cast<int>(byte) << " ";
     }
-    std::cout << std::dec << std::endl;
+    std::cerr << std::dec << std::endl;
     return packet;
 }
 

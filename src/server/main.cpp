@@ -11,7 +11,6 @@
 #include <thread>
 
 #include "Server.hpp"
-#include "include/GameData.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
 #include "parsing/Parser.hpp"
@@ -31,7 +30,7 @@ int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);
 
     try {
-        parser.parseServerFlags(*gameData);
+        //parser.parseServerFlags(*gameData);
     } catch (const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
         std::cerr << parser.getServerUsage() << std::endl;
@@ -49,5 +48,5 @@ int main(int argc, char **argv) {
     //               << std::endl;
     //     return 1;
     // }
-    return jetpack::server::Server::runServer(atoi(argv[1]));
+    return jetpack::server::Server::runServer(parser);
 }
