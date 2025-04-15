@@ -64,13 +64,13 @@ void jetpack::server::Server::updateSockets() {
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
         if (_socketPollList[i].revents & POLLIN && i == 0) {
             this->handleConnection();
-            this->_game->addPlayer(_clients[i - 1]->getId());
+            this->_game->addPlayer(_clients.back()->getId());
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
             if (_clients[i - 1]->handlePayload(buffer)) {
-                this->handleDisconnection(i);
                 this->_game->delPlayer(_clients[i - 1]->getId());
+                this->handleDisconnection(i);
             } else {
                 // Data received from client, handle it here
                 std::cerr << "Payload received from client "
@@ -147,5 +147,6 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
 
 std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
     jetpack::server::Packet packet(1);
+    packet.addPayloadHeader(0, PayloadType_t::START);
     return packet.getPacket();
 }
