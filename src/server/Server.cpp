@@ -174,3 +174,15 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     std::cout << std::dec << std::endl;
     return packet;
 }
+
+std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
+    std::vector<uint8_t> packet;
+    uint16_t headerBigEndian = htons(createPacketHeader(1).rawData);
+    uint16_t payloadBigEndian = htons(createPayloadHeader(0, 14).rawData);
+
+    packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
+    packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));
+    packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
+    return packet;
+}

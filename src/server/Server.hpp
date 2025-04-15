@@ -51,6 +51,7 @@ class Server {
     jetpack::Header_t createPacketHeader(u_int8_t nbrPayload);
     jetpack::Payload_t createPayloadHeader(u_int8_t dataCount, u_int8_t dataId);
     std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
+    std::vector<uint8_t> createStartGamePacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
