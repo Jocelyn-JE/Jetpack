@@ -6,6 +6,7 @@
 #define SRC_CLIENT_MENU_MENU_HPP_
 #include <functional>
 #include <string>
+#include <utility>
 
 #include <SFML/Graphics.hpp>
 

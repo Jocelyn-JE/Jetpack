@@ -2,9 +2,10 @@
 // Created by roussierenoa on 4/10/25.
 //
 
+#include <string>
+#include <utility>
 #include "Menu.hpp"
 
-#include <string>
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
