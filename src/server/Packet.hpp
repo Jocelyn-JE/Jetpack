@@ -19,6 +19,7 @@ namespace jetpack::server {
 
 class Packet {
  public:
+    Packet() = delete;
     explicit Packet(uint8_t nbrPayload);
     void addPayloadHeader(uint16_t dataCount, uint8_t dataId);
     void addData(uint32_t data);
