@@ -34,8 +34,8 @@ class Packet {
     const std::vector<uint8_t> &getPacket() const;
 
  private:
-    Payload_t createPayloadHeader(uint16_t dataCount, uint8_t dataId);
-    Header_t createPacketHeader(uint8_t nbrPayload);
+    static Payload_t createPayloadHeader(uint16_t dataCount, uint8_t dataId);
+    static Header_t createPacketHeader(uint8_t nbrPayload);
     std::vector<uint8_t> _packet;
 };
 
