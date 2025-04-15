@@ -16,6 +16,12 @@
 #include "CommunicationHeader.hpp"
 #include "PollFdList.hpp"
 #include "Socket.hpp"
+
+#include "Server.hpp"
+#include "logic/Game.hpp"
+#include "logic/GameServer.hpp"
+#include "parsing/Parser.hpp"
+
 #define LISTEN_BACKLOG 128
 
 namespace jetpack {
@@ -23,9 +29,9 @@ namespace server {
 class Server {
  public:
     Server() = delete;
-    explicit Server(int port);
+    explicit Server(Parser &parser);
     ~Server();
-    static int runServer(int port);
+    static int runServer(Parser &parser);
 
  private:
     int pollSockets();
@@ -56,6 +62,8 @@ class Server {
     Socket _serverSocket;
     PollFdList _socketPollList;
     unsigned int _nextClientId;
+    std::shared_ptr<GameData> _gameData;
+    std::shared_ptr<Game> _game;
 };
 }  // namespace server
 }  // namespace jetpack

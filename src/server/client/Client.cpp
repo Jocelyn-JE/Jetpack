@@ -13,7 +13,7 @@
 // Helper functions -----------------------------------------------------------
 
 static bool clientDisconnect(jetpack::server::Client const &client) {
-    std::cout << "Client " << client._controlSocket.getSocketFd()
+    std::cerr << "Client " << client._controlSocket.getSocketFd()
               << " disconnected" << std::endl;
     return true;
 }
@@ -25,7 +25,7 @@ jetpack::server::Client::Client(int fd, struct sockaddr_in address,
     : _controlSocket(fd, address), _id(id) {}
 
 jetpack::server::Client::~Client() {
-    std::cout << "Destroying client" << std::endl;
+    std::cerr << "Destroying client" << std::endl;
 }
 
 unsigned int jetpack::server::Client::getId() const { return _id; }
