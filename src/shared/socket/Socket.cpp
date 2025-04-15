@@ -18,7 +18,7 @@ Socket::Socket(int fd, struct sockaddr_in address) noexcept
     : _closeSocketOnDestruction(false) {
     this->_socketFd = fd;
     this->_address = address;
-    std::cout << "Fetched new socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Fetched new socket on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::Socket(int domain, int type, int protocol) noexcept(false)
@@ -28,7 +28,7 @@ Socket::Socket(int domain, int type, int protocol) noexcept(false)
         throw Socket::SocketError("Socket creation failed: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Created socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Created socket on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::~Socket() noexcept(false) {
@@ -37,9 +37,9 @@ Socket::~Socket() noexcept(false) {
             throw Socket::SocketError("Failed to close socket: " +
                                       std::string(strerror(errno)));
         }
-        std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
+        std::cerr << "Closed socket on fd: " << this->_socketFd << std::endl;
     }
-    std::cout << "Removed socket on fd " << this->_socketFd << " from server"
+    std::cerr << "Removed socket on fd " << this->_socketFd << " from server"
               << std::endl;
 }
 
@@ -50,7 +50,7 @@ void Socket::resetSocket(int domain, int type, int protocol) {
         throw Socket::SocketError("Socket creation failed: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Created socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Created socket on fd: " << this->_socketFd << std::endl;
 }
 
 bool Socket::closesOnDestroy() const noexcept {
@@ -62,7 +62,7 @@ void Socket::closeSocket() noexcept(false) {
         throw Socket::SocketError("Failed to close socket: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Closed socket on fd: " << this->_socketFd << std::endl;
     this->_socketFd = -1;
     this->_closeSocketOnDestruction = false;
 }

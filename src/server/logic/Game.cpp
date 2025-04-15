@@ -8,23 +8,25 @@
 
 #include "../parsing/Parser.hpp"
 
-Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr) {}
+Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr)
+{
+    std::cerr << "Game constructor called" << std::endl;
+}
 
 void Game::start(const std::string& mapFile) {
     gameData->isRunning = true;
     gameData->advancement = 0;
-    std::cout << "Game started" << std::endl;
+    std::cerr << "Game started" << std::endl;
 
     if (!loadMap(mapFile)) {
         std::cerr << "Failed to load map: " << mapFile << std::endl;
         gameData->isRunning = false;
         return;
     }
-    std::cout << "Map loaded successfully" << std::endl;
+    std::cerr << "Map loaded successfully" << std::endl;
 
     initNcursesMap();
     printServerData();
-    gameLoop();
 }
 
 void Game::pollInput() {
@@ -113,13 +115,14 @@ void Game::checkCollisions() {
 
         for (auto it = gameData->coins.begin(); it != gameData->coins.end();) {
             auto& coin = *it;
-            if (std::abs(player->y_pos - static_cast<double>(coin->y_pos)) <
-                    0.5f &&
-                std::abs(static_cast<double>(coin->x_pos) -
-                         gameData->advancement) < 0.5f) {
+            if (static_cast<double>(coin->y_pos) <= player->y_pos + 1.0f
+            && (static_cast<double>(coin->y_pos) + 1.0f >= player->y_pos)
+            && (static_cast<double>(coin->x_pos) <= gameData->advancement + 1.0f)
+            && (static_cast<double>(coin->x_pos) + 1.0f >= gameData->advancement)
+            )   {
                 std::cerr << "Player " << player->username
                           << " collected a "
-                             "coin!#######################################"
+                             "coin!"
                           << std::endl;
                 player->coins_collected++;
                 it = gameData->coins.erase(it);
@@ -129,10 +132,11 @@ void Game::checkCollisions() {
         }
 
         for (const auto& obstacle : gameData->obstacles) {
-            if (std::abs(player->y_pos - static_cast<double>(obstacle->y_pos)) <
-                    0.5f &&
-                std::abs(static_cast<double>(obstacle->x_pos) -
-                         gameData->advancement) < 0.5f) {
+            if (static_cast<double>(obstacle->y_pos) + 1.0f >= player->y_pos
+            && (static_cast<double>(obstacle->y_pos) <= player->y_pos + 1.0f)
+            && (static_cast<double>(obstacle->x_pos) <= gameData->advancement + 1.0f)
+            && (static_cast<double>(obstacle->x_pos) + 1.0f >= gameData->advancement)
+            )   {
                 std::cerr << "Player " << player->username
                           << " collided with an obstacle! player y: "
                           << player->y_pos << " obstacle y: " << obstacle->y_pos
@@ -147,8 +151,8 @@ void Game::checkCollisions() {
 void Game::stop() {
     gameData->isRunning = false;
     if (mapWin) {
-        delwin(mapWin);  // Delete the ncurses window
-        endwin();        // End ncurses mode
+        delwin(mapWin);
+        endwin();
         mapWin = nullptr;
     }
 }
@@ -255,7 +259,6 @@ void Game::displayNcursesMap() {
 
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
     for (const auto& [_, player] : gameData->players) {
-        if (playerCount >= 2) break;  // Only display for the first two players
         mvprintw(row++, col, "Player %s: Position Y = %.2f, Velocity = %.2f",
                  player->username, player->y_pos, player->velocity);
         playerCount++;
