@@ -28,9 +28,10 @@ class Packet {
     template <typename T>
     void addData(T data) {
         for (size_t i = 0; i < sizeof(T); ++i) {
-            this->_packet.push_back(static_cast<uint8_t>((data >> (8 * (sizeof(T) - 1 - i))) & 0xFF));
+            this->_packet.push_back(static_cast<uint8_t>(
+                (data >> (8 * (sizeof(T) - 1 - i))) & 0xFF));
         }
-    };
+    }
     void add(uint32_t data, PayloadType_t type);
     void add(uint16_t data, PayloadType_t type);
     void add(uint8_t data, PayloadType_t type);
@@ -41,14 +42,14 @@ class Packet {
     void add(T data, PayloadType_t type) {
         this->addPayloadHeader(1, type);
         this->addData(data);
-    };
+    }
     template <typename T>
     void add(std::vector<T> data, PayloadType_t type) {
-         this->addPayloadHeader(data.size(), type);
-         for (const auto &item : data) {
-               this->addData(item);
-         }
-    };
+        this->addPayloadHeader(data.size(), type);
+        for (const auto &item : data) {
+            this->addData(item);
+        }
+    }
     const std::vector<uint8_t> &getPacket() const;
 
  private:
