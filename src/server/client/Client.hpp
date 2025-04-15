@@ -26,6 +26,8 @@ class Client {
     Socket _controlSocket;
     // handlePayload returns true if the client should be disconnected
     bool handlePayload(std::string commandLine);
+    // handlePayload returns true if the client should be disconnected
+    bool handlePayload(std::vector<uint8_t> payload);
     template <typename T>
     bool handlePayload(std::vector<T> payload) {
         if (payload.size() == 0) return true;

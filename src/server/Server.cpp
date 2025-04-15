@@ -63,7 +63,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
 // The rest is helper functions / handling of connection and disconnection
 
 void jetpack::server::Server::updateSockets() {
-    std::string buffer;
+    std::vector<uint8_t> buffer;
 
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
         if (_socketPollList[i].revents & POLLIN && i == 0) {
@@ -71,15 +71,15 @@ void jetpack::server::Server::updateSockets() {
             this->_game->addPlayer(_clients.back()->getId());
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
-            buffer = _clients[i - 1]->_controlSocket.readFromSocket();
+            buffer = _clients[i - 1]->_controlSocket.readFromSocket(2);
             if (_clients[i - 1]->handlePayload(buffer)) {
                 this->_game->delPlayer(_clients[i - 1]->getId());
                 this->handleDisconnection(i);
             } else {
                 // Data received from client, handle it here
-                std::cerr << "Payload received from client "
-                          << _clients[i - 1]->getId() << ": " << buffer
-                          << std::endl;
+                // std::cerr << "Payload received from client "
+                //           << _clients[i - 1]->getId() << ": " << buffer
+                //           << std::endl;
             }
         }
     }
