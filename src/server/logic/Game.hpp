@@ -47,4 +47,5 @@ class Game {
     void delPlayer(int id);
     void delPlayer(const std::string& username);
     size_t nbPlayer() const;
+    bool isStarted() const;
 };
