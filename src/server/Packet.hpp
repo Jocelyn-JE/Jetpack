@@ -31,11 +31,11 @@ class Packet {
     void add(std::vector<uint32_t> data, PayloadType_t type);
     void add(std::vector<uint16_t> data, PayloadType_t type);
     void add(std::vector<uint8_t> data, PayloadType_t type);
-    const std::vector<uint8_t>& getPacket() const;
-    Payload_t createPayloadHeader(uint16_t dataCount, uint8_t dataId);
-    Header_t createPacketHeader(uint8_t nbrPayload);
+    const std::vector<uint8_t> &getPacket() const;
 
  private:
+    Payload_t createPayloadHeader(uint16_t dataCount, uint8_t dataId);
+    Header_t createPacketHeader(uint8_t nbrPayload);
     std::vector<uint8_t> _packet;
 };
 
