@@ -140,12 +140,6 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
                PayloadType_t::SIZE_T);
 
     const auto &packetData = packet.getPacket();
-    std::cerr << "Packet created: " << std::endl;
-    for (const auto &byte : packetData) {
-        std::cerr << std::hex << std::uppercase << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << " ";
-    }
-    std::cerr << std::dec << std::endl;
     return packetData;
 }
 
