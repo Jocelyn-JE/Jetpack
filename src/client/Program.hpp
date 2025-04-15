@@ -37,7 +37,7 @@ class Program {
             this->_userInteractionMutex.lock();
             this->_lastUserInteraction = data;
             this->_userInteractionMutex.unlock();
-        });
+    });
 
     std::function<void(std::string)> _changeUsername =
         ([this](std::string username) {
@@ -45,13 +45,21 @@ class Program {
             this->_auth.setUsername(username);
             this->_isChangeUsername = true;
             this->_usernameMutex.unlock();
-        });
+    });
 
     std::function<std::string()> _getUsername = ([this]() -> std::string {
         this->_usernameMutex.lock();
         auto data = this->_auth.getUsername();
         this->_usernameMutex.unlock();
         return data;
+    });
+
+    std::function<int()> _getIdWithAuth = ([this]() -> int {
+        return this->_auth.getId();
+    });
+
+    std::function<bool()> _getIsConnectedWithAuth = ([this]() -> bool {
+        return this->_auth.isConnected();
     });
 
     Auth _auth;
