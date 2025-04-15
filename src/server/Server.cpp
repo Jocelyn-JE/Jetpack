@@ -45,6 +45,10 @@ int jetpack::server::Server::runServer(Parser &parser) {
             previousTime = currentTime;
             poll_result = server.pollSockets();
             server.updateSockets();
+            if (server._clients.size() == 2) {
+                server.sendToAllClients(server.createStartGamePacket());
+                server._game->start(server._gameData->filename);
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     } catch (const std::exception &e) {
