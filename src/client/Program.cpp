@@ -57,19 +57,21 @@ void jetpack::Client::Program::_getServerMessage() {
         this->_logger.log("No payload");
         throw GetMessageException("Header error");
     }
-    Payload_t payload {};
-    try {
-        payload = getPayload(this->_logger, this->_socket);
-    } catch (PayloadException &) {
-        this->_socket.closeSocket();
-        this->_graphic.serverError();
-        this->_auth.resetAuth();
-        throw GetMessageException("Payload error");
+    for (int i = 0; i < header.nbrPayload; ++i) {
+        Payload_t payload {};
+        try {
+            payload = getPayload(this->_logger, this->_socket);
+        } catch (PayloadException &) {
+            this->_socket.closeSocket();
+            this->_graphic.serverError();
+            this->_auth.resetAuth();
+            throw GetMessageException("Payload error");
+        }
+        if (payload.dataId == PayloadType_t::START)
+            this->_graphic.switchToGame();
+        else
+            this->_handleMessageFromServer(payload);
     }
-    if (payload.dataId == PayloadType_t::START)
-        this->_graphic.switchToGame();
-    else
-        this->_handleMessageFromServer(payload);
 }
 
 void jetpack::Client::Program::_connectToSocket(const char *ip,
