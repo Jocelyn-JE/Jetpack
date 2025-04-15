@@ -7,6 +7,7 @@
 
 #include "Packet.hpp"
 
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -56,6 +57,21 @@ void Packet::addData(uint16_t data) {
 
 void Packet::addData(uint8_t data) {
     this->_packet.push_back(static_cast<uint8_t>(data & 0xFF));
+}
+
+void Packet::addData(float data) {
+    uint32_t rawData;
+    uint32_t bigEndianData;
+    std::memcpy(&rawData, &data, sizeof(data));
+    bigEndianData = htonl(rawData);
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 24));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 16));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 8));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData & 0xFF));
+}
+
+void Packet::addData(char* data, size_t size) {
+    for (size_t i = 0; i <= size; i++) this->addData(data[i]);
 }
 
 void Packet::add(uint32_t data, PayloadType_t type) {

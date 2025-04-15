@@ -56,6 +56,7 @@ class Server {
 
     std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
     std::vector<uint8_t> createStartGamePacket(void);
+    std::vector<uint8_t> createPlayerListPacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;

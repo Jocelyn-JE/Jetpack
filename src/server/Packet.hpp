@@ -25,11 +25,13 @@ class Packet {
     void addData(uint32_t data);
     void addData(uint16_t data);
     void addData(uint8_t data);
+    void addData(float data);
+    void addData(char *data, size_t size);
     template <typename T>
     void addData(T data) {
-        for (size_t i = 0; i < sizeof(T); ++i) {
+        for (int i = sizeof(T) - 1; i >= 0; i--) {
             this->_packet.push_back(static_cast<uint8_t>(
-                (data >> (8 * (sizeof(T) - 1 - i))) & 0xFF));
+                (data >> (8 * static_cast<T>(sizeof(T) - 1 - i))) & 0xFF));
         }
     }
     void add(uint32_t data, PayloadType_t type);

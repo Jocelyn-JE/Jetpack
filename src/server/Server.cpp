@@ -17,6 +17,7 @@
 
 #include "CommunicationHeader.hpp"
 #include "Packet.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "Socket.hpp"
 
@@ -48,6 +49,9 @@ int jetpack::server::Server::runServer(Parser &parser) {
             if (server._clients.size() == 2 && !server._game->isStarted()) {
                 server.sendToAllClients(server.createStartGamePacket());
                 server._game->start(server._gameData->filename);
+            }
+            if (server._game->isStarted()) {
+                server.sendToAllClients(server.createPlayerListPacket());
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
@@ -136,6 +140,21 @@ void jetpack::server::Server::handleConnection() {
               << " connected fd: " << client_socket << std::endl;
     this->_clients.back()->sendData(
         this->createConnectionPacket(_clients.back()->getId(), 1000));
+}
+
+std::vector<uint8_t> jetpack::server::Server::createPlayerListPacket() {
+    jetpack::server::Packet packet(1);
+    packet.addPayloadHeader(_gameData->players.size(), PayloadType_t::PLAYER);
+    for (const auto &player : _gameData->players) {
+        packet.addData(player.second->id);
+        packet.addData(player.second->username, 20);
+        packet.addData(player.second->y_pos);
+        packet.addData(player.second->coins_collected);
+        packet.addData(player.second->is_dead);
+        packet.addData(player.second->is_jetpack_on);
+        packet.addData(player.second->host);
+    }
+    return packet.getPacket();
 }
 
 std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
