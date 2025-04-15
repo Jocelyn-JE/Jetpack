@@ -21,7 +21,7 @@ Header_t Packet::createPacketHeader(u_int8_t nbrPayload) {
     return header;
 }
 
-Payload_t Packet::createPayloadHeader(u_int8_t dataCount, u_int8_t dataId) {
+Payload_t Packet::createPayloadHeader(u_int16_t dataCount, u_int8_t dataId) {
     Payload_t payload;
     payload.dataCount = dataCount;
     payload.dataId = dataId;
