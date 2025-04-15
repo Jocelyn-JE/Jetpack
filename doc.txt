@@ -1,5 +1,4 @@
 Network Programming Working Group                                     Epitech
-Intended status:
 Category: Informational                                               April 2025
 
        RFC: Binary Protocol and Map Format for Jetpack Epitech Project
