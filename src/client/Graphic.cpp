@@ -137,7 +137,8 @@ jetpack::Client::Graphic::Graphic(
 ):
     _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
         sf::Style::Close | sf::Style::Titlebar),
-    _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting, getIdWithAuth, getIsConnectedWithAuth),
+    _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
+        getIdWithAuth, getIsConnectedWithAuth),
     _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
