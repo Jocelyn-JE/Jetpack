@@ -30,7 +30,7 @@ jetpack::server::Client::~Client() {
 
 unsigned int jetpack::server::Client::getId() const { return _id; }
 
-bool jetpack::server::Client::handleCommand(std::string commandLine) {
+bool jetpack::server::Client::handlePayload(std::string commandLine) {
     if (commandLine == "") {
         return clientDisconnect(*this);
     }
