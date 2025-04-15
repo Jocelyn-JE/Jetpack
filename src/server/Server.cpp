@@ -8,12 +8,12 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <unistd.h>
-#include <chrono>
 
+#include <chrono>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 
 #include "CommunicationHeader.hpp"
 #include "Server.hpp"
@@ -38,7 +38,8 @@ int jetpack::server::Server::runServer(Parser &parser) {
 
         while (poll_result >= -1 && !stopFlag) {
             auto currentTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<float> deltaTimeDuration = currentTime - previousTime;
+            std::chrono::duration<float> deltaTimeDuration =
+                currentTime - previousTime;
             server._game->update(deltaTimeDuration.count());
             previousTime = currentTime;
             poll_result = server.pollSockets();
@@ -60,32 +61,17 @@ void jetpack::server::Server::updateSockets() {
     std::string buffer;
 
     for (std::size_t i = 0; i < _socketPollList.size(); i++) {
-        if (_socketPollList[i].revents & POLLIN && i == 0) {
-            std::string playerList = "player_list:";
-            handleConnection();
-            // for (size_t i = 0; i < _clients.size(); i++) {
-            //     playerList += std::to_string(_clients[i]->getId());
-            //     if (i < _clients.size() - 1) {
-            //         playerList += ",";
-            //     }
-            // }
-            _clients.back()->sendData(
-                createConnectionPacket(_clients.back()->getId(), 1000));
-            // sendToAllClients(playerList);
-        }
+        if (_socketPollList[i].revents & POLLIN && i == 0)
+            this->handleConnection();
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket();
-            std::cerr << "Payload received from client " 
-            << _clients[i - 1]->getId() << ": " << buffer << std::endl;
-            if (_clients[i - 1]->handleCommand(buffer)) {
-                // sendToAllClients("disconnected:" +
-                //                  std::to_string(_clients[i - 1]->getId()));
-                // std::cerr << "Player id:" << _clients[i - 1]->getId()
-                //           << " disconnected" << std::endl;
-                handleDisconnection(i);
+            if (_clients[i - 1]->handlePayload(buffer)) {
+                this->handleDisconnection(i);
             } else {
-                // sendToAllClients(std::to_string(_clients[i - 1]->getId()) +
-                //                  ":" + buffer);
+                // Data received from client, handle it here
+                std::cerr << "Payload received from client "
+                          << _clients[i - 1]->getId() << ": " << buffer
+                          << std::endl;
             }
         }
     }
@@ -141,8 +127,8 @@ void jetpack::server::Server::handleConnection() {
     std::cerr << inet_ntoa(client_addr.sin_addr) << ":"
               << ntohs(client_addr.sin_port)
               << " connected fd: " << client_socket << std::endl;
-    // this->_clients.back()->_controlSocket.writeToSocket(
-    //    "id:" + std::to_string(this->_clients.back()->getId()));
+    this->_clients.back()->sendData(
+        this->createConnectionPacket(_clients.back()->getId(), 1000));
 }
 
 jetpack::Header_t jetpack::server::Server::createPacketHeader(
