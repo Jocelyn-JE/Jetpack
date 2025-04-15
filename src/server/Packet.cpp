@@ -89,6 +89,14 @@ void Packet::add(std::vector<uint8_t> dataList, PayloadType_t type) {
     for (const auto& data : dataList) this->addData(data);
 }
 
-const std::vector<uint8_t>& Packet::getPacket() const { return _packet; }
+const std::vector<uint8_t>& Packet::getPacket() const {
+    std::cerr << "Packet created: " << std::endl;
+    for (const auto& byte : this->_packet) {
+        std::cerr << std::hex << std::uppercase << std::setw(2)
+                  << std::setfill('0') << static_cast<int>(byte) << " ";
+    }
+    std::cerr << std::dec << std::endl;
+    return this->_packet;
+}
 
 }  // namespace jetpack::server
