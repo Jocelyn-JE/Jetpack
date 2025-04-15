@@ -50,19 +50,17 @@ bool jetpack::server::Client::closeAndDisconnect() {
 
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload) {
     Header_t header;
+    Payload_t payloadHeader;
+    std::vector<uint8_t> payloadData;
 
     if (payload.size() == 0) return clientDisconnect(*this);
     header.rawData = (static_cast<uint16_t>(payload[0]) << 8) |
                      (static_cast<uint16_t>(payload[1]));
     if (header.magic1 != 42 || header.magic2 != 42)
         return this->closeAndDisconnect();
-    for (int i = 0; i < header.nbrPayload; i++) {
-        std::vector<uint8_t> payloadData =
-            this->_controlSocket.readFromSocket(2);
-        Payload_t payloadHeader;
-        payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
-                                (static_cast<uint16_t>(payloadData[1]));
-        if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
-    }
+    payloadData = this->_controlSocket.readFromSocket(2);
+    payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
+                            (static_cast<uint16_t>(payloadData[1]));
+    if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
     return false;
 }
