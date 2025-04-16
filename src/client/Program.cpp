@@ -12,6 +12,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <algorithm>
 
 #include "Coin.hpp"
 #include "Exception.hpp"
@@ -44,10 +46,11 @@ void jetpack::Client::Program::_setSize_tData(std::vector<unsigned char> msg) {
     }
 }
 
-void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
-    if (msg.size() < sizeof(player_t)) {
-        this->_logger.log("Invalid player data size: " +
-                          std::to_string(msg.size()));
+void jetpack::Client::Program::_setPlayerData(
+    std::vector<unsigned char> msg) {
+    if (msg.size() < 35) {
+        this->_logger.log("Invalid player data size: "
+                + std::to_string(msg.size()));
         return;
     }
     player_t player;
@@ -63,11 +66,12 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     std::strncpy(player.username, username.c_str(),
                  sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
-    uint32_t yPosInt =
-        (msg[24] << 24) | (msg[25] << 16) | (msg[26] << 8) | msg[27];
-    player.y_pos = ntohl(yPosInt);
-    uint32_t coinsInt =
-        (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
+    uint32_t yPosInt = (msg[25] << 24) | (msg[26] << 16)
+        | (msg[27] << 8) | msg[28];
+    yPosInt = ntohl(yPosInt);
+    std::memcpy(&player.y_pos, &yPosInt, sizeof(player.y_pos));
+    uint32_t coinsInt = (msg[29] << 24) | (msg[30] << 16)
+        | (msg[31] << 8) | msg[32];
     player.coins_collected = ntohl(coinsInt);
     player.is_dead = msg[32] != 0;
     player.is_jetpack_on = msg[33] != 0;
@@ -78,7 +82,7 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     this->_logger.log("Player Coins: " +
                       std::to_string(player.coins_collected));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
-    this->_graphic.setPosPlayer(player.id, sf::Vector2f(0, player.y_pos));
+    this->_graphic.setPosPlayer(player.id, sf::Vector2f(0, player.y_pos * 40.f));
 }
 
 void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {

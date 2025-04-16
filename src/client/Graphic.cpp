@@ -141,17 +141,13 @@ jetpack::Client::Graphic::Graphic(
       _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
-    // Simulation de deux joueurs avec deux piece et deux laser
-    this->addNewPlayer(1, false);
-    this->addNewPlayer(2, true);
+    // Simulation de deux players avec deux piece et deux laser
     this->addNewCoin(1);
     this->addNewCoin(2);
     this->addNewLaser(1);
     this->addNewLaser(2);
     this->setPosCoin(1, {1000, 400});
     this->setPosCoin(2, {1050, 400});
-    this->setPosPlayer(1, {10, 400});
-    this->setPosPlayer(2, {10, 200});
     this->setPosLaser(1, {500, 400});
     this->setPosLaser(2, {200, 200});
 }
