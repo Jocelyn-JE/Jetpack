@@ -116,16 +116,10 @@ void Game::checkCollisions() {
 
         for (auto it = gameData->coins.begin(); it != gameData->coins.end();) {
             auto& coin = *it;
-            if (static_cast<double>(coin->y_pos) <= player->y_pos + 1.0f &&
-                (static_cast<double>(coin->y_pos) + 1.0f >= player->y_pos) &&
-                (static_cast<double>(coin->x_pos) <=
-                 gameData->advancement + 1.0f) &&
-                (static_cast<double>(coin->x_pos) + 1.0f >=
-                 gameData->advancement)) {
-                /*                 std::cerr << "Player " << player->username
-                                          << " collected a "
-                                             "coin!"
-                                          << std::endl; */
+            if (coin->y_pos <= player->y_pos + 1.0 &&
+                coin->y_pos + 1.0 >= player->y_pos &&
+                coin->x_pos <= gameData->advancement + 1.0 &&
+                coin->x_pos + 1.0 >= gameData->advancement) {
                 player->coins_collected++;
                 it = gameData->coins.erase(it);
             } else {
@@ -134,19 +128,10 @@ void Game::checkCollisions() {
         }
 
         for (const auto& obstacle : gameData->obstacles) {
-            if (static_cast<double>(obstacle->y_pos) + 1.0f >= player->y_pos &&
-                (static_cast<double>(obstacle->y_pos) <=
-                 player->y_pos + 1.0f) &&
-                (static_cast<double>(obstacle->x_pos) <=
-                 gameData->advancement + 1.0f) &&
-                (static_cast<double>(obstacle->x_pos) + 1.0f >=
-                 gameData->advancement)) {
-                /*                 std::cerr << "Player " << player->username
-                                          << " collided with an obstacle! player
-                   y: "
-                                          << player->y_pos << " obstacle y: " <<
-                   obstacle->y_pos
-                                          << std::endl; */
+            if (obstacle->y_pos + 1.0 >= player->y_pos &&
+                obstacle->y_pos <= player->y_pos + 1.0 &&
+                obstacle->x_pos <= gameData->advancement + 1.0 &&
+                obstacle->x_pos + 1.0 >= gameData->advancement) {
                 player->is_dead = true;
                 break;
             }
