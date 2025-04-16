@@ -51,11 +51,11 @@ int getPayloadSize(unsigned char dataId) {
         case jetpack::PayloadType_t::SHORT:
             return 2;
         case jetpack::PayloadType_t::PLAYER:
-            return 38;
+            return 39;
         case jetpack::PayloadType_t::NAME:
             return 20;
         case jetpack::PayloadType_t::COIN_POS:
-            return 12;
+            return 24;
         case jetpack::PayloadType_t::HAZARD_POS:
             return sizeof(obstacle_s);
         case jetpack::PayloadType_t::ENUM_COMMAND:

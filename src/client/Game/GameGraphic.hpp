@@ -12,6 +12,7 @@
 #include "../CoinStats/CoinStats.hpp"
 #include "../userInteractions.hpp"
 #include "Sprite.hpp"
+#include "../Coin/CoinGraphic.hpp"
 
 namespace jetpack::Client {
 class Game {
@@ -25,12 +26,14 @@ class Game {
     Sprite _background2;
     CoinStats _coinStats;
 
+    Coin _coin;
+
     void _handleKeyPressed(const sf::Event &event);
 
  public:
     void setCoinsAmount(unsigned int coinsAmount);
 
-    void display(sf::RenderWindow &window);
+    void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin);
 
     void compute();
 

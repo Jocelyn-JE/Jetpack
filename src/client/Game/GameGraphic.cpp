@@ -6,10 +6,14 @@
 
 #include <iostream>
 
-void jetpack::Client::Game::display(sf::RenderWindow &window) {
+void jetpack::Client::Game::display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin) {
     this->_background.display(window);
     this->_background2.display(window);
     this->_coinStats.display(window);
+    for (auto s: _posCoin) {
+        this->_coin.changePosValue(s);
+        this->_coin.display(window);
+    }
 }
 
 void jetpack::Client::Game::compute() {

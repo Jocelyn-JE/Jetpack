@@ -12,15 +12,17 @@
 
 void jetpack::Client::Graphic::display() {
     this->_window.clear();
-    if (this->_windowType == MENU) this->_menu.display(this->_window);
+    this->_posMutex.lock();
+    if (this->_windowType == MENU)
+        this->_menu.display(this->_window);
     if (this->_windowType == GAME) {
-        this->_game.display(this->_window);
+        this->_game.display(this->_window, this->_posCoin);
         for (auto &s : this->_listPlayers)
             s.second.first->display(this->_window);
-        for (auto &s : this->_listCoins) s.second.first->display(this->_window);
         for (auto &s : this->_listLasers)
             s.second.first->display(this->_window);
     }
+    this->_posMutex.unlock();
     this->_window.display();
 }
 
@@ -33,11 +35,8 @@ void jetpack::Client::Graphic::compute() {
         this->_game.compute();
         for (auto &s : this->_listPlayers) {
             s.second.first->compute();
-            if (s.second.first->isHost())
+            if (static_cast<unsigned int>(this->_getIdWithAuth()) == s.second.first->id)
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
-        }
-        for (auto &s : this->_listCoins) {
-            s.second.first->compute();
         }
         for (auto &s : this->_listLasers) {
             s.second.first->compute();
@@ -53,10 +52,15 @@ void jetpack::Client::Graphic::setPosPlayer(unsigned int id, sf::Vector2f pos) {
     this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setPosCoin(unsigned int id, sf::Vector2f pos) {
+void jetpack::Client::Graphic::setCoinAmount(unsigned int id, int coins) {
     this->_posMutex.lock();
-    this->_listCoins.at(id).second = pos;
-    this->_listCoins.at(id).first->changePosValue(pos);
+    this->_listPlayers.at(id).first->setCoinsAmount(coins);
+    this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::setPosCoin(sf::Vector2f pos) {
+    this->_posMutex.lock();
+    this->_posCoin.push_back(pos);
     this->_posMutex.unlock();
 }
 
@@ -89,16 +93,8 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
     this->_posMutex.lock();
     if (!this->_listPlayers.contains(id))
         this->_listPlayers.emplace(
-            id, std::make_pair(std::make_unique<Player>(isTransparent),
+            id, std::make_pair(std::make_unique<Player>(isTransparent, id),
                                sf::Vector2f(0, 0)));
-    this->_posMutex.unlock();
-}
-
-void jetpack::Client::Graphic::addNewCoin(unsigned int id) {
-    this->_posMutex.lock();
-    if (!this->_listCoins.contains(id))
-        this->_listCoins.emplace(
-            id, std::make_pair(std::make_unique<Coin>(), sf::Vector2f(0, 0)));
     this->_posMutex.unlock();
 }
 
@@ -137,6 +133,7 @@ jetpack::Client::Graphic::Graphic(
 ):
     _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
         sf::Style::Close | sf::Style::Titlebar),
+    _getIdWithAuth(getIdWithAuth),
     _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
         getIdWithAuth, getIsConnectedWithAuth),
     _game(sendUserInteraction) {

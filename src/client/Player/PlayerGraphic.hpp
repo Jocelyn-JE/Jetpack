@@ -12,6 +12,7 @@
 
 namespace jetpack::Client {
 class Player {
+
     enum PlayerSprite_t {
         RUNNING = 0,
         JETPACK_ON = 1,
@@ -32,6 +33,8 @@ class Player {
     SpriteSheet _player;
 
  public:
+    unsigned int id = 0;
+
     unsigned int getCoinsAmount();
 
     void setCoinsAmount(unsigned int coins);
@@ -44,7 +47,7 @@ class Player {
 
     void changePosValue(sf::Vector2f pos);
 
-    explicit Player(bool isPlayer);
+    explicit Player(bool isPlayer, unsigned int id);
 
     ~Player();
 };

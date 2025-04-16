@@ -27,24 +27,26 @@ void jetpack::Client::Program::_setSize_tData(
     std::vector<unsigned char> msg) {
     if (!this->_auth.isConnected()) {
         size_t value = 0;
-        value |= static_cast<size_t>(msg[0]) << 48;
-        value |= static_cast<size_t>(msg[1]) << 40;
-        value |= static_cast<size_t>(msg[2]) << 32;
-        value |= static_cast<size_t>(msg[3]) << 16;
-        value |= static_cast<size_t>(msg[4]) << 8;
-        value |= static_cast<size_t>(msg[5]);
+        value |= static_cast<size_t>(msg[0]) << 56;
+        value |= static_cast<size_t>(msg[1]) << 48;
+        value |= static_cast<size_t>(msg[2]) << 40;
+        value |= static_cast<size_t>(msg[3]) << 32;
+        value |= static_cast<size_t>(msg[4]) << 16;
+        value |= static_cast<size_t>(msg[5]) << 8;
+        value |= static_cast<size_t>(msg[6]);
         this->_logger.log("User ID = " + std::to_string(ntohl(value)));
         this->_auth.setId(ntohll(value));
         return;
     }
     if (this->_auth.isConnected()) {
         size_t value = 0;
-        value |= static_cast<size_t>(msg[0]) << 48;
-        value |= static_cast<size_t>(msg[1]) << 40;
-        value |= static_cast<size_t>(msg[2]) << 32;
-        value |= static_cast<size_t>(msg[3]) << 16;
-        value |= static_cast<size_t>(msg[4]) << 8;
-        value |= static_cast<size_t>(msg[5]);
+        value |= static_cast<size_t>(msg[0]) << 56;
+        value |= static_cast<size_t>(msg[1]) << 48;
+        value |= static_cast<size_t>(msg[2]) << 40;
+        value |= static_cast<size_t>(msg[3]) << 32;
+        value |= static_cast<size_t>(msg[4]) << 16;
+        value |= static_cast<size_t>(msg[5]) << 8;
+        value |= static_cast<size_t>(msg[6]);
         this->_logger.log("GameSpeed = " + std::to_string(ntohl(value)));
         this->_graphic.setGameSpeed(ntohl(value));
         return;
@@ -53,7 +55,7 @@ void jetpack::Client::Program::_setSize_tData(
 
 void jetpack::Client::Program::_setPlayerData(
     std::vector<unsigned char> msg) {
-    if (msg.size() < 38) {
+    if (msg.size() < 39) {
         this->_logger.log("Invalid player data size: "
                 + std::to_string(msg.size()));
         return;
@@ -71,21 +73,22 @@ void jetpack::Client::Program::_setPlayerData(
     std::strncpy(player.username, username.c_str(),
         sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
-    uint64_t yPosInt = (static_cast<uint64_t>(msg[24]) << 48)
-                     | (static_cast<uint64_t>(msg[25]) << 40)
-                     | (static_cast<uint64_t>(msg[26]) << 32)
-                     | (static_cast<uint64_t>(msg[27]) << 24)
-                     | (static_cast<uint64_t>(msg[28]) << 16)
-                     | (static_cast<uint64_t>(msg[29]) << 8)
-                     | static_cast<uint64_t>(msg[30]);
+    uint64_t yPosInt = (static_cast<uint64_t>(msg[24]) << 56)
+                     | (static_cast<uint64_t>(msg[25]) << 48)
+                     | (static_cast<uint64_t>(msg[26]) << 40)
+                     | (static_cast<uint64_t>(msg[27]) << 32)
+                     | (static_cast<uint64_t>(msg[28]) << 24)
+                     | (static_cast<uint64_t>(msg[29]) << 16)
+                     | (static_cast<uint64_t>(msg[30]) << 8)
+                     | static_cast<uint64_t>(msg[31]);
     yPosInt = ntohll(yPosInt);
     std::memcpy(&player.y_pos, &yPosInt, sizeof(yPosInt));
-    uint32_t coinsInt = (msg[31] << 24) | (msg[32] << 16)
-        | (msg[33] << 8) | msg[34];
+    uint32_t coinsInt = (msg[32] << 24) | (msg[33] << 16)
+        | (msg[34] << 8) | msg[35];
     player.coins_collected = ntohl(coinsInt);
-    player.is_dead = msg[35] != 0;
-    player.is_jetpack_on = msg[36] != 0;
-    player.host = msg[37] != 0;
+    player.is_dead = msg[36] != 0;
+    player.is_jetpack_on = msg[37] != 0;
+    player.host = msg[38] != 0;
     this->_logger.log("Player ID: " + std::to_string(player.id));
     this->_logger.log("Player Username: " + std::string(player.username));
     this->_logger.log("Player Y Position: " + std::to_string(player.y_pos));
@@ -94,6 +97,7 @@ void jetpack::Client::Program::_setPlayerData(
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
     this->_graphic.setPosPlayer(player.id,
         sf::Vector2f(0, player.y_pos * 40.f));
+    this->_graphic.setCoinAmount(player.id, player.coins_collected);
 }
 
 void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
@@ -103,18 +107,27 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
         return;
     }
     coinsPos_s coin;
-    uint32_t xPosInt = (msg[0] << 24) | (msg[1] << 16) | (msg[2] << 8) | msg[3];
-    coin.x_pos = ntohl(xPosInt) * 40.f;
-    uint32_t yPosInt = (msg[4] << 24) | (msg[5] << 16) | (msg[6] << 8) | msg[7];
-    coin.y_pos = ntohl(yPosInt) * 40.f;
-    coin.coinId = (msg[8] << 24) | (msg[9] << 16) | (msg[10] << 8) | msg[11];
-    coin.coinId = ntohl(coin.coinId);
-    this->_logger.log("Coin ID: " + std::to_string(coin.coinId));
+    uint64_t xPosInt = (static_cast<uint64_t>(msg[0]) << 56)
+                     | (static_cast<uint64_t>(msg[1]) << 48)
+                     | (static_cast<uint64_t>(msg[2]) << 40)
+                     | (static_cast<uint64_t>(msg[3]) << 32)
+                     | (static_cast<uint64_t>(msg[4]) << 24)
+                     | (static_cast<uint64_t>(msg[5]) << 16)
+                     | (static_cast<uint64_t>(msg[6]) << 8)
+                     | static_cast<uint64_t>(msg[7]);
+    coin.x_pos = ntohll(xPosInt) * 40.f;
+    uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56)
+                     | (static_cast<uint64_t>(msg[9]) << 48)
+                     | (static_cast<uint64_t>(msg[10]) << 40)
+                     | (static_cast<uint64_t>(msg[11]) << 32)
+                     | (static_cast<uint64_t>(msg[12]) << 24)
+                     | (static_cast<uint64_t>(msg[13]) << 16)
+                     | (static_cast<uint64_t>(msg[14]) << 8)
+                     | static_cast<uint64_t>(msg[15]);
+    coin.y_pos = ntohll(yPosInt) * 40.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
-    this->_graphic.addNewCoin(coin.coinId);
-    this->_graphic.setPosCoin(coin.coinId,
-        sf::Vector2f(coin.x_pos, coin.y_pos));
+    this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos), static_cast<float>(coin.y_pos)});
 }
 
 void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
