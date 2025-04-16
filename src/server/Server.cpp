@@ -175,7 +175,7 @@ std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
             std::cout << "Coin x: " << _gameData->coins[i]->x_pos
                       << " y: " << _gameData->coins[i]->y_pos
                       << " id: " << _gameData->coins[i]->coinId << std::endl;
-            packet.addData(_gameData->coins[i]->x_pos);
+            packet.addData(_gameData->coins[i]->x_pos - _gameData->advancement);
             packet.addData(_gameData->coins[i]->y_pos);
             packet.addData(static_cast<uint32_t>(_gameData->coins[i]->coinId));
         }
