@@ -20,10 +20,10 @@ class Game {
  private:
     static constexpr float TICK_RATE =
         50.0f;  // 50ms per tick = 20 ticks per second
-    static constexpr float GRAVITY = 20.00f;
-    static constexpr float JETPACK_FORCE = 200.0f;
-    static constexpr float VMAX = -4.0f;
-    static constexpr float VMIN = 3.0f;
+    static constexpr float GRAVITY = 40.00f;
+    static constexpr float JETPACK_FORCE = 400.0f;
+    static constexpr float VMAX = -5.0f;
+    static constexpr float VMIN = 4.0f;
     Clock clock;
     std::shared_ptr<GameData> gameData;
     WINDOW* mapWin = nullptr;  // Ncurses window for the map display

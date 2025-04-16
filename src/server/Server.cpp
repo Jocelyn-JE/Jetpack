@@ -53,6 +53,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
                 server.sendToAllClients(server.createCoinListPacket());
+                server.sendToAllClients(server.createObstacleListPacket());
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
@@ -136,11 +137,11 @@ void jetpack::server::Server::handleConnection() {
         client_socket, client_addr, this->_nextClientId));
     this->_nextClientId++;
     this->_socketPollList.addSocket(client_socket, POLLIN);
-    std::cerr << inet_ntoa(client_addr.sin_addr) << ":"
-              << ntohs(client_addr.sin_port)
-              << " connected fd: " << client_socket << std::endl;
-    std::cout << "GIGA DEBUG============================================="
-              << std::endl;
+    // std::cerr << inet_ntoa(client_addr.sin_addr) << ":"
+    //           << ntohs(client_addr.sin_port)
+    //           << " connected fd: " << client_socket << std::endl;
+    // std::cout << "GIGA DEBUG============================================="
+    //           << std::endl;
     this->_clients.back()->sendData(
         this->createConnectionPacket(_clients.back()->getId(), 1000));
 }
@@ -149,17 +150,17 @@ std::vector<uint8_t> jetpack::server::Server::createPlayerListPacket() {
     jetpack::server::Packet packet(1);
     packet.addPayloadHeader(_gameData->players.size(), PayloadType_t::PLAYER);
     for (const auto &player : _gameData->players) {
-        std::cout << "Player id: " << player.second->id
-                  << " username: " << player.second->username
-                  << " y_pos: " << player.second->y_pos
-                  << " coins_collected: " << 48059
-                  << " is_dead: " << player.second->is_dead
-                  << " is_jetpack_on: " << player.second->is_jetpack_on
-                  << std::endl;
+        // std::cout << "Player id: " << player.second->id
+        //           << " username: " << player.second->username
+        //           << " y_pos: " << player.second->y_pos
+        //           << " coins_collected: " << player.second->coins_collected
+        //           << " is_dead: " << player.second->is_dead
+        //           << " is_jetpack_on: " << player.second->is_jetpack_on
+        //           << std::endl;
         packet.addData(player.second->id);
         packet.addData(player.second->username, 20);
         packet.addData(player.second->y_pos);
-        packet.addData(48059);
+        packet.addData(player.second->coins_collected);
         packet.addData(player.second->is_dead);
         packet.addData(player.second->is_jetpack_on);
         packet.addData(player.second->host);
@@ -176,15 +177,39 @@ std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
             coinCount++;
         }
     }
-    std::cout << "Coin count: " << coinCount << std::endl;
+    // std::cout << "Coin count: " << coinCount << std::endl;
     packet.addPayloadHeader(coinCount, PayloadType_t::COIN_POS);
     for (size_t i = 0; i < _gameData->coins.size(); i++) {
         if (_gameData->coins[i]->x_pos >= _gameData->advancement - 5 &&
             _gameData->coins[i]->x_pos <= _gameData->advancement + 25) {
-            std::cout << "Coin x: " << _gameData->coins[i]->x_pos
-                      << " y: " << _gameData->coins[i]->y_pos << std::endl;
+            // std::cout << "Coin x: " << _gameData->coins[i]->x_pos
+            //           << " y: " << _gameData->coins[i]->y_pos << std::endl;
             packet.addData(_gameData->coins[i]->x_pos - _gameData->advancement);
             packet.addData(static_cast<double>(_gameData->coins[i]->y_pos));
+        }
+    }
+    return packet.getPacket();
+}
+
+std::vector<uint8_t> jetpack::server::Server::createObstacleListPacket() {
+    jetpack::server::Packet packet(1);
+    size_t obstacleCount = 0;
+    for (size_t i = 0; i < _gameData->obstacles.size(); i++) {
+        if (_gameData->obstacles[i]->x_pos >= _gameData->advancement - 5 &&
+            _gameData->obstacles[i]->x_pos <= _gameData->advancement + 25) {
+            obstacleCount++;
+        }
+    }
+    // std::cout << "Obstacle count: " << obstacleCount << std::endl;
+    packet.addPayloadHeader(obstacleCount, PayloadType_t::HAZARD_POS);
+    for (size_t i = 0; i < _gameData->obstacles.size(); i++) {
+        if (_gameData->obstacles[i]->x_pos >= _gameData->advancement - 5 &&
+            _gameData->obstacles[i]->x_pos <= _gameData->advancement + 25) {
+            // std::cout << "Obstacle x: " << _gameData->obstacles[i]->x_pos
+            //           << " y: " << _gameData->obstacles[i]->y_pos << std::endl;
+            packet.addData(_gameData->obstacles[i]->x_pos -
+                           _gameData->advancement);
+            packet.addData(static_cast<double>(_gameData->obstacles[i]->y_pos));
         }
     }
     return packet.getPacket();
