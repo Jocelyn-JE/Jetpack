@@ -26,6 +26,8 @@ Payload_t Packet::createPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload;
     payload.dataCount = dataCount;
     payload.dataId = dataId;
+    std::cout << "Payload header created: dataCount = " << dataCount
+              << ", dataId = " << static_cast<int>(dataId) << std::endl;
     return payload;
 }
 
@@ -71,7 +73,7 @@ void Packet::addData(float data) {
 }
 
 void Packet::addData(char* data, size_t size) {
-    for (size_t i = 0; i <= size; i++) this->addData(data[i]);
+    for (size_t i = 0; i < size; i++) this->addData(data[i]);
 }
 
 void Packet::add(uint32_t data, PayloadType_t type) {
@@ -111,7 +113,7 @@ const std::vector<uint8_t>& Packet::getPacket() const {
         std::cerr << std::hex << std::uppercase << std::setw(2)
                   << std::setfill('0') << static_cast<int>(byte) << " ";
     }
-    std::cerr << std::dec << std::endl;
+    std::cerr << std::dec << std::endl << std::endl;
     return this->_packet;
 }
 
