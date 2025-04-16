@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/10/25.
 //
 
-#ifndef SRC_CLIENT_MENU_MENU_HPP_
-#define SRC_CLIENT_MENU_MENU_HPP_
+#ifndef SRC_CLIENT_MENU_MENUGRAPHIC_HPP_
+#define SRC_CLIENT_MENU_MENUGRAPHIC_HPP_
 #include <functional>
 #include <string>
 #include <utility>
@@ -86,4 +86,4 @@ class Menu {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_MENU_MENU_HPP_
+#endif  // SRC_CLIENT_MENU_MENUGRAPHIC_HPP_

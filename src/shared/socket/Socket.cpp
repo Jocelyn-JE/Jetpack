@@ -6,8 +6,8 @@
 */
 
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <string>
@@ -19,7 +19,7 @@ Socket::Socket(int fd, struct sockaddr_in address) noexcept
     : _closeSocketOnDestruction(false) {
     this->_socketFd = fd;
     this->_address = address;
-    std::cout << "Fetched new socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Fetched new socket on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::Socket(int domain, int type, int protocol) noexcept(false)
@@ -29,7 +29,7 @@ Socket::Socket(int domain, int type, int protocol) noexcept(false)
         throw Socket::SocketError("Socket creation failed: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Created socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Created socket on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::~Socket() noexcept(false) {
@@ -38,9 +38,9 @@ Socket::~Socket() noexcept(false) {
             throw Socket::SocketError("Failed to close socket: " +
                                       std::string(strerror(errno)));
         }
-        std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
+        std::cerr << "Closed socket on fd: " << this->_socketFd << std::endl;
     }
-    std::cout << "Removed socket on fd " << this->_socketFd << " from server"
+    std::cerr << "Removed socket on fd " << this->_socketFd << " from server"
               << std::endl;
 }
 
@@ -51,7 +51,7 @@ void Socket::resetSocket(int domain, int type, int protocol) {
         throw Socket::SocketError("Socket creation failed: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Created socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Created socket on fd: " << this->_socketFd << std::endl;
 }
 
 bool Socket::closesOnDestroy() const noexcept {
@@ -68,7 +68,7 @@ void Socket::closeSocket() noexcept(false) {
         throw Socket::SocketError("Failed to close socket: " +
                                   std::string(strerror(errno)));
     }
-    std::cout << "Closed socket on fd: " << this->_socketFd << std::endl;
+    std::cerr << "Closed socket on fd: " << this->_socketFd << std::endl;
     this->_socketFd = -1;
     this->_closeSocketOnDestruction = false;
 }
@@ -116,34 +116,15 @@ void Socket::connectSocket(const char *ip_address,
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = inet_addr(ip_address);
-    int flags = fcntl(this->_socketFd, F_GETFL, 0);
-    bool is_nonblocking = (flags & O_NONBLOCK);
-    if (is_nonblocking) {
-        fcntl(this->_socketFd, F_SETFL, flags & ~O_NONBLOCK);
-        struct timeval tv;
-        tv.tv_sec = 3;
-        tv.tv_usec = 0;
-        setsockopt(this->_socketFd, SOL_SOCKET,
-            SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-        setsockopt(this->_socketFd, SOL_SOCKET,
-            SO_SNDTIMEO, (const char*)&tv, sizeof tv);
-    }
-    int connect_result = connect(this->_socketFd,
-        (const struct sockaddr *)&address, sizeof(address));
-    if (is_nonblocking)
-        fcntl(this->_socketFd, F_SETFL, flags);
+    int connect_result = connect(
+        this->_socketFd, (const struct sockaddr *)&address, sizeof(address));
     if (connect_result == -1) {
-        if (is_nonblocking && errno == EINPROGRESS) {
-            std::cout << "Connection in progress on fd: " <<
-                this->_socketFd << std::endl;
-            return;
-        }
-        throw Socket::SocketError("Connect failed to " +
-            std::string(ip_address) +
-            ":" + std::to_string(port) + " - " + std::string(strerror(errno)));
+        throw Socket::SocketError(
+            "Connect failed to " + std::string(ip_address) + ":" +
+            std::to_string(port) + " - " + std::string(strerror(errno)));
     }
-    std::cout << "Successfully connected to " << ip_address << ":" <<
-        port << " on fd: " << this->_socketFd << std::endl;
+    std::cout << "Successfully connected to " << ip_address << ":" << port
+              << " on fd: " << this->_socketFd << std::endl;
 }
 
 Socket::SocketError::SocketError(std::string message) noexcept {
@@ -188,15 +169,23 @@ std::string Socket::readFromSocket() noexcept(false) {
     }
     return buffer;
 }
-
 std::vector<uint8_t> Socket::readFromSocket(size_t size) noexcept(false) {
     std::vector<uint8_t> buffer(size);
-    int bytes_read = read(this->_socketFd, buffer.data(), buffer.size());
-
-    if (bytes_read < 0) {
-        throw Socket::SocketError("Read on fd " + this->_socketFd +
-                                  (" failed: " + std::string(strerror(errno))));
+    size_t bytes_read = 0;
+    while (bytes_read < size) {
+        ssize_t result = read(this->_socketFd, buffer.data()
+            + bytes_read, size - bytes_read);
+        if (result < 0) {
+            throw Socket::SocketError("Read on fd " +
+                std::to_string(this->_socketFd) +
+                " failed: " + std::string(strerror(errno)));
+        }
+        if (result == 0) {
+            break;
+        }
+        bytes_read += result;
     }
+    buffer.resize(bytes_read);
     return buffer;
 }
 

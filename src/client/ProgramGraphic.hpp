@@ -2,8 +2,8 @@
 // Created by roussierenoa on 3/28/25.
 //
 
-#ifndef SRC_CLIENT_PROGRAM_HPP_
-#define SRC_CLIENT_PROGRAM_HPP_
+#ifndef SRC_CLIENT_PROGRAMGRAPHIC_HPP_
+#define SRC_CLIENT_PROGRAMGRAPHIC_HPP_
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
@@ -13,11 +13,12 @@
 #include <string>
 #include <thread>
 #include <utility>
+
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
 #include "communicationHeader.hpp"
-#include "Auth/Auth.hpp"
+#include "Auth/AuthGraphic.hpp"
 
 namespace jetpack::Client {
 class Program {
@@ -120,4 +121,4 @@ class Program {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_PROGRAM_HPP_
+#endif  // SRC_CLIENT_PROGRAMGRAPHIC_HPP_

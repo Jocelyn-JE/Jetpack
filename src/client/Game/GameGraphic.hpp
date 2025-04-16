@@ -2,9 +2,10 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#ifndef SRC_CLIENT_GAME_GAME_HPP_
-#define SRC_CLIENT_GAME_GAME_HPP_
+#ifndef SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
+#define SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
 #include <functional>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <SpriteSheet.hpp>
@@ -12,6 +13,8 @@
 #include "../CoinStats/CoinStats.hpp"
 #include "../userInteractions.hpp"
 #include "Sprite.hpp"
+#include "../Coin/CoinGraphic.hpp"
+#include "../Laser/LaserGraphic.hpp"
 
 namespace jetpack::Client {
 class Game {
@@ -25,12 +28,16 @@ class Game {
     Sprite _background2;
     CoinStats _coinStats;
 
+    Coin _coin;
+    Laser _laser;
+
     void _handleKeyPressed(const sf::Event &event);
 
  public:
     void setCoinsAmount(unsigned int coinsAmount);
 
-    void display(sf::RenderWindow &window);
+    void display(sf::RenderWindow &window, std::vector<sf::Vector2f>
+        _posCoin, std::vector<sf::Vector2f> _posLaser);
 
     void compute();
 
@@ -42,4 +49,4 @@ class Game {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_GAME_GAME_HPP_
+#endif  // SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_

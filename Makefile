@@ -38,15 +38,15 @@ CLIENT_BINARY_NAME	=	jetpack_client
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
 CLIENT_SRC			=	./src/client/Graphic.cpp							\
-						./src/client/Menu/Menu.cpp							\
-						./src/client/Game/Game.cpp							\
-						./src/client/Program.cpp							\
-						./src/client/Auth/Auth.cpp							\
+						./src/client/Menu/MenuGraphic.cpp					\
+						./src/client/Game/GameGraphic.cpp					\
+						./src/client/ProgramGraphic.cpp						\
+						./src/client/Auth/AuthGraphic.cpp					\
 						./src/client/Parser/ClientParser.cpp				\
 						./src/client/Player/PlayerGraphic.cpp				\
 						./src/client/Coin/CoinGraphic.cpp					\
 						./src/client/CoinStats/CoinStats.cpp				\
-						./src/client/Laser/Laser.cpp						\
+						./src/client/Laser/LaserGraphic.cpp					\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 
@@ -75,7 +75,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/sfml
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
- 						-L./ -ljetpack -O2 -g  -lstdc++
+ 						-L./ -ljetpack -O2 -g  -lstdc++ -lncurses
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 
@@ -106,8 +106,8 @@ all: server client
 
 $(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
-	g++ $(CPPFLAGS) -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
-$(MAIN_SERVER_OBJ) $(SHARED_OBJ) -lncurses
+	g++ -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
+$(MAIN_SERVER_OBJ) $(SHARED_OBJ) $(CPPFLAGS)
 
 $(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
