@@ -264,8 +264,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             int socketFd = this->_socket.getSocketFd();
 
             if (socketFd == -1 || this->_manualReco) {
-                // this->_graphic.switchToMenu();
-                exit(0);
+                this->_graphic.switchToMenu();
                 this->_manualReco = false;
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
