@@ -3,6 +3,7 @@
 //
 
 #include "AuthGraphic.hpp"
+
 #include <string>
 
 void jetpack::Client::Auth::setId(size_t id) {

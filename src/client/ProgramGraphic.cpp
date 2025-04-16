@@ -6,14 +6,13 @@
 #include <poll.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <iomanip>
-#include <algorithm>
 
 #include "Coin.hpp"
 #include "Exception.hpp"
@@ -46,11 +45,10 @@ void jetpack::Client::Program::_setSize_tData(std::vector<unsigned char> msg) {
     }
 }
 
-void jetpack::Client::Program::_setPlayerData(
-    std::vector<unsigned char> msg) {
+void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     if (msg.size() < 35) {
-        this->_logger.log("Invalid player data size: "
-                + std::to_string(msg.size()));
+        this->_logger.log("Invalid player data size: " +
+                          std::to_string(msg.size()));
         return;
     }
     player_t player;
@@ -66,12 +64,12 @@ void jetpack::Client::Program::_setPlayerData(
     std::strncpy(player.username, username.c_str(),
                  sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
-    uint32_t yPosInt = (msg[24] << 24) | (msg[25] << 16)
-        | (msg[26] << 8) | msg[27];
+    uint32_t yPosInt =
+        (msg[24] << 24) | (msg[25] << 16) | (msg[26] << 8) | msg[27];
     yPosInt = ntohl(yPosInt);
     std::memcpy(&player.y_pos, &yPosInt, sizeof(player.y_pos));
-    uint32_t coinsInt = (msg[28] << 24) | (msg[29] << 16)
-        | (msg[30] << 8) | msg[31];
+    uint32_t coinsInt =
+        (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
     player.coins_collected = ntohl(coinsInt);
     player.is_dead = msg[32] != 0;
     player.is_jetpack_on = msg[33] != 0;
@@ -83,7 +81,7 @@ void jetpack::Client::Program::_setPlayerData(
                       std::to_string(player.coins_collected));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
     this->_graphic.setPosPlayer(player.id,
-        sf::Vector2f(0, player.y_pos * 40.f));
+                                sf::Vector2f(0, player.y_pos * 40.f));
 }
 
 void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
@@ -186,10 +184,9 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
     int nbrPayload = payload.dataCount;
     int sizeData = getPayloadSize(payload.dataId);
     std::vector<unsigned char> msg;
-    this->_logger.log("Payload dataId: " +
-        std::to_string(payload.dataId));
+    this->_logger.log("Payload dataId: " + std::to_string(payload.dataId));
     this->_logger.log("Payload dataCount: " +
-        std::to_string(payload.dataCount));
+                      std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
         this->_logger.log("Payload n°: " + std::to_string(i));

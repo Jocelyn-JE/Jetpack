@@ -14,11 +14,11 @@
 #include <utility>
 #include <vector>
 
+#include "Auth/AuthGraphic.hpp"
 #include "CommunicationHeader.hpp"
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
-#include "Auth/AuthGraphic.hpp"
 
 namespace jetpack::Client {
 class Program {

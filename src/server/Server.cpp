@@ -206,7 +206,8 @@ std::vector<uint8_t> jetpack::server::Server::createObstacleListPacket() {
         if (_gameData->obstacles[i]->x_pos >= _gameData->advancement - 5 &&
             _gameData->obstacles[i]->x_pos <= _gameData->advancement + 25) {
             // std::cout << "Obstacle x: " << _gameData->obstacles[i]->x_pos
-            //           << " y: " << _gameData->obstacles[i]->y_pos << std::endl;
+            //           << " y: " << _gameData->obstacles[i]->y_pos <<
+            //           std::endl;
             packet.addData(_gameData->obstacles[i]->x_pos -
                            _gameData->advancement);
             packet.addData(static_cast<double>(_gameData->obstacles[i]->y_pos));
