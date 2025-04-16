@@ -25,8 +25,8 @@ void Game::start(const std::string& mapFile) {
     }
     std::cerr << "Map loaded successfully" << std::endl;
 
-    initNcursesMap();
-    printServerData();
+    // initNcursesMap();
+    // printServerData();
 }
 
 void Game::pollInput() {
@@ -105,9 +105,9 @@ void Game::update(float deltaTime) {
         }
         checkCollisions();
     }
-    pollInput();
-    printServerData();
-    displayNcursesMap();
+    // pollInput();
+    // printServerData();
+    // displayNcursesMap();
 }
 
 void Game::checkCollisions() {

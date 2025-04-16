@@ -11,6 +11,8 @@
 #include <netinet/in.h>
 
 #include <cstdint>
+#include <iostream>
+#include <typeinfo>
 #include <vector>
 
 #include "CommunicationHeader.hpp"
@@ -29,6 +31,8 @@ class Packet {
     void addData(char *data, size_t size);
     template <typename T>
     void addData(T data) {
+        // std::cout << "Size of data: " << sizeof(T)
+        //           << ", Name of data: " << typeid(T).name() << std::endl;
         for (int i = sizeof(T) - 1; i >= 0; i--) {
             this->_packet.push_back(static_cast<uint8_t>(
                 (data >> (8 * static_cast<T>(sizeof(T) - 1 - i))) & 0xFF));
