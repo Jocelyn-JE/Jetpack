@@ -22,7 +22,7 @@ void jetpack::Client::Coin::compute() {
 
 void jetpack::Client::Coin::changePosValue(const sf::Vector2f &pos) {
     this->_coinMutex.lock();
-    this->_pos = pos;
+    this->_coinSheet.setPos(pos);
     this->_coinMutex.unlock();
 }
 

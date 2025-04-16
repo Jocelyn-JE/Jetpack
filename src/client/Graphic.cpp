@@ -26,6 +26,13 @@ void jetpack::Client::Graphic::display() {
     this->_window.display();
 }
 
+void jetpack::Client::Graphic::clearCoinPos() {
+    this->_posMutex.lock();
+    this->_posCoin.clear();
+    this->_posMutex.unlock();
+}
+
+
 void jetpack::Client::Graphic::compute() {
     this->_posMutex.lock();
     if (this->_windowType == MENU) {

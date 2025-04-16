@@ -46,6 +46,8 @@ class Graphic {
  public:
     void display();
 
+    void clearCoinPos();
+
     bool isOpen() const { return this->_window.isOpen(); }
 
     void compute();

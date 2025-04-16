@@ -115,7 +115,9 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                      | (static_cast<uint64_t>(msg[5]) << 16)
                      | (static_cast<uint64_t>(msg[6]) << 8)
                      | static_cast<uint64_t>(msg[7]);
-    coin.x_pos = ntohll(xPosInt) * 40.f;
+    xPosInt = ntohll(xPosInt);
+    std::memcpy(&coin.x_pos, &xPosInt, sizeof(xPosInt));
+    coin.x_pos *= 40.f;
     uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56)
                      | (static_cast<uint64_t>(msg[9]) << 48)
                      | (static_cast<uint64_t>(msg[10]) << 40)
@@ -124,7 +126,9 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                      | (static_cast<uint64_t>(msg[13]) << 16)
                      | (static_cast<uint64_t>(msg[14]) << 8)
                      | static_cast<uint64_t>(msg[15]);
-    coin.y_pos = ntohll(yPosInt) * 40.f;
+    yPosInt = ntohll(yPosInt);
+    std::memcpy(&coin.y_pos, &yPosInt, sizeof(yPosInt));
+    coin.y_pos *= 40.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
     this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos), static_cast<float>(coin.y_pos)});
@@ -192,7 +196,6 @@ void jetpack::Client::Program::_getServerMessage() {
 void jetpack::Client::Program::_connectToSocket(const char *ip,
     unsigned int port) {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
-    auto fd = (this->_socket.getSocketFd());
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
@@ -205,7 +208,6 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
-    fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
 }
 
 void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
@@ -216,6 +218,8 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
         std::to_string(payload.dataId));
     this->_logger.log("Payload dataCount: " +
         std::to_string(payload.dataCount));
+    if (payload.dataId == PayloadType_t::COIN_POS)
+        this->_graphic.clearCoinPos();
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
         this->_logger.log("Payload n°: " + std::to_string(i));
