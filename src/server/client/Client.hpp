@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Socket.hpp"
 
@@ -24,12 +25,27 @@ class Client {
     Client(int fd, struct sockaddr_in address, unsigned int id);
     ~Client();
     Socket _controlSocket;
-    // handleCommand returns true if the client should be disconnected
-    bool handleCommand(std::string commandLine);
-    void sendData(std::string data);
+    // handlePayload returns true if the client should be disconnected
+    bool handlePayload(std::string commandLine);
+    // handlePayload returns true if the client should be disconnected
+    bool handlePayload(std::vector<uint8_t> payload);
+    template <typename T>
+    bool handlePayload(std::vector<T> payload) {
+        if (payload.size() == 0) return true;
+        return false;
+    }
+    template <typename T>
+    void sendData(T data) {
+        _controlSocket.writeToSocket(data);
+    }
+    template <typename T>
+    void sendData(std::vector<T> data) {
+        _controlSocket.writeToSocket(data);
+    }
     unsigned int getId() const;
 
  private:
+    bool closeAndDisconnect();
     unsigned int _id;
 };
 }  // namespace server

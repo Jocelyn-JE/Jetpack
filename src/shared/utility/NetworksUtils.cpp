@@ -4,21 +4,19 @@
 
 #include <sys/poll.h>
 
-#include <vector>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
 #include <string>
+#include <vector>
 
-#include "communicationHeader.hpp"
+#include "Coin.hpp"
+#include "CommunicationHeader.hpp"
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
-
-#include "Socket.hpp"
-#include "Player.hpp"
-#include "Coin.hpp"
 #include "Obstacle.hpp"
-#include "Logger.hpp"
+#include "Player.hpp"
+#include "Socket.hpp"
 
 jetpack::Header_t generateHeader(unsigned char nbrPayload) {
     jetpack::Header_t header{};
@@ -29,7 +27,7 @@ jetpack::Header_t generateHeader(unsigned char nbrPayload) {
 }
 
 jetpack::Payload_t generatePayload(unsigned char dataCount,
-    unsigned char dataId) {
+                                   unsigned char dataId) {
     jetpack::Payload_t payload{};
     payload.dataCount = dataCount;
     payload.dataId = dataId;
@@ -77,7 +75,6 @@ int getPayloadSize(unsigned char dataId) {
     }
 }
 
-
 jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     struct pollfd pfd;
     pfd.fd = socket.getSocketFd();
@@ -93,29 +90,29 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     std::vector<unsigned char> headerBuffer;
     headerBuffer.resize(2);
     headerBuffer = socket.readFromSocket(2);
-    if (headerBuffer.empty() || headerBuffer ==
-        std::vector<unsigned char>(2, 0)) {
+    if (headerBuffer.empty() ||
+        headerBuffer == std::vector<unsigned char>(2, 0)) {
         logger.log("Header Error or Server disconnected");
         throw HeaderException("Incomplete Header size = 0");
     }
     if (headerBuffer.size() < 2) {
         logger.log("Incomplete Header");
         throw HeaderException("Incomplete Header size = " +
-            std::to_string(headerBuffer.size()));
+                              std::to_string(headerBuffer.size()));
     }
     logger.log("Packet received: ");
     std::stringstream ss;
-    for (const auto& byte : headerBuffer) {
-        ss << std::hex << std::uppercase << std::setw(2)
-           << std::setfill('0') << static_cast<int>(byte) << " ";
+    for (const auto &byte : headerBuffer) {
+        ss << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+           << static_cast<int>(byte) << " ";
         ss << std::dec;
     }
     logger.log(ss.str());
-    jetpack::Header_t header {};
+    jetpack::Header_t header{};
     uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
                           static_cast<uint16_t>(headerBuffer[1]);
     header.rawData = ntohs(dataHeader);
-    __bswap_64(header.rawData);;
+    __bswap_64(header.rawData);
     logger.log("Received: littleEndian " + std::to_string(header.rawData));
     logger.log("Received: " + std::to_string(dataHeader));
     logger.log("magic1: " + std::to_string(header.magic1));
@@ -148,19 +145,20 @@ jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
     if (payloadBuffer.size() < 2) {
         logger.log("Incomplete Payload");
         throw PayloadException("Incomplete Payload size = " +
-            std::to_string(payloadBuffer.size()));
+                               std::to_string(payloadBuffer.size()));
     }
     logger.log("Packet received: ");
     std::stringstream ss;
     for (const auto &byte : payloadBuffer) {
-        ss << std::hex << std::uppercase << std::setw(2)
-           << std::setfill('0') << static_cast<int>(byte) << " ";
+        ss << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+           << static_cast<int>(byte) << " ";
         ss << std::dec;
     }
     logger.log(ss.str());
     jetpack::Payload_t payload = {};
     uint16_t dataPayload = (static_cast<uint8_t>(payloadBuffer[0]) << 8) |
-                            static_cast<uint8_t>(payloadBuffer[1]);
+                           static_cast<uint8_t>(payloadBuffer[1]);
+
     payload.rawData = ntohs(dataPayload);
     logger.log("Received: littleEndian " + std::to_string(payload.rawData));
     logger.log("Received: " + std::to_string(dataPayload));

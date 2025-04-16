@@ -10,11 +10,11 @@
 #include <SFML/Graphics.hpp>
 #include <SpriteSheet.hpp>
 
+#include "../Coin/CoinGraphic.hpp"
 #include "../CoinStats/CoinStats.hpp"
+#include "../Laser/LaserGraphic.hpp"
 #include "../userInteractions.hpp"
 #include "Sprite.hpp"
-#include "../Coin/CoinGraphic.hpp"
-#include "../Laser/LaserGraphic.hpp"
 
 namespace jetpack::Client {
 class Game {
@@ -36,8 +36,8 @@ class Game {
  public:
     void setCoinsAmount(unsigned int coinsAmount);
 
-    void display(sf::RenderWindow &window, std::vector<sf::Vector2f>
-        _posCoin, std::vector<sf::Vector2f> _posLaser);
+    void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin,
+                 std::vector<sf::Vector2f> _posLaser);
 
     void compute();
 

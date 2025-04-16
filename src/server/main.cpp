@@ -10,11 +10,10 @@
 #include <memory>
 #include <thread>
 
-#include "../include/GameData.hpp"
-#include "./parsing/Parser.hpp"
 #include "Server.hpp"
 #include "logic/Game.hpp"
 #include "logic/GameServer.hpp"
+#include "parsing/Parser.hpp"
 
 void gameLoop(std::shared_ptr<GameData> gameData) {
     Game game(gameData);
@@ -31,23 +30,23 @@ int main(int argc, char **argv) {
     jetpack::Parser parser(argc, argv);
 
     try {
-        parser.parseServerFlags(*gameData);
+        // parser.parseServerFlags(*gameData);
     } catch (const jetpack::Parser::ParsingError &e) {
         std::cerr << e.what() << std::endl;
         std::cerr << parser.getServerUsage() << std::endl;
         return 84;
     }
 
-    if (std::filesystem::exists(gameData->filename)) {
-        std::thread gameThread(gameLoop, gameData);
-        std::thread networkThread(networkLoop, gameData);
+    // if (std::filesystem::exists(gameData->filename)) {
+    //     std::thread gameThread(gameLoop, gameData);
+    //     std::thread networkThread(networkLoop, gameData);
 
-        gameThread.join();
-        networkThread.join();
-    } else {
-        std::cerr << "Error: " << gameData->filename << " not found"
-                  << std::endl;
-        return 1;
-    }
-    return jetpack::server::Server::runServer(atoi(argv[1]));
+    //     gameThread.join();
+    //     networkThread.join();
+    // } else {
+    //     std::cerr << "Error: " << gameData->filename << " not found"
+    //               << std::endl;
+    //     return 1;
+    // }
+    return jetpack::server::Server::runServer(parser);
 }

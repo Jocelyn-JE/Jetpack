@@ -2,9 +2,10 @@
 // Created by roussierenoa on 4/10/25.
 //
 
+#include "MenuGraphic.hpp"
+
 #include <string>
 #include <utility>
-#include "MenuGraphic.hpp"
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
@@ -36,9 +37,11 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setSize({105, 70});
                 this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
             } else {
-                this->_sendSocketSettings({this->_ipBoxContent.getString(),
-                    std::stoi(
-                    this->_portBoxContent.getString().toAnsiString())});
+                this->_sendSocketSettings(
+                    {this->_ipBoxContent.getString(),
+                     std::stoi(
+                         this->_portBoxContent.getString().toAnsiString())});
+
                 this->_settingsTextButton.setString("Settings");
                 this->_settingsButton.setSize({140, 70});
                 this->_usernameButton.setFillColor(this->_menuButtonColor);
@@ -95,7 +98,7 @@ void jetpack::Client::Menu::compute() {
     if (this->_authIsConnected()) {
         this->_menuIDText.setFillColor(this->_menuTextColor);
         this->_menuIDText.setString("ID: " +
-            std::to_string(this->_authGetId()));
+                                    std::to_string(this->_authGetId()));
     } else {
         this->_menuIDText.setFillColor(sf::Color::Red);
         this->_menuIDText.setString("ID: none");
@@ -132,8 +135,8 @@ void jetpack::Client::Menu::analyze(const sf::Event &event) {
         this->_usernameBoxContent.setString(this->_username);
     }
     if (event.type == sf::Event::TextEntered && this->_isIpSelected) {
-        if (((event.text.unicode >= '0' && event.text.unicode <= '9')
-                || event.text.unicode == '.'))
+        if (((event.text.unicode >= '0' && event.text.unicode <= '9') ||
+             event.text.unicode == '.'))
             this->_ip += static_cast<char>(event.text.unicode);
         else if (event.text.unicode == 8 && !this->_ip.empty())
             this->_ip.pop_back();
@@ -164,19 +167,19 @@ void jetpack::Client::Menu::setServerStateOk() {
     this->_serverStateText.setString("Server: " + this->_serverStateString);
 }
 
-jetpack::Client::Menu::Menu(std::function<void(std::string)> &changeUsername,
+jetpack::Client::Menu::Menu(
+    std::function<void(std::string)> &changeUsername,
     std::function<std::string()> &getUsername,
     std::function<std::pair<std::string, std::string>()> &getSocketSettings,
     std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
     std::function<int()> &getIdWithAuth,
-    std::function<bool()> &getIsConnectedWithAuth
-):
-    _changeUsername(changeUsername),
-    _getUsername(getUsername),
-    _authIsConnected(getIsConnectedWithAuth),
-    _authGetId(getIdWithAuth),
-    _getSocketSettings(getSocketSettings),
-    _sendSocketSettings(sendSocketSettings) {
+    std::function<bool()> &getIsConnectedWithAuth)
+    : _changeUsername(changeUsername),
+      _getUsername(getUsername),
+      _authIsConnected(getIsConnectedWithAuth),
+      _authGetId(getIdWithAuth),
+      _getSocketSettings(getSocketSettings),
+      _sendSocketSettings(sendSocketSettings) {
     if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
                                                    "MenuBackground.png")) {
         throw std::runtime_error(

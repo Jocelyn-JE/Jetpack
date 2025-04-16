@@ -7,18 +7,18 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include <vector>
 #include <functional>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <utility>
+#include <vector>
 
+#include "Auth/AuthGraphic.hpp"
+#include "CommunicationHeader.hpp"
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
-#include "communicationHeader.hpp"
-#include "Auth/AuthGraphic.hpp"
 
 namespace jetpack::Client {
 class Program {
@@ -46,7 +46,7 @@ class Program {
             this->_userInteractionMutex.lock();
             this->_lastUserInteraction = data;
             this->_userInteractionMutex.unlock();
-    });
+        });
 
     std::function<void(std::string)> _changeUsername =
         ([this](std::string username) {
@@ -54,7 +54,7 @@ class Program {
             this->_auth.setUsername(username);
             this->_isChangeUsername = true;
             this->_usernameMutex.unlock();
-    });
+        });
 
     std::function<std::string()> _getUsername = ([this]() -> std::string {
         this->_usernameMutex.lock();
@@ -65,11 +65,11 @@ class Program {
 
     std::function<std::pair<std::string, std::string>()> _getSocketSettings =
         ([this]() -> std::pair<std::string, std::string> {
-        this->_portIpMutex.lock();
-        auto data = std::make_pair(this->_ip, std::to_string(this->_port));
-        this->_portIpMutex.unlock();
-        return data;
-    });
+            this->_portIpMutex.lock();
+            auto data = std::make_pair(this->_ip, std::to_string(this->_port));
+            this->_portIpMutex.unlock();
+            return data;
+        });
 
     std::function<void(std::pair<std::string, int>)> _setSocketSettings =
         ([this](std::pair<std::string, int> data) {
@@ -78,15 +78,13 @@ class Program {
             this->_ip = data.first;
             this->_port = data.second;
             this->_portIpMutex.unlock();
-    });
+        });
 
-    std::function<int()> _getIdWithAuth = ([this]() -> int {
-        return this->_auth.getId();
-    });
+    std::function<int()> _getIdWithAuth =
+        ([this]() -> int { return this->_auth.getId(); });
 
-    std::function<bool()> _getIsConnectedWithAuth = ([this]() -> bool {
-        return this->_auth.isConnected();
-    });
+    std::function<bool()> _getIsConnectedWithAuth =
+        ([this]() -> bool { return this->_auth.isConnected(); });
 
     void _setSize_tData(std::vector<unsigned char> msg);
 

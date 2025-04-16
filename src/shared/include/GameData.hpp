@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "./include/GamePlayer.hpp"
 #include "Coin.hpp"
-#include "GamePlayer.hpp"
 #include "Obstacle.hpp"
 
 struct GameData {
@@ -15,12 +15,12 @@ struct GameData {
     std::vector<std::shared_ptr<coinsPos_t>> coins;
     std::vector<std::shared_ptr<obstacle_t>> obstacles;
     double advancement = 0;
-    size_t gameSpeed = 1000;
+    size_t gameSpeed = 500;
     bool isRunning;
     bool debug;
     int port;
     std::string filename;
 
     GameData()
-        : isRunning(true), debug(false), port(4242), filename("map.joy") {}
+        : isRunning(false), debug(false), port(4242), filename("map.joy") {}
 };

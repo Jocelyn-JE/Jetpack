@@ -9,11 +9,14 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
+#include <CommunicationHeader.hpp>
 
 // Helper functions -----------------------------------------------------------
 
 static bool clientDisconnect(jetpack::server::Client const &client) {
-    std::cout << "Client " << client._controlSocket.getSocketFd()
+    std::cerr << "Client " << client._controlSocket.getSocketFd()
               << " disconnected" << std::endl;
     return true;
 }
@@ -25,22 +28,39 @@ jetpack::server::Client::Client(int fd, struct sockaddr_in address,
     : _controlSocket(fd, address), _id(id) {}
 
 jetpack::server::Client::~Client() {
-    std::cout << "Destroying client" << std::endl;
+    std::cerr << "Destroying client" << std::endl;
 }
 
 unsigned int jetpack::server::Client::getId() const { return _id; }
 
-void jetpack::server::Client::sendData(std::string data) {
-    _controlSocket.writeToSocket(data);
-}
-
-bool jetpack::server::Client::handleCommand(std::string commandLine) {
+bool jetpack::server::Client::handlePayload(std::string commandLine) {
     if (commandLine == "") {
         return clientDisconnect(*this);
     }
     if (commandLine == "QUIT\r\n") {
-        _controlSocket.closeSocket();
-        return true;
+        return this->closeAndDisconnect();
     }
+    return false;
+}
+
+bool jetpack::server::Client::closeAndDisconnect() {
+    _controlSocket.closeSocket();
+    return true;
+}
+
+bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload) {
+    Header_t header;
+    Payload_t payloadHeader;
+    std::vector<uint8_t> payloadData;
+
+    if (payload.size() == 0) return clientDisconnect(*this);
+    header.rawData = (static_cast<uint16_t>(payload[0]) << 8) |
+                     (static_cast<uint16_t>(payload[1]));
+    if (header.magic1 != 42 || header.magic2 != 42)
+        return this->closeAndDisconnect();
+    payloadData = this->_controlSocket.readFromSocket(2);
+    payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
+                            (static_cast<uint16_t>(payloadData[1]));
+    if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
     return false;
 }

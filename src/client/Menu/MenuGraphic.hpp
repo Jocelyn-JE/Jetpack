@@ -74,13 +74,13 @@ class Menu {
 
     void analyze(const sf::Event &event);
 
-    Menu(std::function<void(std::string)> &changeUsername,
-         std::function<std::string()> &getUsername,
-         std::function<std::pair<std::string, std::string>()>
-            &getSocketSettings,
-         std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
-         std::function<int()> &getIdWithAuth,
-         std::function<bool()> &getIsConnectedWithAuth);
+    Menu(
+        std::function<void(std::string)> &changeUsername,
+        std::function<std::string()> &getUsername,
+        std::function<std::pair<std::string, std::string>()> &getSocketSettings,
+        std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
+        std::function<int()> &getIdWithAuth,
+        std::function<bool()> &getIsConnectedWithAuth);
 
     ~Menu() = default;
 };
