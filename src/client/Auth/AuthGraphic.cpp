@@ -2,8 +2,7 @@
 // Created by roussierenoa on 4/14/25.
 //
 
-#include "Auth.hpp"
-
+#include "AuthGraphic.hpp"
 #include <string>
 
 void jetpack::Client::Auth::setId(size_t id) {

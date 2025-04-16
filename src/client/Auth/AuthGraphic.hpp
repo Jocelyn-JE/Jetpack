@@ -2,8 +2,9 @@
 // Created by roussierenoa on 4/14/25.
 //
 
-#ifndef SRC_CLIENT_AUTH_AUTH_HPP_
-#define SRC_CLIENT_AUTH_AUTH_HPP_
+#ifndef SRC_CLIENT_AUTH_AUTHGRAPHIC_HPP_
+#define SRC_CLIENT_AUTH_AUTHGRAPHIC_HPP_
+#include <string>
 #include <mutex>
 #include <string>
 
@@ -34,4 +35,4 @@ class Auth {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_AUTH_AUTH_HPP_
+#endif  // SRC_CLIENT_AUTH_AUTHGRAPHIC_HPP_

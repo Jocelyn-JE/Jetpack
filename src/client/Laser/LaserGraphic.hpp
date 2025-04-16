@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#ifndef SRC_CLIENT_LASER_LASER_HPP_
-#define SRC_CLIENT_LASER_LASER_HPP_
+#ifndef SRC_CLIENT_LASER_LASERGRAPHIC_HPP_
+#define SRC_CLIENT_LASER_LASERGRAPHIC_HPP_
 #include <mutex>
 
 #include <SFML/Graphics.hpp>
@@ -33,4 +33,4 @@ class Laser {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_LASER_LASER_HPP_
+#endif  // SRC_CLIENT_LASER_LASERGRAPHIC_HPP_

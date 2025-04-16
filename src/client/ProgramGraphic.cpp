@@ -66,12 +66,12 @@ void jetpack::Client::Program::_setPlayerData(
     std::strncpy(player.username, username.c_str(),
                  sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
-    uint32_t yPosInt = (msg[25] << 24) | (msg[26] << 16)
-        | (msg[27] << 8) | msg[28];
+    uint32_t yPosInt = (msg[24] << 24) | (msg[25] << 16)
+        | (msg[26] << 8) | msg[27];
     yPosInt = ntohl(yPosInt);
     std::memcpy(&player.y_pos, &yPosInt, sizeof(player.y_pos));
-    uint32_t coinsInt = (msg[29] << 24) | (msg[30] << 16)
-        | (msg[31] << 8) | msg[32];
+    uint32_t coinsInt = (msg[28] << 24) | (msg[29] << 16)
+        | (msg[30] << 8) | msg[31];
     player.coins_collected = ntohl(coinsInt);
     player.is_dead = msg[32] != 0;
     player.is_jetpack_on = msg[33] != 0;
@@ -82,7 +82,8 @@ void jetpack::Client::Program::_setPlayerData(
     this->_logger.log("Player Coins: " +
                       std::to_string(player.coins_collected));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
-    this->_graphic.setPosPlayer(player.id, sf::Vector2f(0, player.y_pos * 40.f));
+    this->_graphic.setPosPlayer(player.id,
+        sf::Vector2f(0, player.y_pos * 40.f));
 }
 
 void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
@@ -93,14 +94,16 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
     }
     coinsPos_s coin;
     uint32_t xPosInt = (msg[0] << 24) | (msg[1] << 16) | (msg[2] << 8) | msg[3];
-    coin.x_pos = ntohl(xPosInt);
+    coin.x_pos = ntohl(xPosInt) * 40.f;
     uint32_t yPosInt = (msg[4] << 24) | (msg[5] << 16) | (msg[6] << 8) | msg[7];
-    coin.y_pos = ntohl(yPosInt);
+    coin.y_pos = ntohl(yPosInt) * 40.f;
     coin.coinId = (msg[8] << 24) | (msg[9] << 16) | (msg[10] << 8) | msg[11];
     coin.coinId = ntohl(coin.coinId);
     this->_logger.log("Coin Position: X=" + std::to_string(coin.x_pos) +
                       ", Y=" + std::to_string(coin.y_pos));
     this->_logger.log("Coin ID: " + std::to_string(coin.coinId));
+    this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
+    this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
     this->_graphic.addNewCoin(coin.coinId);
     this->_graphic.setPosCoin(coin.coinId,
                               sf::Vector2f(coin.x_pos, coin.y_pos));
@@ -136,7 +139,7 @@ void jetpack::Client::Program::_getServerMessage() {
     try {
         header = getHeader(this->_logger, this->_socket);
     } catch (HeaderException &) {
-        this->_socket.closeSocket();
+        this->_manualReco = true;
         this->_graphic.serverError();
         this->_auth.resetAuth();
         throw GetMessageException("Header error");
@@ -150,7 +153,7 @@ void jetpack::Client::Program::_getServerMessage() {
         try {
             payload = getPayload(this->_logger, this->_socket);
         } catch (PayloadException &) {
-            this->_socket.closeSocket();
+            this->_manualReco = true;
             this->_graphic.serverError();
             this->_auth.resetAuth();
             throw GetMessageException("Payload error");
@@ -175,7 +178,7 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
     } catch (const std::exception &e) {
         this->_graphic.serverError();
         this->_auth.resetAuth();
-        this->_socket.closeSocket();
+        this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
     fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
@@ -183,12 +186,12 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
 
 void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
     int nbrPayload = payload.dataCount;
-    int sizeData = 0;
+    int sizeData = getPayloadSize(payload.dataId);
     std::vector<unsigned char> msg;
-    sizeData = getPayloadSize(payload.dataId);
-    this->_logger.log("Payload dataId: " + std::to_string(payload.dataId));
+    this->_logger.log("Payload dataId: " +
+        std::to_string(payload.dataId));
     this->_logger.log("Payload dataCount: " +
-                      std::to_string(payload.dataCount));
+        std::to_string(payload.dataCount));
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
         this->_logger.log("Payload n°: " + std::to_string(i));
@@ -219,8 +222,9 @@ void jetpack::Client::Program::_sniffANetwork() {
             int socketFd = this->_socket.getSocketFd();
 
             if (socketFd == -1 || this->_manualReco) {
+                // this->_graphic.switchToMenu();
+                exit(0);
                 this->_manualReco = false;
-                this->_socket.closeSocket();
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
                 try {
@@ -238,7 +242,7 @@ void jetpack::Client::Program::_sniffANetwork() {
 
             if (pollResult < 0) {
                 this->_logger.log("Poll error");
-                this->_socket.closeSocket();
+                this->_manualReco = true;
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
                 continue;
@@ -262,7 +266,7 @@ void jetpack::Client::Program::_sniffANetwork() {
                                       std::string(e.what()));
                     this->_graphic.serverError();
                     this->_auth.resetAuth();
-                    this->_socket.closeSocket();
+                    this->_manualReco = true;
                 } catch (const NetworkException &e) {
                     this->_logger.log("Network error: " +
                                       std::string(e.what()));
@@ -273,10 +277,7 @@ void jetpack::Client::Program::_sniffANetwork() {
                               std::string(e.what()));
             this->_graphic.serverError();
             this->_auth.resetAuth();
-            try {
-                this->_socket.closeSocket();
-            } catch (...) {
-            }
+            this->_manualReco = true;
             std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
@@ -314,7 +315,7 @@ void jetpack::Client::Program::_sendPlayerInput() {
     } catch (const Socket::SocketError &e) {
         std::cerr << "Error sending player input: " << e.what() << std::endl;
         try {
-            this->_socket.closeSocket();
+            this->_manualReco = true;
         } catch (...) {
         }
     }
@@ -355,10 +356,7 @@ void jetpack::Client::Program::_sendNewUsername() {
         this->_communicationMutex.unlock();
     } catch (const Socket::SocketError &e) {
         std::cerr << "Error sending username change: " << e.what() << std::endl;
-        try {
-            this->_socket.closeSocket();
-        } catch (...) {
-        }
+        this->_manualReco = true;
     }
 }
 

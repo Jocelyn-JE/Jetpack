@@ -2,8 +2,8 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#ifndef SRC_CLIENT_GAME_GAME_HPP_
-#define SRC_CLIENT_GAME_GAME_HPP_
+#ifndef SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
+#define SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
 #include <functional>
 
 #include <SFML/Graphics.hpp>
@@ -42,4 +42,4 @@ class Game {
 };
 }  // namespace jetpack::Client
 
-#endif  // SRC_CLIENT_GAME_GAME_HPP_
+#endif  // SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_

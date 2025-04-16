@@ -19,6 +19,8 @@
 #include "Graphic.hpp"
 #include "Logger.hpp"
 #include "Socket.hpp"
+#include "communicationHeader.hpp"
+#include "Auth/AuthGraphic.hpp"
 
 namespace jetpack::Client {
 class Program {
