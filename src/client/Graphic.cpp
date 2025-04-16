@@ -16,10 +16,8 @@ void jetpack::Client::Graphic::display() {
     if (this->_windowType == MENU)
         this->_menu.display(this->_window);
     if (this->_windowType == GAME) {
-        this->_game.display(this->_window, this->_posCoin);
+        this->_game.display(this->_window, this->_posCoin, this->_posLaser);
         for (auto &s : this->_listPlayers)
-            s.second.first->display(this->_window);
-        for (auto &s : this->_listLasers)
             s.second.first->display(this->_window);
     }
     this->_posMutex.unlock();
@@ -29,6 +27,12 @@ void jetpack::Client::Graphic::display() {
 void jetpack::Client::Graphic::clearCoinPos() {
     this->_posMutex.lock();
     this->_posCoin.clear();
+    this->_posMutex.unlock();
+}
+
+void jetpack::Client::Graphic::clearLaserPos() {
+    this->_posMutex.lock();
+    this->_posLaser.clear();
     this->_posMutex.unlock();
 }
 
@@ -44,9 +48,6 @@ void jetpack::Client::Graphic::compute() {
             s.second.first->compute();
             if (static_cast<unsigned int>(this->_getIdWithAuth()) == s.second.first->id)
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
-        }
-        for (auto &s : this->_listLasers) {
-            s.second.first->compute();
         }
     }
     this->_posMutex.unlock();
@@ -71,10 +72,9 @@ void jetpack::Client::Graphic::setPosCoin(sf::Vector2f pos) {
     this->_posMutex.unlock();
 }
 
-void jetpack::Client::Graphic::setPosLaser(unsigned int id, sf::Vector2f pos) {
+void jetpack::Client::Graphic::setPosLaser(sf::Vector2f pos) {
     this->_posMutex.lock();
-    this->_listLasers.at(id).second = pos;
-    this->_listLasers.at(id).first->changePosValue(pos);
+    this->_posLaser.push_back(pos);
     this->_posMutex.unlock();
 }
 
@@ -102,14 +102,6 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
         this->_listPlayers.emplace(
             id, std::make_pair(std::make_unique<Player>(isTransparent, id),
                                sf::Vector2f(0, 0)));
-    this->_posMutex.unlock();
-}
-
-void jetpack::Client::Graphic::addNewLaser(unsigned int id) {
-    this->_posMutex.lock();
-    if (!this->_listLasers.contains(id))
-        this->_listLasers.emplace(
-            id, std::make_pair(std::make_unique<Laser>(), sf::Vector2f(0, 0)));
     this->_posMutex.unlock();
 }
 

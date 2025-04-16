@@ -13,6 +13,7 @@
 #include "../userInteractions.hpp"
 #include "Sprite.hpp"
 #include "../Coin/CoinGraphic.hpp"
+#include "../Laser/LaserGraphic.hpp"
 
 namespace jetpack::Client {
 class Game {
@@ -27,13 +28,14 @@ class Game {
     CoinStats _coinStats;
 
     Coin _coin;
+    Laser _laser;
 
     void _handleKeyPressed(const sf::Event &event);
 
  public:
     void setCoinsAmount(unsigned int coinsAmount);
 
-    void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin);
+    void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin, std::vector<sf::Vector2f> _posLaser);
 
     void compute();
 

@@ -117,7 +117,7 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                      | static_cast<uint64_t>(msg[7]);
     xPosInt = ntohll(xPosInt);
     std::memcpy(&coin.x_pos, &xPosInt, sizeof(xPosInt));
-    coin.x_pos *= 40.f;
+    coin.x_pos *= 60.f;
     uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56)
                      | (static_cast<uint64_t>(msg[9]) << 48)
                      | (static_cast<uint64_t>(msg[10]) << 40)
@@ -128,38 +128,44 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                      | static_cast<uint64_t>(msg[15]);
     yPosInt = ntohll(yPosInt);
     std::memcpy(&coin.y_pos, &yPosInt, sizeof(yPosInt));
-    coin.y_pos *= 40.f;
+    coin.y_pos *= 42.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
     this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos), static_cast<float>(coin.y_pos)});
 }
 
 void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
-    if (msg.size() < sizeof(obstacle_t)) {
-        this->_logger.log("Invalid obstacle data size: " +
+    if (msg.size() < sizeof(coinsPos_s)) {
+        this->_logger.log("Invalid coin data size: " +
             std::to_string(msg.size()));
         return;
     }
     obstacle_t obstacle;
-    uint32_t xPosInt = (msg[0] << 24) | (msg[1] << 16)
-        | (msg[2] << 8) | msg[3];
-    obstacle.x_pos = ntohl(xPosInt);
-    uint32_t yPosInt = (msg[4] << 24) | (msg[5] << 16)
-        | (msg[6] << 8) | msg[7];
-    obstacle.y_pos = ntohl(yPosInt);
-    int obstacleId = 0;
-    if (msg.size() >= 12) {
-        uint32_t idInt = (msg[8] << 24) | (msg[9] << 16)
-            | (msg[10] << 8) | msg[11];
-        obstacleId = ntohl(idInt);
-    }
-    this->_logger.log("Obstacle Position: X=" +
-        std::to_string(obstacle.x_pos) +", Y=" +
-        std::to_string(obstacle.y_pos));
-    this->_logger.log("Obstacle ID: " + std::to_string(obstacleId));
-    this->_graphic.addNewLaser(obstacleId);
-    this->_graphic.setPosLaser(obstacleId,
-        sf::Vector2f(obstacle.x_pos, obstacle.y_pos));
+    uint64_t xPosInt = (static_cast<uint64_t>(msg[0]) << 56)
+                     | (static_cast<uint64_t>(msg[1]) << 48)
+                     | (static_cast<uint64_t>(msg[2]) << 40)
+                     | (static_cast<uint64_t>(msg[3]) << 32)
+                     | (static_cast<uint64_t>(msg[4]) << 24)
+                     | (static_cast<uint64_t>(msg[5]) << 16)
+                     | (static_cast<uint64_t>(msg[6]) << 8)
+                     | static_cast<uint64_t>(msg[7]);
+    xPosInt = ntohll(xPosInt);
+    std::memcpy(&obstacle.x_pos, &xPosInt, sizeof(xPosInt));
+    obstacle.x_pos *= 60.f;
+    uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56)
+                     | (static_cast<uint64_t>(msg[9]) << 48)
+                     | (static_cast<uint64_t>(msg[10]) << 40)
+                     | (static_cast<uint64_t>(msg[11]) << 32)
+                     | (static_cast<uint64_t>(msg[12]) << 24)
+                     | (static_cast<uint64_t>(msg[13]) << 16)
+                     | (static_cast<uint64_t>(msg[14]) << 8)
+                     | static_cast<uint64_t>(msg[15]);
+    yPosInt = ntohll(yPosInt);
+    std::memcpy(&obstacle.y_pos, &yPosInt, sizeof(yPosInt));
+    obstacle.y_pos *= 42.f;
+    this->_logger.log("Obstacle X Position: " + std::to_string(obstacle.x_pos));
+    this->_logger.log("Obstacle Y Position: " + std::to_string(obstacle.y_pos));
+    this->_graphic.setPosLaser(sf::Vector2f{static_cast<float>(obstacle.x_pos), static_cast<float>(obstacle.y_pos)});
 }
 
 void jetpack::Client::Program::_getServerMessage() {
@@ -220,6 +226,8 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
         std::to_string(payload.dataCount));
     if (payload.dataId == PayloadType_t::COIN_POS)
         this->_graphic.clearCoinPos();
+    if (payload.dataId == PayloadType_t::HAZARD_POS)
+        this->_graphic.clearLaserPos();
     for (int i = 0; i < nbrPayload; ++i) {
         msg.resize(sizeData);
         this->_logger.log("Payload n°: " + std::to_string(i));

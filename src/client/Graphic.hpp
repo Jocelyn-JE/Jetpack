@@ -34,8 +34,8 @@ class Graphic {
         _listPlayers;
     std::vector<sf::Vector2f> _posCoin;
 
-    std::map<unsigned int, std::pair<std::unique_ptr<Laser>, sf::Vector2f> >
-        _listLasers;
+    std::vector<sf::Vector2f> _posLaser;
+
     std::mutex _posMutex;
 
     std::function<int()> &_getIdWithAuth;
@@ -47,6 +47,8 @@ class Graphic {
     void display();
 
     void clearCoinPos();
+
+    void clearLaserPos();
 
     bool isOpen() const { return this->_window.isOpen(); }
 
@@ -60,15 +62,13 @@ class Graphic {
 
     void setPosCoin(sf::Vector2f pos);
 
-    void setPosLaser(unsigned int id, sf::Vector2f pos);
+    void setPosLaser(sf::Vector2f pos);
 
     void analyse();
 
     void setGameSpeed(size_t value);
 
     void addNewPlayer(unsigned int id, bool isCurrent);
-
-    void addNewLaser(unsigned int id);
 
     void switchToGame();
 

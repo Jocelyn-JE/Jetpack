@@ -12,7 +12,6 @@ void jetpack::Client::Coin::display(sf::RenderWindow &window) {
 
 void jetpack::Client::Coin::compute() {
     this->_coinMutex.lock();
-    this->_coinSheet.setPos(this->_pos);
     if (this->_clock.getElapsedTime().asMilliseconds() > 100) {
         this->_coinSheet.nextSprite();
         this->_clock.restart();
