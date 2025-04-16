@@ -52,6 +52,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
             }
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
+                server.sendToAllClients(server.createCoinListPacket());
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
@@ -153,6 +154,17 @@ std::vector<uint8_t> jetpack::server::Server::createPlayerListPacket() {
         packet.addData(player.second->is_dead);
         packet.addData(player.second->is_jetpack_on);
         packet.addData(player.second->host);
+    }
+    return packet.getPacket();
+}
+
+std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
+    jetpack::server::Packet packet(1);
+    packet.addPayloadHeader(_gameData->coins.size(), PayloadType_t::COIN_POS);
+    for (const auto &coin : _gameData->coins) {
+        packet.addData(coin->x_pos);
+        packet.addData(coin->y_pos);
+        packet.addData(coin->coinId);
     }
     return packet.getPacket();
 }
