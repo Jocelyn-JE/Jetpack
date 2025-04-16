@@ -12,7 +12,6 @@
 
 namespace jetpack::Client {
 class Player {
-
     enum PlayerSprite_t {
         RUNNING = 0,
         JETPACK_ON = 1,

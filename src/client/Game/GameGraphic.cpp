@@ -5,16 +5,18 @@
 #include "GameGraphic.hpp"
 
 #include <iostream>
+#include <vector>
 
-void jetpack::Client::Game::display(sf::RenderWindow &window, std::vector<sf::Vector2f> posCoin, std::vector<sf::Vector2f> posLaser) {
+void jetpack::Client::Game::display(sf::RenderWindow &window,
+    std::vector<sf::Vector2f> posCoin, std::vector<sf::Vector2f> posLaser) {
     this->_background.display(window);
     this->_background2.display(window);
     this->_coinStats.display(window);
-    for (auto s: posCoin) {
+    for (auto s : posCoin) {
         this->_coin.changePosValue(s);
         this->_coin.display(window);
     }
-    for (auto s: posLaser) {
+    for (auto s : posLaser) {
         this->_laser.changePosValue(s);
         this->_laser.display(window);
     }

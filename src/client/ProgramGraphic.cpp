@@ -16,7 +16,7 @@
 
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
-#include "Program.hpp"
+#include "ProgramGraphic.hpp"
 #include "Player.hpp"
 #include "Coin.hpp"
 #include "Obstacle.hpp"
@@ -131,7 +131,8 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
     coin.y_pos *= 42.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
-    this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos), static_cast<float>(coin.y_pos)});
+    this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos),
+        static_cast<float>(coin.y_pos)});
 }
 
 void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
@@ -165,7 +166,8 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
     obstacle.y_pos *= 42.f;
     this->_logger.log("Obstacle X Position: " + std::to_string(obstacle.x_pos));
     this->_logger.log("Obstacle Y Position: " + std::to_string(obstacle.y_pos));
-    this->_graphic.setPosLaser(sf::Vector2f{static_cast<float>(obstacle.x_pos), static_cast<float>(obstacle.y_pos)});
+    this->_graphic.setPosLaser(sf::Vector2f{static_cast<float>(obstacle.x_pos),
+        static_cast<float>(obstacle.y_pos)});
 }
 
 void jetpack::Client::Program::_getServerMessage() {

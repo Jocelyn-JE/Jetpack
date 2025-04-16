@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "Program.hpp"
+#include "ProgramGraphic.hpp"
 
 void jetpack::Client::Graphic::display() {
     this->_window.clear();
@@ -46,7 +46,8 @@ void jetpack::Client::Graphic::compute() {
         this->_game.compute();
         for (auto &s : this->_listPlayers) {
             s.second.first->compute();
-            if (static_cast<unsigned int>(this->_getIdWithAuth()) == s.second.first->id)
+            if (static_cast<unsigned int>(this->_getIdWithAuth())
+                == s.second.first->id)
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
         }
     }

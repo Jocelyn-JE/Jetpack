@@ -5,6 +5,7 @@
 #ifndef SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
 #define SRC_CLIENT_GAME_GAMEGRAPHIC_HPP_
 #include <functional>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <SpriteSheet.hpp>
@@ -35,7 +36,8 @@ class Game {
  public:
     void setCoinsAmount(unsigned int coinsAmount);
 
-    void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin, std::vector<sf::Vector2f> _posLaser);
+    void display(sf::RenderWindow &window, std::vector<sf::Vector2f>
+        _posCoin, std::vector<sf::Vector2f> _posLaser);
 
     void compute();
 
