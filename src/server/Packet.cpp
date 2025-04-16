@@ -79,6 +79,7 @@ void Packet::addData(double data) {
     uint64_t bigEndianData;
     std::memcpy(&rawData, &data, sizeof(data));
     bigEndianData = htonll(rawData);
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 56));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 48));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 40));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 32));
