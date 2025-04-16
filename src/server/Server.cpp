@@ -54,7 +54,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
                 server.sendToAllClients(server.createPlayerListPacket());
                 server.sendToAllClients(server.createCoinListPacket());
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;

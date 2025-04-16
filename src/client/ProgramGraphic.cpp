@@ -168,7 +168,6 @@ void jetpack::Client::Program::_getServerMessage() {
 void jetpack::Client::Program::_connectToSocket(const char *ip,
                                                 unsigned int port) {
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
-    auto fd = (this->_socket.getSocketFd());
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
@@ -181,7 +180,6 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
     }
-    fcntl(fd, F_SETFL, F_GETFL | O_NONBLOCK);
 }
 
 void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {

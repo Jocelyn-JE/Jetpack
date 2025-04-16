@@ -116,27 +116,9 @@ void Socket::connectSocket(const char *ip_address,
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     address.sin_addr.s_addr = inet_addr(ip_address);
-    int flags = fcntl(this->_socketFd, F_GETFL, 0);
-    bool is_nonblocking = (flags & O_NONBLOCK);
-    if (is_nonblocking) {
-        fcntl(this->_socketFd, F_SETFL, flags & ~O_NONBLOCK);
-        struct timeval tv;
-        tv.tv_sec = 3;
-        tv.tv_usec = 0;
-        setsockopt(this->_socketFd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv,
-                   sizeof tv);
-        setsockopt(this->_socketFd, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv,
-                   sizeof tv);
-    }
     int connect_result = connect(
         this->_socketFd, (const struct sockaddr *)&address, sizeof(address));
-    if (is_nonblocking) fcntl(this->_socketFd, F_SETFL, flags);
     if (connect_result == -1) {
-        if (is_nonblocking && errno == EINPROGRESS) {
-            std::cout << "Connection in progress on fd: " << this->_socketFd
-                      << std::endl;
-            return;
-        }
         throw Socket::SocketError(
             "Connect failed to " + std::string(ip_address) + ":" +
             std::to_string(port) + " - " + std::string(strerror(errno)));
@@ -190,12 +172,21 @@ std::string Socket::readFromSocket() noexcept(false) {
 
 std::vector<uint8_t> Socket::readFromSocket(size_t size) noexcept(false) {
     std::vector<uint8_t> buffer(size);
-    int bytes_read = read(this->_socketFd, buffer.data(), buffer.size());
-
-    if (bytes_read < 0) {
-        throw Socket::SocketError("Read on fd " + this->_socketFd +
-                                  (" failed: " + std::string(strerror(errno))));
+    size_t bytes_read = 0;
+    while (bytes_read < size) {
+        ssize_t result = read(this->_socketFd, buffer.data() + bytes_read,
+                              size - bytes_read);
+        if (result < 0) {
+            throw Socket::SocketError(
+                "Read on fd " + std::to_string(this->_socketFd) +
+                " failed: " + std::string(strerror(errno)));
+        }
+        if (result == 0) {
+            break;
+        }
+        bytes_read += result;
     }
+    buffer.resize(bytes_read);
     return buffer;
 }
 
