@@ -6,6 +6,8 @@
 
 #include <string>
 #include <utility>
+#include "MenuGraphic.hpp"
+
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
@@ -37,10 +39,10 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsButton.setSize({105, 70});
                 this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
             } else {
-                this->_sendSocketSettings(
-                    {this->_ipBoxContent.getString(),
-                     std::stoi(
-                         this->_portBoxContent.getString().toAnsiString())});
+                this->_sendSocketSettings({this->_ipBoxContent.getString(),
+                    std::stoi(
+                    this->_portBoxContent.getString().toAnsiString())});
+
                 this->_settingsTextButton.setString("Settings");
                 this->_settingsButton.setSize({140, 70});
                 this->_usernameButton.setFillColor(this->_menuButtonColor);

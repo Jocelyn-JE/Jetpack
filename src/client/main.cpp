@@ -11,7 +11,7 @@
 #include "Exception.hpp"
 #include "Logger.hpp"
 #include "Parser/ClientParser.hpp"
-#include "Program.hpp"
+#include "ProgramGraphic.hpp"
 
 int main(int argc, char **argv) {
     try {

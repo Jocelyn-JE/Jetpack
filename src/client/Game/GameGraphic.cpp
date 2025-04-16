@@ -5,11 +5,21 @@
 #include "GameGraphic.hpp"
 
 #include <iostream>
+#include <vector>
 
-void jetpack::Client::Game::display(sf::RenderWindow &window) {
+void jetpack::Client::Game::display(sf::RenderWindow &window,
+    std::vector<sf::Vector2f> posCoin, std::vector<sf::Vector2f> posLaser) {
     this->_background.display(window);
     this->_background2.display(window);
     this->_coinStats.display(window);
+    for (auto s : posCoin) {
+        this->_coin.changePosValue(s);
+        this->_coin.display(window);
+    }
+    for (auto s : posLaser) {
+        this->_laser.changePosValue(s);
+        this->_laser.display(window);
+    }
 }
 
 void jetpack::Client::Game::compute() {
@@ -26,6 +36,8 @@ void jetpack::Client::Game::compute() {
             this->_background.changePos({pos2.x + bgWidth - 5, pos1.y});
         if (pos2.x < completelyOutPosition)
             this->_background2.changePos({pos1.x + bgWidth - 5, pos2.y});
+        this->_coin.compute();
+        this->_laser.compute();
     }
     this->_coinStats.compute();
 }

@@ -11,6 +11,7 @@
 #include <mutex>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -32,17 +33,23 @@ class Graphic {
     sf::RenderWindow _window;
     std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> >
         _listPlayers;
-    std::map<unsigned int, std::pair<std::unique_ptr<Coin>, sf::Vector2f> >
-        _listCoins;
-    std::map<unsigned int, std::pair<std::unique_ptr<Laser>, sf::Vector2f> >
-        _listLasers;
+    std::vector<sf::Vector2f> _posCoin;
+
+    std::vector<sf::Vector2f> _posLaser;
+
     std::mutex _posMutex;
+
+    std::function<int()> &_getIdWithAuth;
 
     Menu _menu;
     Game _game;
 
  public:
     void display();
+
+    void clearCoinPos();
+
+    void clearLaserPos();
 
     bool isOpen() const { return this->_window.isOpen(); }
 
@@ -52,19 +59,17 @@ class Graphic {
 
     void setPosPlayer(unsigned int id, sf::Vector2f pos);
 
-    void setPosCoin(unsigned int id, sf::Vector2f pos);
+    void setCoinAmount(unsigned int id, int coins);
 
-    void setPosLaser(unsigned int id, sf::Vector2f pos);
+    void setPosCoin(sf::Vector2f pos);
+
+    void setPosLaser(sf::Vector2f pos);
 
     void analyse();
 
     void setGameSpeed(size_t value);
 
     void addNewPlayer(unsigned int id, bool isCurrent);
-
-    void addNewCoin(unsigned int id);
-
-    void addNewLaser(unsigned int id);
 
     void switchToGame();
 
