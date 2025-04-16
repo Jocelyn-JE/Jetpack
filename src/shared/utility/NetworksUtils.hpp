@@ -19,18 +19,6 @@
 #endif
 #endif
 
-#ifdef __OPTIMIZE__
-# if __BYTE_ORDER == __BIG_ENDIAN
-# define ntohll(x)  __uint64_identity (x)
-# define htonll(x)  __uint64_identity (x)
-# else
-#  if __BYTE_ORDER == __LITTLE_ENDIAN
-#   define ntohll(x) __bswap_64 (x)
-#   define htonll(x) __bswap_64 (x)
-#  endif
-# endif
-#endif
-
 jetpack::Header_t generateHeader(unsigned char nbrPayload);
 jetpack::Payload_t generatePayload(unsigned char dataCount,
                                    unsigned char dataId);

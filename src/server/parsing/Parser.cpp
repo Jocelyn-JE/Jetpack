@@ -146,7 +146,7 @@ void jetpack::MapParser::processLine(
             obstacles.push_back(std::make_shared<obstacle_t>(x, y));
         } else if (line[x] == '*') {
             coins.push_back(
-                std::make_shared<coinsPos_t>(x, y, coins.size() + 1));
+                std::make_shared<coinsPos_t>(x, y));
         }
     }
 }
