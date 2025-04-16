@@ -41,7 +41,7 @@ int getPayloadSize(unsigned char dataId) {
         case jetpack::PayloadType_t::INT:
             return 4;
         case jetpack::PayloadType_t::SIZE_T:
-            return 4;
+            return 8;
         case jetpack::PayloadType_t::BOOL:
             return 1;
         case jetpack::PayloadType_t::DOUBLE:
@@ -51,7 +51,7 @@ int getPayloadSize(unsigned char dataId) {
         case jetpack::PayloadType_t::SHORT:
             return 2;
         case jetpack::PayloadType_t::PLAYER:
-            return 35;
+            return 38;
         case jetpack::PayloadType_t::NAME:
             return 20;
         case jetpack::PayloadType_t::COIN_POS:
@@ -115,6 +115,7 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
                           static_cast<uint16_t>(headerBuffer[1]);
     header.rawData = ntohs(dataHeader);
+    __bswap_64(header.rawData);;
     logger.log("Received: littleEndian " + std::to_string(header.rawData));
     logger.log("Received: " + std::to_string(dataHeader));
     logger.log("magic1: " + std::to_string(header.magic1));
