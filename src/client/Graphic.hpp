@@ -15,9 +15,9 @@
 #include <SFML/Graphics.hpp>
 
 #include "Coin/CoinGraphic.hpp"
-#include "Game/Game.hpp"
-#include "Laser/Laser.hpp"
-#include "Menu/Menu.hpp"
+#include "Game/GameGraphic.hpp"
+#include "Laser/LaserGraphic.hpp"
+#include "Menu/MenuGraphic.hpp"
 #include "Player/PlayerGraphic.hpp"
 #include "userInteractions.hpp"
 

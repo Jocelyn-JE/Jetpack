@@ -38,15 +38,15 @@ CLIENT_BINARY_NAME	=	jetpack_client
 MAIN_CLIENT_SRC		=	./src/client/main.cpp
 
 CLIENT_SRC			=	./src/client/Graphic.cpp							\
-						./src/client/Menu/Menu.cpp							\
-						./src/client/Game/Game.cpp							\
-						./src/client/Program.cpp							\
-						./src/client/Auth/Auth.cpp							\
+						./src/client/Menu/MenuGraphic.cpp					\
+						./src/client/Game/GameGraphic.cpp					\
+						./src/client/ProgramGraphic.cpp						\
+						./src/client/Auth/AuthGraphic.cpp					\
 						./src/client/Parser/ClientParser.cpp				\
 						./src/client/Player/PlayerGraphic.cpp				\
 						./src/client/Coin/CoinGraphic.cpp					\
 						./src/client/CoinStats/CoinStats.cpp				\
-						./src/client/Laser/Laser.cpp						\
+						./src/client/Laser/LaserGraphic.cpp					\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 

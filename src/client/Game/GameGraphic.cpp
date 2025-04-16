@@ -2,7 +2,7 @@
 // Created by roussierenoa on 4/11/25.
 //
 
-#include "Game.hpp"
+#include "GameGraphic.hpp"
 
 #include <iostream>
 
