@@ -7,11 +7,11 @@
 
 #include <arpa/inet.h>
 
-#include <ranges>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -145,8 +145,7 @@ void jetpack::MapParser::processLine(
         if (line[x] == '#') {
             obstacles.push_back(std::make_shared<obstacle_t>(x, y));
         } else if (line[x] == '*') {
-            coins.push_back(
-                std::make_shared<coinsPos_t>(x, y));
+            coins.push_back(std::make_shared<coinsPos_t>(x, y));
         }
     }
 }

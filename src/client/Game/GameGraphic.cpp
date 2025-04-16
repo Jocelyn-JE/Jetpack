@@ -8,7 +8,8 @@
 #include <vector>
 
 void jetpack::Client::Game::display(sf::RenderWindow &window,
-    std::vector<sf::Vector2f> posCoin, std::vector<sf::Vector2f> posLaser) {
+                                    std::vector<sf::Vector2f> posCoin,
+                                    std::vector<sf::Vector2f> posLaser) {
     this->_background.display(window);
     this->_background2.display(window);
     this->_coinStats.display(window);
