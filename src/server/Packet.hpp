@@ -28,6 +28,7 @@ class Packet {
     void addData(uint16_t data);
     void addData(uint8_t data);
     void addData(float data);
+    void addData(double data);
     void addData(char *data, size_t size);
     template <typename T>
     void addData(T data) {

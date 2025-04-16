@@ -12,6 +12,8 @@
 #include <iostream>
 #include <vector>
 
+#include "NetworksUtils.hpp"
+
 namespace jetpack::server {
 
 Header_t Packet::createPacketHeader(uint8_t nbrPayload) {
@@ -66,6 +68,20 @@ void Packet::addData(float data) {
     uint32_t bigEndianData;
     std::memcpy(&rawData, &data, sizeof(data));
     bigEndianData = htonl(rawData);
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 24));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 16));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 8));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData & 0xFF));
+}
+
+void Packet::addData(double data) {
+    uint64_t rawData;
+    uint64_t bigEndianData;
+    std::memcpy(&rawData, &data, sizeof(data));
+    bigEndianData = htonll(rawData);
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 48));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 40));
+    this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 32));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 24));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 16));
     this->_packet.push_back(static_cast<uint8_t>(bigEndianData >> 8));
