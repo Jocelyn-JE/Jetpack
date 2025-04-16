@@ -75,7 +75,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/sfml
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
- 						-L./ -ljetpack -O2 -g  -lstdc++
+ 						-L./ -ljetpack -O2 -g  -lstdc++ -lncurses
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 
@@ -107,7 +107,7 @@ all: server client
 $(SERVER_BINARY_NAME):	$(SERVER_OBJ) $(MAIN_SERVER_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
 	g++ $(CPPFLAGS) -o $(SERVER_BINARY_NAME) $(SERVER_OBJ) \
-$(MAIN_SERVER_OBJ) $(SHARED_OBJ) -lncurses
+$(MAIN_SERVER_OBJ) $(SHARED_OBJ)
 
 $(CLIENT_BINARY_NAME):	$(CLIENT_OBJ) $(MAIN_CLIENT_OBJ) $(SHARED_OBJ) \
 	$(LIB_NAME)
