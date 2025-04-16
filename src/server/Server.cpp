@@ -162,7 +162,8 @@ std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
     jetpack::server::Packet packet(1);
     packet.addPayloadHeader(_gameData->coins.size(), PayloadType_t::COIN_POS);
     for (const auto &coin : _gameData->coins) {
-        if (coin->x_pos < _gameData->advancement - 5  || coin->x_pos > _gameData->advancement + 25)
+        if (coin->x_pos < _gameData->advancement - 5 ||
+            coin->x_pos > _gameData->advancement + 25)
             continue;
         packet.addData(coin->x_pos);
         packet.addData(coin->y_pos);
