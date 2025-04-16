@@ -182,12 +182,9 @@ std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
         if (_gameData->coins[i]->x_pos >= _gameData->advancement - 5 &&
             _gameData->coins[i]->x_pos <= _gameData->advancement + 25) {
             std::cout << "Coin x: " << _gameData->coins[i]->x_pos
-                      << " y: " << _gameData->coins[i]->y_pos
-                      << " id: " << _gameData->coins[i]->coinId << std::endl;
-            packet.addData(_gameData->coins[i]->x_pos -
-                           static_cast<int>(_gameData->advancement));
-            packet.addData(_gameData->coins[i]->y_pos);
-            packet.addData(static_cast<uint32_t>(_gameData->coins[i]->coinId));
+                      << " y: " << _gameData->coins[i]->y_pos << std::endl;
+            packet.addData(_gameData->coins[i]->x_pos - _gameData->advancement);
+            packet.addData(static_cast<double>(_gameData->coins[i]->y_pos));
         }
     }
     return packet.getPacket();
@@ -196,9 +193,7 @@ std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
 std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     size_t id, size_t gameSpeed) {
     jetpack::server::Packet packet(1);
-    packet.add(std::vector<uint32_t>{static_cast<uint32_t>(id),
-                                     static_cast<uint32_t>(gameSpeed)},
-               PayloadType_t::SIZE_T);
+    packet.add(std::vector<uint64_t>{id, gameSpeed}, PayloadType_t::SIZE_T);
 
     const auto &packetData = packet.getPacket();
     return packetData;
