@@ -31,7 +31,7 @@ sf::Vector2f jetpack::Client::Coin::getPos() const {
 
 jetpack::Client::Coin::Coin()
     : _coinSheet("./src/client/assets/coins_sprite_sheet.png", {193, 170}, 1, 6,
-                 {0.2, 0.2}) {
+                 {0.202, 0.229}) {
     this->_pos = {0, 0};
     this->_clock.restart();
 }

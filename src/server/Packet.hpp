@@ -24,6 +24,7 @@ class Packet {
     Packet() = delete;
     explicit Packet(uint8_t nbrPayload);
     void addPayloadHeader(uint16_t dataCount, uint8_t dataId);
+    void addData(uint64_t data);
     void addData(uint32_t data);
     void addData(uint16_t data);
     void addData(uint8_t data);
@@ -34,14 +35,16 @@ class Packet {
     void addData(T data) {
         // std::cout << "Size of data: " << sizeof(T)
         //           << ", Name of data: " << typeid(T).name() << std::endl;
-        for (int i = sizeof(T) - 1; i >= 0; i--) {
+        for (int i = 0; i < static_cast<int>(sizeof(T)); i++) {
             this->_packet.push_back(static_cast<uint8_t>(
                 (data >> (8 * static_cast<T>(sizeof(T) - 1 - i))) & 0xFF));
         }
     }
+    void add(uint64_t data, PayloadType_t type);
     void add(uint32_t data, PayloadType_t type);
     void add(uint16_t data, PayloadType_t type);
     void add(uint8_t data, PayloadType_t type);
+    void add(std::vector<uint64_t> data, PayloadType_t type);
     void add(std::vector<uint32_t> data, PayloadType_t type);
     void add(std::vector<uint16_t> data, PayloadType_t type);
     void add(std::vector<uint8_t> data, PayloadType_t type);

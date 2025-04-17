@@ -50,10 +50,11 @@ void jetpack::Client::Player::setCoinsAmount(unsigned int coins) {
 jetpack::Client::Player::Player(bool isPlayer, unsigned int id)
     : _isHost(!isPlayer),
       _player("./src/client/assets/player_sprite_sheet.png", {138, 135}, 6, 4,
-              {0.65, 0.65}) {
+              {0.282, 0.288}) {
     this->id = id;
     this->_pos = {0, 0};
-    if (isPlayer) this->_player.setTransparency();
+    if (!isPlayer)
+        this->_player.setTransparency();
     this->_clock.restart();
     this->_currentSpriteState = RUNNING;
     this->_player.setSpriteType(this->_currentSpriteState);

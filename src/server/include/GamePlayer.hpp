@@ -5,8 +5,8 @@
 typedef struct gameplayer {
     int id;
     char username[20];
-    double y_pos;
-    double velocity;
+    float y_pos;
+    float velocity;
     int coins_collected;
     bool is_dead;
     bool is_jetpack_on;

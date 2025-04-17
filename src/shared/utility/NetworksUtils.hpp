@@ -10,13 +10,13 @@
 #include "Socket.hpp"
 
 #if __BYTE_ORDER == __BIG_ENDIAN
-#define ntohll(x) __uint64_identity(x)
-#define htonll(x) __uint64_identity(x)
+    #define ntohll(x) __uint64_identity(x)
+    #define htonll(x) __uint64_identity(x)
 #else
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define ntohll(x) __bswap_64(x)
-#define htonll(x) __bswap_64(x)
-#endif
+    #if __BYTE_ORDER == __LITTLE_ENDIAN
+        #define ntohll(x) __bswap_64(x)
+        #define htonll(x) __bswap_64(x)
+    #endif
 #endif
 
 jetpack::Header_t generateHeader(unsigned char nbrPayload);

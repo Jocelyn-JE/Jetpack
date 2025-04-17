@@ -95,7 +95,7 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
                       std::to_string(player.coins_collected));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
     this->_graphic.setPosPlayer(player.id,
-                                sf::Vector2f(0, player.y_pos * 40.f));
+                                sf::Vector2f(90, player.y_pos * 39.f + 90.f));
     this->_graphic.setCoinAmount(player.id, player.coins_collected);
 }
 
@@ -116,7 +116,8 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                        static_cast<uint64_t>(msg[7]);
     xPosInt = ntohll(xPosInt);
     std::memcpy(&coin.x_pos, &xPosInt, sizeof(xPosInt));
-    coin.x_pos *= 60.f;
+    coin.x_pos *= 39.f;
+    coin.x_pos += 90.f;
     uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56) |
                        (static_cast<uint64_t>(msg[9]) << 48) |
                        (static_cast<uint64_t>(msg[10]) << 40) |
@@ -127,7 +128,8 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
                        static_cast<uint64_t>(msg[15]);
     yPosInt = ntohll(yPosInt);
     std::memcpy(&coin.y_pos, &yPosInt, sizeof(yPosInt));
-    coin.y_pos *= 42.f;
+    coin.y_pos *= 39.f;
+    coin.y_pos += 90.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
     this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos),
@@ -151,7 +153,8 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
                        static_cast<uint64_t>(msg[7]);
     xPosInt = ntohll(xPosInt);
     std::memcpy(&obstacle.x_pos, &xPosInt, sizeof(xPosInt));
-    obstacle.x_pos *= 60.f;
+    obstacle.x_pos *= 39.f;
+    obstacle.x_pos += 90.f;
     uint64_t yPosInt = (static_cast<uint64_t>(msg[8]) << 56) |
                        (static_cast<uint64_t>(msg[9]) << 48) |
                        (static_cast<uint64_t>(msg[10]) << 40) |
@@ -162,7 +165,8 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
                        static_cast<uint64_t>(msg[15]);
     yPosInt = ntohll(yPosInt);
     std::memcpy(&obstacle.y_pos, &yPosInt, sizeof(yPosInt));
-    obstacle.y_pos *= 42.f;
+    obstacle.y_pos *= 39.f;
+    obstacle.y_pos += 90.f;
     this->_logger.log("Obstacle X Position: " + std::to_string(obstacle.x_pos));
     this->_logger.log("Obstacle Y Position: " + std::to_string(obstacle.y_pos));
     this->_graphic.setPosLaser(

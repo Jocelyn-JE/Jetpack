@@ -31,7 +31,7 @@ sf::Vector2f jetpack::Client ::Laser::getPos() const {
 
 jetpack::Client ::Laser::Laser()
     : _laserSheet("./src/client/assets/laser_sprite_sheet.png", {106, 120}, 1,
-                  4, {0.5, 0.5}) {
+                  4, {0.367, 0.325}) {
     this->_pos = {0, 0};
     this->_clock.restart();
 }

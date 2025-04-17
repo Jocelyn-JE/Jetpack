@@ -60,7 +60,7 @@ bool Socket::closesOnDestroy() const noexcept {
 
 void Socket::closeSocket() noexcept(false) {
     if (this->_socketFd == -1) {
-        std::cout << "Socket already closed on fd: " << this->_socketFd
+        std::cerr << "Socket already closed on fd: " << this->_socketFd
                   << std::endl;
         return;
     }
@@ -123,7 +123,7 @@ void Socket::connectSocket(const char *ip_address,
             "Connect failed to " + std::string(ip_address) + ":" +
             std::to_string(port) + " - " + std::string(strerror(errno)));
     }
-    std::cout << "Successfully connected to " << ip_address << ":" << port
+    std::cerr << "Successfully connected to " << ip_address << ":" << port
               << " on fd: " << this->_socketFd << std::endl;
 }
 
