@@ -14,6 +14,7 @@
 #include "CommunicationHeader.hpp"
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
+#include "Coin/CoinGraphic.hpp"
 #include "Obstacle.hpp"
 #include "Player.hpp"
 #include "Socket.hpp"
@@ -49,13 +50,13 @@ int getPayloadSize(unsigned char dataId) {
         case jetpack::PayloadType_t::SHORT:
             return 2;
         case jetpack::PayloadType_t::PLAYER:
-            return 39;
+            return 35;
         case jetpack::PayloadType_t::NAME:
             return 20;
         case jetpack::PayloadType_t::COIN_POS:
             return 16;
         case jetpack::PayloadType_t::HAZARD_POS:
-            return sizeof(obstacle_s);
+            return 16;
         case jetpack::PayloadType_t::ENUM_COMMAND:
             return 1;
         case jetpack::PayloadType_t::GAMESPEED:
@@ -79,7 +80,7 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     struct pollfd pfd;
     pfd.fd = socket.getSocketFd();
     pfd.events = POLLIN;
-    int ret = poll(&pfd, 1, 1000);
+    int ret = poll(&pfd, 1, 0);
     if (ret == -1) {
         logger.log("poll() failed: " + std::string(strerror(errno)));
         throw NetworkException("poll() failed");
@@ -111,8 +112,7 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     jetpack::Header_t header{};
     uint16_t dataHeader = (static_cast<uint16_t>(headerBuffer[0]) << 8) |
                           static_cast<uint16_t>(headerBuffer[1]);
-    header.rawData = ntohs(dataHeader);
-    __bswap_64(header.rawData);
+    header.rawData = dataHeader;
     logger.log("Received: littleEndian " + std::to_string(header.rawData));
     logger.log("Received: " + std::to_string(dataHeader));
     logger.log("magic1: " + std::to_string(header.magic1));
@@ -129,7 +129,7 @@ jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
     pfd.fd = socket.getSocketFd();
     pfd.events = POLLIN;
 
-    int ret = poll(&pfd, 1, 1000);
+    int ret = poll(&pfd, 1, 0);
     if (ret == -1) {
         logger.log("poll() failed: " + std::string(strerror(errno)));
         throw NetworkException("poll() failed");
@@ -157,9 +157,16 @@ jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
     logger.log(ss.str());
     jetpack::Payload_t payload = {};
     uint16_t dataPayload = (static_cast<uint8_t>(payloadBuffer[0]) << 8) |
-                           static_cast<uint8_t>(payloadBuffer[1]);
-
-    payload.rawData = ntohs(dataPayload);
+                            static_cast<uint8_t>(payloadBuffer[1]);
+    payload.rawData = dataPayload;
+    std::stringstream binaryss;
+    binaryss << "Binary representation of header.rawData: ";
+    for (int i = 15; i >= 0; i--) {
+        binaryss << ((payload.rawData >> i) & 1);
+        if (i % 4 == 0 && i > 0)
+            binaryss << " ";
+    }
+    logger.log(binaryss.str());
     logger.log("Received: littleEndian " + std::to_string(payload.rawData));
     logger.log("Received: " + std::to_string(dataPayload));
     logger.log("data count: " + std::to_string(payload.dataCount));
