@@ -167,7 +167,8 @@ void jetpack::Client::Program::_getServerMessage() {
     }
 }
 
-void jetpack::Client::Program::_connectToSocket(const char *ip, unsigned int port) {
+void jetpack::Client::Program::_connectToSocket(const char *ip,
+    unsigned int port) {
     if (this->_socket.getSocketFd() != -1) {
         this->_socket.closeSocket();
     }
@@ -183,7 +184,7 @@ void jetpack::Client::Program::_connectToSocket(const char *ip, unsigned int por
         this->_auth.resetAuth();
         this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
-        throw; // Relancer pour que _sniffANetwork puisse gérer les tentatives
+        throw;
     }
 }
 
