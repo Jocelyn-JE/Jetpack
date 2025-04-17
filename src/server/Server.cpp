@@ -78,6 +78,7 @@ void jetpack::server::Server::updateSockets() {
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket(2);
+            std::cerr << "Buffer size: " << buffer.size() << std::endl;
             if (_clients[i - 1]->handlePayload(buffer)) {
                 this->_game->delPlayer(_clients[i - 1]->getId());
                 this->handleDisconnection(i);

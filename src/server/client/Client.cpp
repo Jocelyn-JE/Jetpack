@@ -49,6 +49,12 @@ bool jetpack::server::Client::closeAndDisconnect() {
 }
 
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload) {
+    std::cerr << "Received payload: ";
+    for (const auto &byte : payload) {
+        std::cerr << std::hex << static_cast<int>(byte) << " ";
+    }
+    std::cerr << std::dec << std::endl;
+
     Header_t header;
     Payload_t payloadHeader;
     std::vector<uint8_t> payloadData;
