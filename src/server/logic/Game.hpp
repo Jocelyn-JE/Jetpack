@@ -48,4 +48,5 @@ class Game {
     void delPlayer(const std::string& username);
     size_t nbPlayer() const;
     bool isStarted() const;
+    std::shared_ptr<gameplayer_t> getPlayer(int id);
 };

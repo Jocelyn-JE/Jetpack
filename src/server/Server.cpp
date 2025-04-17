@@ -21,6 +21,7 @@
 #include "Server.hpp"
 #include "Socket.hpp"
 
+
 volatile sig_atomic_t stopFlag = 0;
 
 static void handler(int signum) { stopFlag = signum; }
@@ -79,14 +80,15 @@ void jetpack::server::Server::updateSockets() {
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket(2);
             std::cerr << "Buffer size: " << buffer.size() << std::endl;
-            if (_clients[i - 1]->handlePayload(buffer)) {
-                this->_game->delPlayer(_clients[i - 1]->getId());
+            if (_clients[i - 1]->handlePayload(buffer, _game)) {
+                _game->delPlayer(_clients[i - 1]->getId());
                 this->handleDisconnection(i);
             } else {
                 // Data received from client, handle it here
                 // std::cerr << "Payload received from client "
                 //           << _clients[i - 1]->getId() << ": " << buffer
                 //           << std::endl;
+                _clients[i - 1]->_controlSocket.flush();
             }
         }
     }

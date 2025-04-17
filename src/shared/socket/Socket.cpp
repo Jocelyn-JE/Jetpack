@@ -194,3 +194,27 @@ struct sockaddr_in Socket::getAddress() const noexcept { return _address; }
 void Socket::setCloseOnDestroy(bool closeOnDestroy) noexcept {
     this->_closeSocketOnDestruction = closeOnDestroy;
 }
+
+void Socket::flush() noexcept(false) {
+    int flags = fcntl(this->_socketFd, F_GETFL, 0);
+    if (flags == -1) {
+        throw Socket::SocketError("Failed to get socket flags: " +
+                                  std::string(strerror(errno)));
+    }
+
+    if (fcntl(this->_socketFd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        throw Socket::SocketError("Failed to set non-blocking mode: " +
+                                  std::string(strerror(errno)));
+    }
+
+    std::vector<uint8_t> buffer(BUFSIZ);
+    ssize_t bytesRead;
+    do {
+        bytesRead = read(this->_socketFd, buffer.data(), buffer.size());
+    } while (bytesRead > 0);
+
+    if (fcntl(this->_socketFd, F_SETFL, flags) == -1) {
+        throw Socket::SocketError("Failed to restore socket flags: " +
+                                  std::string(strerror(errno)));
+    }
+}

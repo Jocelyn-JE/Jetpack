@@ -142,6 +142,9 @@ class Socket {
     // Set whether the socket will be closed on destruction.
     void setCloseOnDestroy(bool closeOnDestroy) noexcept;
 
+    // Flush the socket by reading all available data.
+    void flush() noexcept(false);
+
     // Exception class for Socket.
     class SocketError : public std::exception {
      public:
