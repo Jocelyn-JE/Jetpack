@@ -31,18 +31,18 @@ enum PayloadType_t {
 
 union Header_t {
     struct {
-        u_int8_t magic1 : 6;
-        u_int8_t magic2 : 6;
-        u_int8_t nbrPayload : 4;
+        u_int16_t nbrPayload : 4;
+        u_int16_t magic2     : 6;
+        u_int16_t magic1     : 6;
     };
 
-    u_int16_t rawData : 16;
+    u_int16_t rawData;
 };
 
 union Payload_t {
     struct {
-        u_int16_t dataCount : 10;
         u_int8_t dataId : 6;
+        u_int16_t dataCount : 10;
     };
 
     u_int16_t rawData : 16;

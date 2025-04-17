@@ -1,5 +1,6 @@
-Network Programming Working Group                                     Epitech
-Category: Informational                                               April 2025
+Network Programming Working Group                                      Epitech
+
+Category: Informational                                             April 2025
 
        RFC: Binary Protocol and Map Format for Jetpack Epitech Project
 
@@ -7,7 +8,8 @@ Status of This Memo
 
    This document defines the binary communication protocol and map format
    for the Jetpack game project. This protocol is designed for real-time
-   multiplayer gameplay, enabling efficient and responsive network communication.
+   multiplayer gameplay, enabling efficient and responsive network
+   communication.
 
 Table of Contents
 
@@ -85,7 +87,7 @@ Table of Contents
    +-----+------------------+-------------+----------------------------+
    | 0   | Unused/Special   | Variable    | Reserved                   |
    | 1   | int              | 4 bytes     | Signed integer             |
-   | 2   | size_t           | 4 bytes     | Unsigned integer           |
+   | 2   | size_t           | 8 bytes     | Unsigned long              |
    | 3   | bool             | 1 byte      | Boolean value              |
    | 4   | double           | 8 bytes     | Double float               |
    | 5   | float            | 4 bytes     | Single float               |
@@ -101,6 +103,8 @@ Table of Contents
    | 15  | healthcheck      | 0 bytes     | Used for connection check  |
    | 16  | jetpack_force    | 4 bytes     | Jetpack thrust             |
    | 17  | Velocity_limits  | 8 bytes     | Two float velocities       |
+   | 18  | getNbPlayers     | 0 bytes     | Ask for number of players  |
+   | 19  | nbPlayers        | 4 bytes     | Number of players (int)    |
    +-----+------------------+-------------+----------------------------+
 
 4. Communication Flow
@@ -109,11 +113,11 @@ Table of Contents
 
    First packet to client:
 
-   +-----------------------------------------------------------+
-   | Magic | nb types | nb data | data ID | player ID | speed  |
-   +-----------------------------------------------------------+
-   | 0x2A  |    1     |    0    |    2    | size_t    | size_t |
-   +-------+----------+---------+---------+-----------+--------+
+   +---------+----------+---------+---------+-----------+--------+
+   |  Magic  | nb lists | nb data | data ID | player ID | speed  |
+   +---------+----------+---------+---------+-----------+--------+
+   | 42  42  |    1     |    2    |    2    | size_t    | size_t |
+   +---------+----------+---------+---------+-----------+--------+
 
    If a client receives a malformed first packet, it must discard it.
 
@@ -169,4 +173,3 @@ Table of Contents
    - Ensure data types match expected sizes
    - Discard malformed packets
    - Use healthcheck packets to detect dropped clients
-
