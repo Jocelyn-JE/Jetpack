@@ -105,5 +105,6 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
     } else {
         game->getPlayer(_id)->is_jetpack_on = false;
     }
+    (void)payloadData;
     return false;
 }
