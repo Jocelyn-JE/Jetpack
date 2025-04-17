@@ -51,6 +51,9 @@ class Menu {
     sf::Text _portBoxContent;
     sf::Text _portBoxTitle;
 
+    sf::Text _startTextButton;
+    sf::RectangleShape _startButton;
+
     sf::Text _serverStateText;
     std::string _serverStateString = "OK";
 
@@ -62,6 +65,7 @@ class Menu {
     std::function<int()> &_authGetId;
     std::function<std::pair<std::string, std::string>()> &_getSocketSettings;
     std::function<void(std::pair<std::string, int>)> &_sendSocketSettings;
+    std::function<void()> &_sendStartServer;
 
  public:
     void setServerStateError();
@@ -80,7 +84,8 @@ class Menu {
         std::function<std::pair<std::string, std::string>()> &getSocketSettings,
         std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
         std::function<int()> &getIdWithAuth,
-        std::function<bool()> &getIsConnectedWithAuth);
+        std::function<bool()> &getIsConnectedWithAuth,
+        std::function<void()> &sendStartServer);
 
     ~Menu() = default;
 };

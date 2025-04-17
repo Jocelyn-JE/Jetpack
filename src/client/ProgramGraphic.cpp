@@ -378,7 +378,7 @@ jetpack::Client::Program::Program(const char *ip, unsigned int port,
       _graphic(this->_sendUserInteraction, this->_changeUsername,
                this->_getUsername, this->_getSocketSettings,
                this->_setSocketSettings, this->_getIdWithAuth,
-               this->_getIsConnectedWithAuth),
+               this->_getIsConnectedWithAuth, this->_sendStartGame),
       _socket(AF_INET, SOCK_STREAM, 0) {
     this->_port = port;
     this->_logger.log("Connecting to " + this->_ip +
