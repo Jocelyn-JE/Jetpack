@@ -8,7 +8,8 @@
 #include <vector>
 
 void jetpack::Client::Game::display(sf::RenderWindow &window,
-    std::vector<sf::Vector2f> posCoin, std::vector<sf::Vector2f> posLaser) {
+                                    std::vector<sf::Vector2f> posCoin,
+                                    std::vector<sf::Vector2f> posLaser) {
     this->_background.display(window);
     this->_background2.display(window);
     this->_coinStats.display(window);
@@ -58,12 +59,12 @@ void jetpack::Client::Game::analyze(const sf::Event &event) {
     if (event.type == sf::Event::KeyPressed) this->_handleKeyPressed(event);
 }
 
-jetpack::Client::Game::Game(std::function<void(UserInteractions_s)>
-    &sendUserInteraction):
-    _sendUserInteraction(sendUserInteraction),
-    _background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15}),
-    _background2("src/client/assets/GameBackground.png", {3444, 0},
-    {2, 2.15}) {
+jetpack::Client::Game::Game(
+    std::function<void(UserInteractions_s)> &sendUserInteraction)
+    : _sendUserInteraction(sendUserInteraction),
+      _background("src/client/assets/GameBackground.png", {0, 0}, {2, 2.15}),
+      _background2("src/client/assets/GameBackground.png", {3444, 0},
+                   {2, 2.15}) {
     this->_clock = sf::Clock();
 }
 

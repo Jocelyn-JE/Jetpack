@@ -4,8 +4,9 @@
 
 #ifndef SRC_CLIENT_AUTH_AUTHGRAPHIC_HPP_
 #define SRC_CLIENT_AUTH_AUTHGRAPHIC_HPP_
-#include <string>
+
 #include <mutex>
+#include <string>
 
 namespace jetpack::Client {
 class Auth {

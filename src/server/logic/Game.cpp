@@ -3,28 +3,30 @@
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <thread>
 
 #include "../parsing/Parser.hpp"
 
-Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr) {}
+Game::Game(std::shared_ptr<GameData> data) : gameData(data), mapWin(nullptr) {
+    std::cerr << "Game constructor called" << std::endl;
+}
 
 void Game::start(const std::string& mapFile) {
     gameData->isRunning = true;
     gameData->advancement = 0;
-    std::cout << "Game started" << std::endl;
+    std::cerr << "Game started" << std::endl;
 
     if (!loadMap(mapFile)) {
         std::cerr << "Failed to load map: " << mapFile << std::endl;
         gameData->isRunning = false;
         return;
     }
-    std::cout << "Map loaded successfully" << std::endl;
+    std::cerr << "Map loaded successfully" << std::endl;
 
     initNcursesMap();
-    printServerData();
-    gameLoop();
+    // printServerData();
 }
 
 void Game::pollInput() {
@@ -71,7 +73,7 @@ void Game::gameLoop() {
 }
 
 void Game::update(float deltaTime) {
-    std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
+    // std::cerr << "Update called with deltaTime: " << deltaTime << std::endl;
     {
         std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
@@ -91,19 +93,20 @@ void Game::update(float deltaTime) {
                 player->velocity = VMAX;
             }
             player->y_pos += player->velocity * deltaTime;
-            std::cerr << "Player " << player->username
-                      << " position: " << player->y_pos
-                      << " velocity: " << player->velocity << std::endl;
+            /*             std::cerr << "Player " << player->username
+                                  << " position: " << player->y_pos
+                                  << " velocity: " << player->velocity <<
+               std::endl; */
             if (player->y_pos < 0.0) {
                 player->y_pos = 0.0;
-            } else if (player->y_pos > 8.0) {
-                player->y_pos = 8.0;
+            } else if (player->y_pos > 10.0) {
+                player->y_pos = 10.0;
             }
         }
         checkCollisions();
     }
     pollInput();
-    printServerData();
+    // printServerData();
     displayNcursesMap();
 }
 
@@ -113,14 +116,10 @@ void Game::checkCollisions() {
 
         for (auto it = gameData->coins.begin(); it != gameData->coins.end();) {
             auto& coin = *it;
-            if (std::abs(player->y_pos - static_cast<double>(coin->y_pos)) <
-                    0.5f &&
-                std::abs(static_cast<double>(coin->x_pos) -
-                         gameData->advancement) < 0.5f) {
-                std::cerr << "Player " << player->username
-                          << " collected a "
-                             "coin!#######################################"
-                          << std::endl;
+            if (coin->y_pos <= player->y_pos + 1.0 &&
+                coin->y_pos + 1.0 >= player->y_pos &&
+                coin->x_pos <= gameData->advancement + 1.0 &&
+                coin->x_pos + 1.0 >= gameData->advancement) {
                 player->coins_collected++;
                 it = gameData->coins.erase(it);
             } else {
@@ -129,14 +128,10 @@ void Game::checkCollisions() {
         }
 
         for (const auto& obstacle : gameData->obstacles) {
-            if (std::abs(player->y_pos - static_cast<double>(obstacle->y_pos)) <
-                    0.5f &&
-                std::abs(static_cast<double>(obstacle->x_pos) -
-                         gameData->advancement) < 0.5f) {
-                std::cerr << "Player " << player->username
-                          << " collided with an obstacle! player y: "
-                          << player->y_pos << " obstacle y: " << obstacle->y_pos
-                          << std::endl;
+            if (obstacle->y_pos + 1.0 >= player->y_pos &&
+                obstacle->y_pos <= player->y_pos + 1.0 &&
+                obstacle->x_pos <= gameData->advancement + 1.0 &&
+                obstacle->x_pos + 1.0 >= gameData->advancement) {
                 player->is_dead = true;
                 break;
             }
@@ -147,8 +142,8 @@ void Game::checkCollisions() {
 void Game::stop() {
     gameData->isRunning = false;
     if (mapWin) {
-        delwin(mapWin);  // Delete the ncurses window
-        endwin();        // End ncurses mode
+        delwin(mapWin);
+        endwin();
         mapWin = nullptr;
     }
 }
@@ -161,21 +156,22 @@ bool Game::loadMap(const std::string& filename) {
 void Game::printServerData() const {
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
 
-    std::cerr << "\n=== Server Data ===" << std::endl;
+    /*     std::cerr << "\n=== Server Data ===" << std::endl;
 
-    std::cerr << "Advancement: " << gameData->advancement << std::endl;
-    std::cerr << "Game Speed: " << gameData->gameSpeed << std::endl;
+        std::cerr << "Advancement: " << gameData->advancement << std::endl;
+        std::cerr << "Game Speed: " << gameData->gameSpeed << std::endl;
 
-    // DEBUUG Print Players
-    std::cerr << "\nPlayers (" << gameData->players.size() << "):" << std::endl;
-    for (const auto& [id, player] : gameData->players) {
-        std::cerr << "Player ID: " << id << "\n  Username: " << player->username
-                  << "\n  Position Y: " << player->y_pos
-                  << "\n  Coins: " << player->coins_collected
-                  << "\n  Status: " << (player->is_dead ? "Dead" : "Alive")
-                  << "\n  Jetpack: " << (player->is_jetpack_on ? "On" : "Off")
-                  << std::endl;
-    }
+        // DEBUUG Print Players
+        std::cerr << "\nPlayers (" << gameData->players.size() << "):" <<
+       std::endl; for (const auto& [id, player] : gameData->players) { std::cerr
+       << "Player ID: " << id << "\n  Username: " << player->username
+                      << "\n  Position Y: " << player->y_pos
+                      << "\n  Coins: " << player->coins_collected
+                      << "\n  Status: " << (player->is_dead ? "Dead" : "Alive")
+                      << "\n  Jetpack: " << (player->is_jetpack_on ? "On" :
+       "Off")
+                      << std::endl;
+        } */
 
     //// Print Coins
     // std::cerr << "\nCoins (" << gameData->coins.size() << "):" << std::endl;
@@ -193,7 +189,7 @@ void Game::printServerData() const {
     //               << obstacle->y_pos << ")" << std::endl;
     // }
 
-    std::cerr << "\n=================" << std::endl;
+    // std::cerr << "\n=================" << std::endl;
 }
 
 void Game::initNcursesMap() {
@@ -255,10 +251,53 @@ void Game::displayNcursesMap() {
 
     std::lock_guard<std::mutex> lock(gameData->dataMutex);
     for (const auto& [_, player] : gameData->players) {
-        if (playerCount >= 2) break;  // Only display for the first two players
         mvprintw(row++, col, "Player %s: Position Y = %.2f, Velocity = %.2f",
                  player->username, player->y_pos, player->velocity);
         playerCount++;
     }
     refresh();  // Refresh the standard screen to show the text
 }
+
+void Game::addPlayer(const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    int id =
+        gameData->players.empty() ? 1 : gameData->players.rbegin()->first + 1;
+    auto player = std::make_shared<gameplayer_t>(id, username);
+    gameData->players[id] = player;
+}
+
+void Game::addPlayer(int id) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    auto player =
+        std::make_shared<gameplayer_t>(id, "Player" + std::to_string(id));
+    gameData->players[id] = player;
+}
+
+void Game::addPlayer(int id, const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    auto player = std::make_shared<gameplayer_t>(id, username);
+    gameData->players[id] = player;
+}
+
+void Game::delPlayer(const std::string& username) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    for (auto it = gameData->players.begin(); it != gameData->players.end();
+         ++it) {
+        if (it->second->username == username) {
+            gameData->players.erase(it);
+            break;
+        }
+    }
+}
+
+void Game::delPlayer(int id) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    gameData->players.erase(id);
+}
+
+size_t Game::nbPlayer() const {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    return gameData->players.size();
+}
+
+bool Game::isStarted() const { return gameData->isRunning; }

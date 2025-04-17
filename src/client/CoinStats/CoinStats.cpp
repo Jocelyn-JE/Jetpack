@@ -2,8 +2,9 @@
 // Created by roussierenoa on 4/12/25.
 //
 
-#include <iostream>
 #include "CoinStats.hpp"
+
+#include <iostream>
 
 void jetpack::Client::CoinStats::setCoinsAmount(unsigned int coinsAmount) {
     this->_coinsAmount = coinsAmount;

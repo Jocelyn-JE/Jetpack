@@ -27,6 +27,7 @@ SERVER_SRC			=	./src/server/client/Client.cpp						\
 						./src/server/logic/Game.cpp							\
 						./src/server/logic/GameServer.cpp					\
 						./src/server/logic/Clock.cpp						\
+						./src/server/Packet.cpp								\
 
 SERVER_OBJ			=	$(SERVER_SRC:.cpp=.o)
 
@@ -71,8 +72,8 @@ TESTS_SRC			=
 INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/shared/utility -I ./src/server/pollfdlist	\
 						-I ./src/server/client  -I ./src/shared/include		\
-						-I ./src/server/include								\
-						-I ./src/shared/sfml
+						-I ./src/shared/sfml    -I ./src/server				\
+						-I ./src/client		    -I ./src/shared				\
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g  -lstdc++ -lncurses

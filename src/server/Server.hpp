@@ -13,8 +13,14 @@
 #include <vector>
 
 #include "Client.hpp"
+#include "CommunicationHeader.hpp"
 #include "PollFdList.hpp"
+#include "Server.hpp"
 #include "Socket.hpp"
+#include "logic/Game.hpp"
+#include "logic/GameServer.hpp"
+#include "parsing/Parser.hpp"
+
 #define LISTEN_BACKLOG 128
 
 namespace jetpack {
@@ -22,9 +28,9 @@ namespace server {
 class Server {
  public:
     Server() = delete;
-    explicit Server(int port);
+    explicit Server(Parser &parser);
     ~Server();
-    static int runServer(int port);
+    static int runServer(Parser &parser);
 
  private:
     int pollSockets();
@@ -37,11 +43,28 @@ class Server {
     // the socket list and poll list
     void handleDisconnection(int socketIndex);
     bool isClosed();
-    void sendToAllClients(std::string data);
+    template <typename T>
+    void sendToAllClients(T data) {
+        for (size_t i = 0; i < this->_clients.size(); i++)
+            this->_clients[i]->sendData(data);
+    }
+    template <typename T>
+    void sendToAllClients(std::vector<T> data) {
+        for (size_t i = 0; i < this->_clients.size(); i++)
+            this->_clients[i]->sendData(data);
+    }
+
+    std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
+    std::vector<uint8_t> createStartGamePacket(void);
+    std::vector<uint8_t> createPlayerListPacket(void);
+    std::vector<uint8_t> createCoinListPacket(void);
+    std::vector<uint8_t> createObstacleListPacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
     unsigned int _nextClientId;
+    std::shared_ptr<GameData> _gameData;
+    std::shared_ptr<Game> _game;
 };
 }  // namespace server
 }  // namespace jetpack

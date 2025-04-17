@@ -3,6 +3,7 @@
 //
 
 #include "AuthGraphic.hpp"
+
 #include <string>
 
 void jetpack::Client::Auth::setId(size_t id) {
@@ -42,8 +43,6 @@ std::string jetpack::Client::Auth::getUsername() const {
     return this->_username;
 }
 
-jetpack::Client::Auth::Auth(): _id(0) {
-}
+jetpack::Client::Auth::Auth() : _id(0) {}
 
-jetpack::Client::Auth::~Auth() {
-}
+jetpack::Client::Auth::~Auth() {}

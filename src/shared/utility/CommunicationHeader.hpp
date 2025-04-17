@@ -25,6 +25,7 @@ enum PayloadType_t {
     HEALTHCHECK = 15,
     JETPACK_FORCE = 16,
     VELOCITY_LIMITS = 17,
+    INVALID
 };
 
 #pragma pack(push, 1)
@@ -45,7 +46,7 @@ union Payload_t {
         u_int16_t dataCount : 10;
     };
 
-    u_int16_t rawData : 16;
+    uint16_t rawData : 16;
 };
 };  // namespace jetpack
 

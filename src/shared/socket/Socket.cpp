@@ -173,11 +173,11 @@ std::vector<uint8_t> Socket::readFromSocket(size_t size) noexcept(false) {
     std::vector<uint8_t> buffer(size);
     size_t bytes_read = 0;
     while (bytes_read < size) {
-        ssize_t result = read(this->_socketFd, buffer.data()
-            + bytes_read, size - bytes_read);
+        ssize_t result = read(this->_socketFd, buffer.data() + bytes_read,
+                              size - bytes_read);
         if (result < 0) {
-            throw Socket::SocketError("Read on fd " +
-                std::to_string(this->_socketFd) +
+            throw Socket::SocketError(
+                "Read on fd " + std::to_string(this->_socketFd) +
                 " failed: " + std::string(strerror(errno)));
         }
         if (result == 0) {

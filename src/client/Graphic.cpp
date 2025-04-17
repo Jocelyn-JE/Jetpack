@@ -13,8 +13,7 @@
 void jetpack::Client::Graphic::display() {
     this->_window.clear();
     this->_posMutex.lock();
-    if (this->_windowType == MENU)
-        this->_menu.display(this->_window);
+    if (this->_windowType == MENU) this->_menu.display(this->_window);
     if (this->_windowType == GAME) {
         this->_game.display(this->_window, this->_posCoin, this->_posLaser);
         for (auto &s : this->_listPlayers)
@@ -36,7 +35,6 @@ void jetpack::Client::Graphic::clearLaserPos() {
     this->_posMutex.unlock();
 }
 
-
 void jetpack::Client::Graphic::compute() {
     this->_posMutex.lock();
     if (this->_windowType == MENU) {
@@ -46,8 +44,8 @@ void jetpack::Client::Graphic::compute() {
         this->_game.compute();
         for (auto &s : this->_listPlayers) {
             s.second.first->compute();
-            if (static_cast<unsigned int>(this->_getIdWithAuth())
-                == s.second.first->id)
+            if (static_cast<unsigned int>(this->_getIdWithAuth()) ==
+                s.second.first->id)
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
         }
     }
@@ -129,14 +127,13 @@ jetpack::Client::Graphic::Graphic(
     std::function<std::pair<std::string, std::string>()> &getSocketSettings,
     std::function<void(std::pair<std::string, int>)> &sendSocketSetting,
     std::function<int()> &getIdWithAuth,
-    std::function<bool()> &getIsConnectedWithAuth
-):
-    _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
-        sf::Style::Close | sf::Style::Titlebar),
-    _getIdWithAuth(getIdWithAuth),
-    _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
-        getIdWithAuth, getIsConnectedWithAuth),
-    _game(sendUserInteraction) {
+    std::function<bool()> &getIsConnectedWithAuth)
+    : _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
+              sf::Style::Close | sf::Style::Titlebar),
+      _getIdWithAuth(getIdWithAuth),
+      _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
+            getIdWithAuth, getIsConnectedWithAuth),
+      _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
 }
