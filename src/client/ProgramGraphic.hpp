@@ -106,6 +106,8 @@ class Program {
 
     void _sendUpEvent();
 
+    void _sendEmptyEvent();
+
     void _sendPlayerInput();
 
     void _sendNewUsername();
