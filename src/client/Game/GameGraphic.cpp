@@ -55,8 +55,20 @@ void jetpack::Client::Game::_handleKeyPressed(const sf::Event &event) {
     // server et le client
 }
 
+void jetpack::Client::Game::_handleKeyRelease(const sf::Event &event) {
+    if (event.key.code == sf::Keyboard::Up) {
+        std::cout << "GROS CACA" << std::endl;
+        this->_sendUserInteraction(UserInteractions_s::NO_INTERACTION);
+    }
+    // TODO(noa) : demander les autres interaction possible entre le
+    // server et le client
+}
+
 void jetpack::Client::Game::analyze(const sf::Event &event) {
-    if (event.type == sf::Event::KeyPressed) this->_handleKeyPressed(event);
+    if (event.type == sf::Event::KeyPressed)
+        this->_handleKeyPressed(event);
+    if (event.type == sf::Event::KeyReleased)
+        this->_handleKeyRelease(event);
 }
 
 jetpack::Client::Game::Game(

@@ -248,8 +248,8 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             this->_graphic.serverOK();
 
-            if (pollResult > 0 && (pfd.revents & POLLOUT)) {
-                this->_sendNewUsername();
+            if (pollResult > 0) {
+                // this->_sendNewUsername();
                 this->_sendPlayerInput();
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
@@ -296,21 +296,30 @@ void jetpack::Client::Program::_sendUpEvent() {
     this->_socket.writeToSocket<bool>(true);
 }
 
+void jetpack::Client::Program::_sendEmptyEvent() {
+    if (this->_socket.getSocketFd() == -1) {
+        this->_logger.log("Cannot send username: not connected to server");
+        return;
+    }
+    Header_t header = generateHeader(1);
+    auto valueHeaderBigEndian = htons(header.rawData);
+    Payload_t payload = generatePayload(1, 13);
+    auto valuePayloadBigEndian = htons(payload.rawData);
+    this->_socket.writeToSocket<uint16_t>(valueHeaderBigEndian);
+    this->_socket.writeToSocket<uint16_t>(valuePayloadBigEndian);
+    this->_socket.writeToSocket<bool>(false);
+}
+
 void jetpack::Client::Program::_sendPlayerInput() {
     this->_communicationMutex.lock();
     this->_userInteractionMutex.lock();
-    if (this->_lastUserInteraction == UserInteractions_s::NO_INTERACTION) {
-        this->_userInteractionMutex.unlock();
-        this->_communicationMutex.unlock();
-        return;
-    }
     try {
         if (this->_socket.getSocketFd() != -1) {
-            if (this->_lastUserInteraction == jetpack::Client::UP) {
+            if (this->_lastUserInteraction == jetpack::Client::UP)
                 this->_sendUpEvent();
-            }
+            if (this->_lastUserInteraction == jetpack::Client::NO_INTERACTION)
+                this->_sendEmptyEvent();
         }
-        this->_lastUserInteraction = UserInteractions_s::NO_INTERACTION;
     } catch (const Socket::SocketError &e) {
         std::cerr << "Error sending player input: " << e.what() << std::endl;
         try {
