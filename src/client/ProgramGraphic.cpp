@@ -163,20 +163,23 @@ void jetpack::Client::Program::_getServerMessage() {
     }
 }
 
-void jetpack::Client::Program::_connectToSocket(const char *ip,
-                                                unsigned int port) {
+void jetpack::Client::Program::_connectToSocket(const char *ip, unsigned int port) {
+    if (this->_socket.getSocketFd() != -1) {
+        this->_socket.closeSocket();
+    }
     this->_socket.resetSocket(AF_INET, SOCK_STREAM, 0);
     try {
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
         this->_logger.log("Connected to server at " + std::string(ip) + ":" +
-                          std::to_string(port));
+                         std::to_string(port));
         this->_graphic.serverOK();
     } catch (const std::exception &e) {
         this->_graphic.serverError();
         this->_auth.resetAuth();
         this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
+        throw; // Relancer pour que _sniffANetwork puisse gérer les tentatives
     }
 }
 
@@ -240,7 +243,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             struct pollfd pfd;
             pfd.fd = socketFd;
             pfd.events = POLLIN;
-            int pollResult = poll(&pfd, 1, 100);
+            int pollResult = poll(&pfd, 1, 10);
 
             if (pollResult < 0) {
                 this->_logger.log("Poll error");
@@ -324,11 +327,11 @@ void jetpack::Client::Program::_sendPlayerInput() {
                 this->_sendEmptyEvent();
         }
     } catch (const Socket::SocketError &e) {
-        std::cerr << "Error sending player input: " << e.what() << std::endl;
-        try {
-            this->_manualReco = true;
-        } catch (...) {
-        }
+        // std::cerr << "Error sending player input: " << e.what() << std::endl;
+        // try {
+        //     this->_manualReco = true;
+        // } catch (...) {
+        // }
     }
     this->_userInteractionMutex.unlock();
     this->_communicationMutex.unlock();
