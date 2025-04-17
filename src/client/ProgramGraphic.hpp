@@ -117,7 +117,11 @@ class Program {
 
     void _sendEmptyEvent();
 
+    void _sendStartEvent();
+
     void _sendPlayerInput();
+
+    void _sendStartInput();
 
     void _sendNewUsername();
 

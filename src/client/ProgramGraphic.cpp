@@ -257,6 +257,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             if (pollResult > 0) {
                 // this->_sendNewUsername();
                 this->_sendPlayerInput();
+                this->_sendStartInput();
             }
             if (pollResult > 0 && (pfd.revents & POLLIN)) {
                 try {
@@ -316,6 +317,19 @@ void jetpack::Client::Program::_sendEmptyEvent() {
     this->_socket.writeToSocket<bool>(false);
 }
 
+void jetpack::Client::Program::_sendStartEvent() {
+    if (this->_socket.getSocketFd() == -1) {
+        this->_logger.log("Cannot send username: not connected to server");
+        return;
+    }
+    Header_t header = generateHeader(1);
+    auto valueHeaderBigEndian = htons(header.rawData);
+    Payload_t payload = generatePayload(1, 14);
+    auto valuePayloadBigEndian = htons(payload.rawData);
+    this->_socket.writeToSocket<uint16_t>(valueHeaderBigEndian);
+    this->_socket.writeToSocket<uint16_t>(valuePayloadBigEndian);
+}
+
 void jetpack::Client::Program::_sendPlayerInput() {
     this->_communicationMutex.lock();
     this->_userInteractionMutex.lock();
@@ -335,6 +349,21 @@ void jetpack::Client::Program::_sendPlayerInput() {
     }
     this->_userInteractionMutex.unlock();
     this->_communicationMutex.unlock();
+}
+
+void jetpack::Client::Program::_sendStartInput() {
+    try {
+        if (this->_socket.getSocketFd() != -1) {
+            if (this->_startGameInteraction == jetpack::Client::START)
+                this->_sendStartEvent();
+        }
+    } catch (const Socket::SocketError &e) {
+        // std::cerr << "Error sending player input: " << e.what() << std::endl;
+        // try {
+        //     this->_manualReco = true;
+        // } catch (...) {
+        // }
+    }
 }
 
 void jetpack::Client::Program::loop() {
