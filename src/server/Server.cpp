@@ -227,7 +227,7 @@ std::vector<uint8_t> jetpack::server::Server::createObstacleListPacket() {
 std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     size_t id, size_t gameSpeed) {
     jetpack::server::Packet packet(1);
-    //packet.add(std::vector<uint64_t>{id, gameSpeed}, PayloadType_t::SIZE_T);
+    // packet.add(std::vector<uint64_t>{id, gameSpeed}, PayloadType_t::SIZE_T);
     packet.addPayloadHeader(2, PayloadType_t::SIZE_T);
     packet.addData(static_cast<uint64_t>(id));
     packet.addData(static_cast<uint64_t>(gameSpeed));

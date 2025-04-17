@@ -41,11 +41,10 @@ void jetpack::Client::Program::_setSize_tData(std::vector<unsigned char> msg) {
     }
 }
 
-float readBigEndianFloat(const std::vector<unsigned char>& data, size_t offset) {
-    uint32_t asInt = (data[offset] << 24) |
-                     (data[offset + 1] << 16) |
-                     (data[offset + 2] << 8) |
-                     data[offset + 3];
+float readBigEndianFloat(const std::vector<unsigned char> &data,
+                         size_t offset) {
+    uint32_t asInt = (data[offset] << 24) | (data[offset + 1] << 16) |
+                     (data[offset + 2] << 8) | data[offset + 3];
     float result;
     std::memcpy(&result, &asInt, sizeof(result));
     return result;
@@ -53,7 +52,8 @@ float readBigEndianFloat(const std::vector<unsigned char>& data, size_t offset) 
 
 void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     if (msg.size() < 35) {
-        this->_logger.log("Invalid player data size: " + std::to_string(msg.size()));
+        this->_logger.log("Invalid player data size: " +
+                          std::to_string(msg.size()));
         return;
     }
     player_t player;
@@ -66,20 +66,24 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
         else
             break;
     }
-    std::strncpy(player.username, username.c_str(), sizeof(player.username) - 1);
+    std::strncpy(player.username, username.c_str(),
+                 sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
     player.y_pos = readBigEndianFloat(msg, 24);
-    player.coins_collected = (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
+    player.coins_collected =
+        (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
     player.is_dead = msg[32] != 0;
     player.is_jetpack_on = msg[33] != 0;
     player.host = msg[34] != 0;
     this->_logger.log("Player ID: " + std::to_string(player.id));
     this->_logger.log("Player Username: " + std::string(player.username));
     this->_logger.log("Player Y Position: " + std::to_string(player.y_pos));
-    this->_logger.log("Player Coins: " + std::to_string(player.coins_collected));
+    this->_logger.log("Player Coins: " +
+                      std::to_string(player.coins_collected));
     this->_logger.log("Player is dead: " + std::to_string(player.is_dead));
     this->_logger.log("Player is host: " + std::to_string(player.host));
-    this->_logger.log("Player is jetpack on: " + std::to_string(player.is_jetpack_on));
+    this->_logger.log("Player is jetpack on: " +
+                      std::to_string(player.is_jetpack_on));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
     this->_graphic.setPosPlayer(player.id,
                                 sf::Vector2f(90, player.y_pos * 39.f + 90.f));
@@ -107,10 +111,8 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
     coin.y_pos += 90.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
-    this->_graphic.setPosCoin(sf::Vector2f{
-        static_cast<float>(coin.x_pos),
-        static_cast<float>(coin.y_pos)
-    });
+    this->_graphic.setPosCoin(sf::Vector2f{static_cast<float>(coin.x_pos),
+                                           static_cast<float>(coin.y_pos)});
 }
 
 void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
@@ -120,7 +122,8 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
         return;
     }
     obstacle_t obstacle;
-    auto bytesToDouble = [](const std::vector<unsigned char>& data, size_t offset) -> double {
+    auto bytesToDouble = [](const std::vector<unsigned char> &data,
+                            size_t offset) -> double {
         uint64_t raw = 0;
         for (int i = 0; i < 8; ++i)
             raw |= static_cast<uint64_t>(data[offset + i]) << (56 - 8 * i);
@@ -136,7 +139,6 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
         sf::Vector2f{static_cast<float>(obstacle.x_pos),
                      static_cast<float>(obstacle.y_pos)});
 }
-
 
 void jetpack::Client::Program::_getServerMessage() {
     Header_t header{};
@@ -211,15 +213,11 @@ void jetpack::Client::Program::_handleMessageFromServer(Payload_t payload) {
 }
 
 void jetpack::Client::Program::_handlePayload(std::vector<unsigned char> msg,
-    Payload_t payload) {
-    if (payload.dataId == SIZE_T)
-        this->_setSize_tData(msg);
-    if (payload.dataId == PLAYER)
-        this->_setPlayerData(msg);
-    if (payload.dataId == COIN_POS)
-        this->_setCoinData(msg);
-    if (payload.dataId == HAZARD_POS)
-        this->_setLaserData(msg);
+                                              Payload_t payload) {
+    if (payload.dataId == SIZE_T) this->_setSize_tData(msg);
+    if (payload.dataId == PLAYER) this->_setPlayerData(msg);
+    if (payload.dataId == COIN_POS) this->_setCoinData(msg);
+    if (payload.dataId == HAZARD_POS) this->_setLaserData(msg);
 }
 
 void jetpack::Client::Program::_sniffANetwork() {
