@@ -30,7 +30,8 @@ class Client {
     // handlePayload returns true if the client should be disconnected
     bool handlePayload(std::string commandLine);
     // handlePayload returns true if the client should be disconnected
-    bool handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game);
+    bool handlePayload(std::vector<uint8_t> payload,
+                       std::shared_ptr<Game> game);
     template <typename T>
     bool handlePayload(std::vector<T> payload) {
         if (payload.size() == 0) return true;
@@ -45,10 +46,11 @@ class Client {
         _controlSocket.writeToSocket(data);
     }
     unsigned int getId() const;
-    bool handleInput(std::vector<uint8_t> payloadData, std::shared_ptr<Game> game);
+    bool handleInput(std::vector<uint8_t> payloadData,
+                     std::shared_ptr<Game> game);
 
  private:
-    bool closeAndDisconnect();
+    bool badInput();
     unsigned int _id;
 };
 }  // namespace server
