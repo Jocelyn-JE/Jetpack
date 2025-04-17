@@ -81,7 +81,8 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     this->_logger.log("Player is host: " + std::to_string(player.host));
     this->_logger.log("Player is jetpack on: " + std::to_string(player.is_jetpack_on));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
-    this->_graphic.setPosPlayer(player.id, sf::Vector2f(0, player.y_pos * 40.f));
+    this->_graphic.setPosPlayer(player.id,
+                                sf::Vector2f(90, player.y_pos * 39.f + 90.f));
     this->_graphic.setCoinAmount(player.id, player.coins_collected);
 }
 
@@ -96,12 +97,14 @@ void jetpack::Client::Program::_setCoinData(std::vector<unsigned char> msg) {
     for (int i = 0; i < 8; ++i)
         xRaw |= static_cast<uint64_t>(msg[i]) << (56 - 8 * i);
     std::memcpy(&coin.x_pos, &xRaw, sizeof(double));
-    coin.x_pos *= 60.f;
+    coin.x_pos *= 39.f;
+    coin.x_pos += 90.f;
     uint64_t yRaw = 0;
     for (int i = 0; i < 8; ++i)
         yRaw |= static_cast<uint64_t>(msg[8 + i]) << (56 - 8 * i);
     std::memcpy(&coin.y_pos, &yRaw, sizeof(double));
-    coin.y_pos *= 42.f;
+    coin.y_pos *= 39.f;
+    coin.y_pos += 90.f;
     this->_logger.log("Coin X Position: " + std::to_string(coin.x_pos));
     this->_logger.log("Coin Y Position: " + std::to_string(coin.y_pos));
     this->_graphic.setPosCoin(sf::Vector2f{
@@ -125,8 +128,8 @@ void jetpack::Client::Program::_setLaserData(std::vector<unsigned char> msg) {
         std::memcpy(&value, &raw, sizeof(double));
         return value;
     };
-    obstacle.x_pos = bytesToDouble(msg, 0) * 60.f;
-    obstacle.y_pos = bytesToDouble(msg, 8) * 42.f;
+    obstacle.x_pos = bytesToDouble(msg, 0) * 39.f + 90.f;
+    obstacle.y_pos = bytesToDouble(msg, 8) * 39.f + 90.f;
     this->_logger.log("Obstacle X Position: " + std::to_string(obstacle.x_pos));
     this->_logger.log("Obstacle Y Position: " + std::to_string(obstacle.y_pos));
     this->_graphic.setPosLaser(

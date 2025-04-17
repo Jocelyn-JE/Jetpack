@@ -17,8 +17,8 @@
 #include "PollFdList.hpp"
 #include "Server.hpp"
 #include "Socket.hpp"
-#include "logic/Game.hpp"
-#include "logic/GameServer.hpp"
+#include "Game.hpp"
+#include "GameServer.hpp"
 #include "parsing/Parser.hpp"
 
 #define LISTEN_BACKLOG 128

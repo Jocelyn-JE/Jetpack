@@ -60,7 +60,7 @@ bool Socket::closesOnDestroy() const noexcept {
 
 void Socket::closeSocket() noexcept(false) {
     if (this->_socketFd == -1) {
-        std::cout << "Socket already closed on fd: " << this->_socketFd
+        std::cerr << "Socket already closed on fd: " << this->_socketFd
                   << std::endl;
         return;
     }
@@ -123,7 +123,7 @@ void Socket::connectSocket(const char *ip_address,
             "Connect failed to " + std::string(ip_address) + ":" +
             std::to_string(port) + " - " + std::string(strerror(errno)));
     }
-    std::cout << "Successfully connected to " << ip_address << ":" << port
+    std::cerr << "Successfully connected to " << ip_address << ":" << port
               << " on fd: " << this->_socketFd << std::endl;
 }
 
@@ -193,4 +193,28 @@ struct sockaddr_in Socket::getAddress() const noexcept { return _address; }
 
 void Socket::setCloseOnDestroy(bool closeOnDestroy) noexcept {
     this->_closeSocketOnDestruction = closeOnDestroy;
+}
+
+void Socket::flush() noexcept(false) {
+    int flags = fcntl(this->_socketFd, F_GETFL, 0);
+    if (flags == -1) {
+        throw Socket::SocketError("Failed to get socket flags: " +
+                                  std::string(strerror(errno)));
+    }
+
+    if (fcntl(this->_socketFd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        throw Socket::SocketError("Failed to set non-blocking mode: " +
+                                  std::string(strerror(errno)));
+    }
+
+    std::vector<uint8_t> buffer(BUFSIZ);
+    ssize_t bytesRead;
+    do {
+        bytesRead = read(this->_socketFd, buffer.data(), buffer.size());
+    } while (bytesRead > 0);
+
+    if (fcntl(this->_socketFd, F_SETFL, flags) == -1) {
+        throw Socket::SocketError("Failed to restore socket flags: " +
+                                  std::string(strerror(errno)));
+    }
 }

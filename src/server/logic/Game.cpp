@@ -25,7 +25,7 @@ void Game::start(const std::string& mapFile) {
     }
     std::cerr << "Map loaded successfully" << std::endl;
 
-    initNcursesMap();
+    //initNcursesMap();
     // printServerData();
 }
 
@@ -105,9 +105,9 @@ void Game::update(float deltaTime) {
         }
         checkCollisions();
     }
-    pollInput();
+    //pollInput();
     // printServerData();
-    displayNcursesMap();
+    // displayNcursesMap();
 }
 
 void Game::checkCollisions() {
@@ -198,7 +198,7 @@ void Game::initNcursesMap() {
     curs_set(0);            // Hide the cursor
     nodelay(stdscr, TRUE);  // Make getch() non-blocking
 
-    mapWin = newwin(11, 120, 0, 0);  // Create a 10x120 window
+    mapWin = newwin(12, 120, 0, 0);  // Create a 10x120 window
     box(mapWin, 0, 0);               // Draw a border around the window
     wrefresh(mapWin);                // Refresh the window to show the border
 }
@@ -301,3 +301,12 @@ size_t Game::nbPlayer() const {
 }
 
 bool Game::isStarted() const { return gameData->isRunning; }
+
+std::shared_ptr<gameplayer_t> Game::getPlayer(int id) {
+    std::lock_guard<std::mutex> lock(gameData->dataMutex);
+    auto it = gameData->players.find(id);
+    if (it != gameData->players.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
