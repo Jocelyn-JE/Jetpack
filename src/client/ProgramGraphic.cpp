@@ -184,7 +184,6 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_auth.resetAuth();
         this->_manualReco = true;
         this->_logger.log("Connection failed: " + std::string(e.what()));
-        throw;
     }
 }
 
