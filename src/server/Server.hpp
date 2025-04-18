@@ -59,7 +59,7 @@ class Server {
     std::vector<uint8_t> createStartGamePacket(void);
     std::vector<uint8_t> createPlayerListPacket(void);
     std::vector<uint8_t> createCoinListPacket(
-        const std::vector<std::shared_ptr<coinsPos_t>>& coins);
+        const std::vector<std::shared_ptr<coinsPos_t>> &coins);
     std::vector<uint8_t> createObstacleListPacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
