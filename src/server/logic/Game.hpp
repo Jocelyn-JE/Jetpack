@@ -42,8 +42,8 @@ class Game {
     bool loadMap(const std::string& filename);
     // Initialize ncurses map
     void initNcursesMap();
-    
-    public:
+
+ public:
     // Constructor
     // Initializes the game with the given game data
     // The game data contains the players, coins, obstacles, and other game

@@ -52,7 +52,8 @@ int jetpack::server::Server::runServer(Parser &parser) {
                 server._game->start(server._gameData->filename);
             }
             server._setToEnd = server._game->checkEndgame();
-            std::cerr << "############setToEnd: " << server._setToEnd << std::endl;
+            std::cerr << "############setToEnd: " << server._setToEnd
+                      << std::endl;
             if (server._setToEnd && server._game->isStarted()) {
                 server.sendToAllClients(server.createEndgamePacket());
                 exit(0);

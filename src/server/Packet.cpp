@@ -50,9 +50,7 @@ Packet::Packet(uint8_t nbrPayload) {
 
 void Packet::addPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload = createPayloadHeader(dataCount, dataId);
-    uint16_t raw =
-    ((payload.dataCount & 0x3FF) << 6)
-  |  (payload.dataId   & 0x3F);
+    uint16_t raw = ((payload.dataCount & 0x3FF) << 6) | (payload.dataId & 0x3F);
     uint16_t payloadBigEndian = htons(raw);
     this->_packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
     this->_packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));

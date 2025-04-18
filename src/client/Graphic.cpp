@@ -18,8 +18,7 @@ void jetpack::Client::Graphic::display() {
         this->_game.display(this->_window, this->_posCoin, this->_posLaser);
         for (auto &s : this->_listPlayers)
             s.second.first->display(this->_window);
-        if (this->_isEndGame)
-            this->_endGame.display(this->_window);
+        if (this->_isEndGame) this->_endGame.display(this->_window);
     }
     this->_posMutex.unlock();
     this->_window.display();

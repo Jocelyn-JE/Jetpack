@@ -49,9 +49,7 @@ class Player {
 
     void changePosValue(sf::Vector2f pos);
 
-    void setPlayerStatus(bool isDead) {
-        this->_isDead = isDead;
-    }
+    void setPlayerStatus(bool isDead) { this->_isDead = isDead; }
 
     explicit Player(bool isPlayer, unsigned int id);
 

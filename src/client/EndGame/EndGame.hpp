@@ -6,37 +6,39 @@
 #define SRC_CLIENT_ENDGAME_ENDGAME_HPP_
 
 #include <functional>
-#include <memory>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
+
 #include <SFML/Graphics.hpp>
+
 #include "Player/PlayerGraphic.hpp"
 
 namespace jetpack::Client {
 class EndGame {
  private:
-        sf::Clock _endGameClock;
-        sf::Text _text;
-        sf::Font _font;
-        sf::RenderWindow _window;
+    sf::Clock _endGameClock;
+    sf::Text _text;
+    sf::Font _font;
+    sf::RenderWindow _window;
 
-        std::function<void()> &_switchToMenu;
+    std::function<void()> &_switchToMenu;
 
  public:
-        void resetEndGameClock();
+    void resetEndGameClock();
 
-        void display(sf::RenderWindow &window);
+    void display(sf::RenderWindow &window);
 
-        void compute(int id, const std::map<unsigned int,
-            std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer);
+    void compute(
+        int id, const std::map<unsigned int,
+                               std::pair<std::unique_ptr<Player>, sf::Vector2f>>
+                    &listPlayer);
 
-        explicit EndGame(std::function<void()> &switchToMenu);
+    explicit EndGame(std::function<void()> &switchToMenu);
 
-        ~EndGame();
+    ~EndGame();
 };
 }  // namespace jetpack::Client
-
-
 
 #endif  // SRC_CLIENT_ENDGAME_ENDGAME_HPP_
