@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <iostream>
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
@@ -18,6 +19,7 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_usernameTextButton.setString("Close");
                 this->_usernameButton.setSize({105, 70});
                 this->_settingsButton.setFillColor(sf::Color(71, 71, 70));
+                this->_startButton.setFillColor(sf::Color(71, 71, 70));
             } else {
                 if (!this->_username.empty() &&
                     this->_getUsername() != this->_username)
@@ -25,6 +27,7 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_usernameTextButton.setString("Change Username");
                 this->_usernameButton.setSize({250, 70});
                 this->_settingsButton.setFillColor(this->_menuButtonColor);
+                this->_startButton.setFillColor(this->_menuButtonColor);
             }
         }
         if (!this->_isUserNamePressed &&
@@ -36,6 +39,7 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsTextButton.setString("Close");
                 this->_settingsButton.setSize({105, 70});
                 this->_usernameButton.setFillColor(sf::Color(71, 71, 70));
+                this->_startButton.setFillColor(sf::Color(71, 71, 70));
             } else {
                 this->_sendSocketSettings(
                     {this->_ipBoxContent.getString(),
@@ -45,8 +49,17 @@ void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
                 this->_settingsTextButton.setString("Settings");
                 this->_settingsButton.setSize({140, 70});
                 this->_usernameButton.setFillColor(this->_menuButtonColor);
+                this->_startButton.setFillColor(this->_menuButtonColor);
             }
         }
+
+        if (!this->_isUserNamePressed && !this->_isSettingsPressed &&
+            this->_startButton.getGlobalBounds().contains(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y))) {
+            this->_sendStartServer();
+        }
+
         if (this->_isSettingsPressed &&
             this->_ipField.getGlobalBounds().contains(
                 static_cast<float>(event.mouseButton.x),
@@ -76,6 +89,8 @@ void jetpack::Client::Menu::display(sf::RenderWindow &window) {
     window.draw(this->_usernameTextButton);
     window.draw(this->_settingsButton);
     window.draw(this->_settingsTextButton);
+    window.draw(this->_startButton);
+    window.draw(this->_startTextButton);
     if (this->_isUserNamePressed) {
         window.draw(this->_usernameBox);
         window.draw(this->_usernameBoxTitle);
@@ -173,13 +188,15 @@ jetpack::Client::Menu::Menu(
     std::function<std::pair<std::string, std::string>()> &getSocketSettings,
     std::function<void(std::pair<std::string, int>)> &sendSocketSettings,
     std::function<int()> &getIdWithAuth,
-    std::function<bool()> &getIsConnectedWithAuth)
+    std::function<bool()> &getIsConnectedWithAuth,
+    std::function<void()> &sendStartServer)
     : _changeUsername(changeUsername),
       _getUsername(getUsername),
       _authIsConnected(getIsConnectedWithAuth),
       _authGetId(getIdWithAuth),
       _getSocketSettings(getSocketSettings),
-      _sendSocketSettings(sendSocketSettings) {
+      _sendSocketSettings(sendSocketSettings),
+      _sendStartServer(sendStartServer) {
     if (!this->_menuBackgroundTexture.loadFromFile("src/client/assets/"
                                                    "MenuBackground.png")) {
         throw std::runtime_error(
@@ -346,6 +363,20 @@ jetpack::Client::Menu::Menu(
     this->_blurShader.setUniform("sigma", 5.f);
     this->_blurShader.setUniform("direction", sf::Vector2f(0.f, 1.f));
     this->_blurShader.setUniform("resolution", sf::Vector2f(1440.f, 550.f));
+
+    this->_startTextButton.setFont(this->_jetpackFont);
+    this->_startTextButton.setString("Start");
+    this->_startTextButton.setCharacterSize(30);
+    this->_startTextButton.setFillColor(this->_menuButtonTextColor);
+    this->_startTextButton.setOutlineThickness(3);
+    this->_startTextButton.setOutlineColor(sf::Color::Black);
+    this->_startTextButton.setPosition({52, 190});
+
+    this->_startButton.setPosition({20, 180});
+    this->_startButton.setSize({140, 60});
+    this->_startButton.setFillColor(this->_menuButtonColor);
+    this->_startButton.setOutlineColor(sf::Color::Black);
+    this->_startButton.setOutlineThickness(4);
 
     this->_menuBackground = sf::Sprite(this->_menuBackgroundTexture);
 }

@@ -86,7 +86,8 @@ class Graphic {
         std::function<std::pair<std::string, std::string>()> &getSocketSettings,
         std::function<void(std::pair<std::string, int>)> &sendSocketSetting,
         std::function<int()> &getIdWithAuth,
-        std::function<bool()> &getIsConnectedWithAuth);
+        std::function<bool()> &getIsConnectedWithAuth,
+        std::function<void()> &sendStartGame);
 
     ~Graphic() = default;
 };

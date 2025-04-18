@@ -57,7 +57,6 @@ void jetpack::Client::Game::_handleKeyPressed(const sf::Event &event) {
 
 void jetpack::Client::Game::_handleKeyRelease(const sf::Event &event) {
     if (event.key.code == sf::Keyboard::Up) {
-        std::cout << "GROS CACA" << std::endl;
         this->_sendUserInteraction(UserInteractions_s::NO_INTERACTION);
     }
     // TODO(noa) : demander les autres interaction possible entre le

@@ -127,12 +127,13 @@ jetpack::Client::Graphic::Graphic(
     std::function<std::pair<std::string, std::string>()> &getSocketSettings,
     std::function<void(std::pair<std::string, int>)> &sendSocketSetting,
     std::function<int()> &getIdWithAuth,
-    std::function<bool()> &getIsConnectedWithAuth)
+    std::function<bool()> &getIsConnectedWithAuth,
+    std::function<void()> &sendStartGame)
     : _window(sf::VideoMode({1440, 550}), "Jetpack Joyride",
               sf::Style::Close | sf::Style::Titlebar),
       _getIdWithAuth(getIdWithAuth),
       _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
-            getIdWithAuth, getIsConnectedWithAuth),
+            getIdWithAuth, getIsConnectedWithAuth, sendStartGame),
       _game(sendUserInteraction) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
