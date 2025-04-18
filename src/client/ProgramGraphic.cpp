@@ -41,12 +41,10 @@ void jetpack::Client::Program::_setSize_tData(std::vector<unsigned char> msg) {
     }
 }
 
-float readBigEndianFloat(const std::vector<unsigned char>& data,
-    size_t offset) {
-    uint32_t asInt = (data[offset] << 24) |
-                     (data[offset + 1] << 16) |
-                     (data[offset + 2] << 8) |
-                     data[offset + 3];
+float readBigEndianFloat(const std::vector<unsigned char> &data,
+                         size_t offset) {
+    uint32_t asInt = (data[offset] << 24) | (data[offset + 1] << 16) |
+                     (data[offset + 2] << 8) | data[offset + 3];
     float result;
     std::memcpy(&result, &asInt, sizeof(result));
     return result;
@@ -55,7 +53,7 @@ float readBigEndianFloat(const std::vector<unsigned char>& data,
 void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     if (msg.size() < 35) {
         this->_logger.log("Invalid player data size: " +
-            std::to_string(msg.size()));
+                          std::to_string(msg.size()));
         return;
     }
     player_t player;
@@ -72,8 +70,8 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
                  sizeof(player.username) - 1);
     player.username[sizeof(player.username) - 1] = '\0';
     player.y_pos = readBigEndianFloat(msg, 24);
-    player.coins_collected = (msg[28] << 24) | (msg[29] << 16)
-        | (msg[30] << 8) | msg[31];
+    player.coins_collected =
+        (msg[28] << 24) | (msg[29] << 16) | (msg[30] << 8) | msg[31];
     player.is_dead = msg[32] != 0;
     player.is_jetpack_on = msg[33] != 0;
     player.host = msg[34] != 0;
@@ -85,7 +83,7 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     this->_logger.log("Player is dead: " + std::to_string(player.is_dead));
     this->_logger.log("Player is host: " + std::to_string(player.host));
     this->_logger.log("Player is jetpack on: " +
-        std::to_string(player.is_jetpack_on));
+                      std::to_string(player.is_jetpack_on));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
     this->_graphic.setPosPlayer(player.id,
                                 sf::Vector2f(90, player.y_pos * 39.f + 90.f));
@@ -168,7 +166,7 @@ void jetpack::Client::Program::_getServerMessage() {
 }
 
 void jetpack::Client::Program::_connectToSocket(const char *ip,
-    unsigned int port) {
+                                                unsigned int port) {
     if (this->_socket.getSocketFd() != -1) {
         this->_socket.closeSocket();
     }
@@ -177,7 +175,7 @@ void jetpack::Client::Program::_connectToSocket(const char *ip,
         this->_socket.connectSocket(ip, port);
         this->_socket.setCloseOnDestroy(true);
         this->_logger.log("Connected to server at " + std::string(ip) + ":" +
-                         std::to_string(port));
+                          std::to_string(port));
         this->_graphic.serverOK();
     } catch (const std::exception &e) {
         this->_graphic.serverError();

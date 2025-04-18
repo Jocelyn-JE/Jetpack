@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** my_jetpack
+** client.cpp
 ** File description:
 ** Client
 */
@@ -15,6 +15,7 @@
 #include <CommunicationHeader.hpp>
 
 #include "NetworksUtils.hpp"
+#include "Server.hpp"
 
 // Helper functions -----------------------------------------------------------
 
@@ -53,7 +54,8 @@ bool jetpack::server::Client::badInput() {
 }
 
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
-                                            std::shared_ptr<Game> game) {
+                                            std::shared_ptr<Game> game,
+                                            jetpack::server::Server &server) {
     for (const auto &byte : payload) {
         std::cerr << std::hex << std::uppercase << std::setw(2)
                   << std::setfill('0') << static_cast<int>(byte) << " ";
@@ -69,6 +71,8 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
     if (header.magic1 != 42 || header.magic2 != 42) {
         return this->badInput();
     }
+    std::cerr << "------------------------------------------------From ID: "
+              << _id << std::endl;
     std::cerr << "Header: magic1 = " << header.magic1
               << ", magic2 = " << header.magic2
               << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
@@ -76,11 +80,14 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
     payloadData = this->_controlSocket.readFromSocket(2);
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
+    std::cerr << "Payload: dataId = " << static_cast<int>(payloadHeader.dataId)
+              << ", dataCount = " << static_cast<int>(payloadHeader.dataCount)
+              << std::endl;
     if (payloadHeader.dataId >= INVALID) return this->badInput();
     if (payloadHeader.dataId == PLAYER_INPUT)
         return this->handleInput(payloadData, game);
     if (payloadHeader.dataId == START)
-        return this->handleInput(payloadData, game);
+        return this->handleStart(payloadData, server);
     return this->badInput();
 }
 
@@ -106,5 +113,17 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
         game->getPlayer(_id)->is_jetpack_on = false;
     }
     (void)payloadData;
+    return false;
+}
+
+bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,
+                                          jetpack::server::Server &server) {
+    std::cerr << "Handling start command from client ID: " << _id << std::endl;
+
+    uint8_t startFlag = payloadData[0];
+    std::cerr << "Start flag: " << static_cast<int>(startFlag) << std::endl;
+
+    server.setToRun();
+
     return false;
 }

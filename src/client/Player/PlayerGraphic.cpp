@@ -53,8 +53,7 @@ jetpack::Client::Player::Player(bool isPlayer, unsigned int id)
               {0.282, 0.288}) {
     this->id = id;
     this->_pos = {0, 0};
-    if (!isPlayer)
-        this->_player.setTransparency();
+    if (!isPlayer) this->_player.setTransparency();
     this->_clock.restart();
     this->_currentSpriteState = RUNNING;
     this->_player.setSpriteType(this->_currentSpriteState);

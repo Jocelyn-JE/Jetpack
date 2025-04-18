@@ -34,8 +34,7 @@ class Program {
     std::mutex _userInteractionMutex;
     UserInteractions_s _lastUserInteraction =
         UserInteractions_s::NO_INTERACTION;
-    StartGame_s _startGameInteraction =
-        StartGame_s::NOTHING;
+    StartGame_s _startGameInteraction = StartGame_s::NOTHING;
     bool _isChangeUsername = false;
 
     Auth _auth;
@@ -50,8 +49,7 @@ class Program {
             this->_userInteractionMutex.unlock();
         });
 
-    std::function<void()> _sendStartGame =
-    ([this]() {
+    std::function<void()> _sendStartGame = ([this]() {
         this->_userInteractionMutex.lock();
         this->_startGameInteraction = START;
         this->_userInteractionMutex.unlock();
