@@ -14,5 +14,5 @@ enum StartGame_s {
     START,
     NOTHING,
 };
-}
+}  // namespace jetpack::Client
 #endif  // SRC_CLIENT_USERINTERACTIONS_HPP_

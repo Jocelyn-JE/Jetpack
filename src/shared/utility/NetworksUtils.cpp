@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "Coin.hpp"
+#include "Coin/CoinGraphic.hpp"
 #include "CommunicationHeader.hpp"
 #include "Exception.hpp"
 #include "NetworksUtils.hpp"
-#include "Coin/CoinGraphic.hpp"
 #include "Obstacle.hpp"
 #include "Player.hpp"
 #include "Socket.hpp"
@@ -166,14 +166,13 @@ jetpack::Payload_t getPayload(jetpack::Logger &logger, Socket &socket) {
     logger.log(ss.str());
     jetpack::Payload_t payload = {};
     uint16_t dataPayload = (static_cast<uint8_t>(payloadBuffer[0]) << 8) |
-                            static_cast<uint8_t>(payloadBuffer[1]);
+                           static_cast<uint8_t>(payloadBuffer[1]);
     payload.rawData = dataPayload;
     std::stringstream binaryss;
     binaryss << "Binary representation of header.rawData: ";
     for (int i = 15; i >= 0; i--) {
         binaryss << ((payload.rawData >> i) & 1);
-        if (i % 4 == 0 && i > 0)
-            binaryss << " ";
+        if (i % 4 == 0 && i > 0) binaryss << " ";
     }
     logger.log(binaryss.str());
     logger.log("Received: littleEndian " + std::to_string(payload.rawData));
