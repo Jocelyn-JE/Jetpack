@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** my_jetpack
+** Client.hpp
 ** File description:
 ** Client
 */
@@ -10,6 +10,7 @@
 
 #include <bits/stdc++.h>
 
+#include "Server.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -19,8 +20,12 @@
 #include "GameServer.hpp"
 #include "Socket.hpp"
 
+namespace jetpack::server {
+    class Server;
+}
+
 namespace jetpack {
-namespace server {
+    namespace server {
 class Client {
  public:
     Client() = delete;
@@ -30,7 +35,7 @@ class Client {
     // handlePayload returns true if the client should be disconnected
     bool handlePayload(std::string commandLine);
     // handlePayload returns true if the client should be disconnected
-    bool handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game);
+    bool handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game,  jetpack::server::Server &server);
     template <typename T>
     bool handlePayload(std::vector<T> payload) {
         if (payload.size() == 0) return true;
@@ -46,6 +51,7 @@ class Client {
     }
     unsigned int getId() const;
     bool handleInput(std::vector<uint8_t> payloadData, std::shared_ptr<Game> game);
+    bool handleStart(std::vector<uint8_t> payloadData,  jetpack::server::Server &server);
 
  private:
     bool closeAndDisconnect();

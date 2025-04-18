@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** my_jetpack
+** Server.hpp
 ** File description:
 ** Server
 */
@@ -15,7 +15,6 @@
 #include "Client.hpp"
 #include "CommunicationHeader.hpp"
 #include "PollFdList.hpp"
-#include "Server.hpp"
 #include "Socket.hpp"
 #include "Game.hpp"
 #include "GameServer.hpp"
@@ -31,6 +30,7 @@ class Server {
     explicit Server(Parser &parser);
     ~Server();
     static int runServer(Parser &parser);
+    void setToRun() { _setToRun = true; }
 
  private:
     int pollSockets();
@@ -65,6 +65,7 @@ class Server {
     unsigned int _nextClientId;
     std::shared_ptr<GameData> _gameData;
     std::shared_ptr<Game> _game;
+    bool _setToRun = false;
 };
 }  // namespace server
 }  // namespace jetpack

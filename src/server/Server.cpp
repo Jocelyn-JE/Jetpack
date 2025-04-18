@@ -47,7 +47,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
             previousTime = currentTime;
             poll_result = server.pollSockets();
             server.updateSockets();
-            if (server._clients.size() == 2 && !server._game->isStarted()) {
+            if (server._setToRun && server._clients.size() >= 2 && !server._game->isStarted()) {
                 server.sendToAllClients(server.createStartGamePacket());
                 server._game->start(server._gameData->filename);
             }
@@ -80,7 +80,7 @@ void jetpack::server::Server::updateSockets() {
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket(2);
             std::cerr << "Buffer size: " << buffer.size() << std::endl;
-            if (_clients[i - 1]->handlePayload(buffer, _game)) {
+            if (_clients[i - 1]->handlePayload(buffer, _game, *this)) {
                 _game->delPlayer(_clients[i - 1]->getId());
                 this->handleDisconnection(i);
             } else {

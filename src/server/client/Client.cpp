@@ -1,16 +1,17 @@
 /*
 ** EPITECH PROJECT, 2025
-** my_jetpack
+** client.cpp
 ** File description:
 ** Client
 */
 
+
+#include "Server.hpp"
 #include "Client.hpp"
 
 #include <iostream>
 #include <string>
 #include <vector>
-
 
 #include "NetworksUtils.hpp"
 #include <CommunicationHeader.hpp>
@@ -23,7 +24,7 @@ static bool clientDisconnect(jetpack::server::Client const &client) {
     return true;
 }
 
-// Client clastd::cerr member functions ----------------------------------------------
+// Client class member functions ----------------------------------------------
 
 jetpack::server::Client::Client(int fd, struct sockaddr_in address,
                                 unsigned int id)
@@ -50,7 +51,7 @@ bool jetpack::server::Client::closeAndDisconnect() {
     return true;
 }
 
-bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game) {
+bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game,  jetpack::server::Server &server) {
     for (const auto &byte : payload) {
         std::cerr << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<int>(byte) << " ";    std::cerr << std::dec;
     }
@@ -73,7 +74,7 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload, std::s
                             (static_cast<uint16_t>(payloadData[1]));
     if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
     if (payloadHeader.dataId == PLAYER_INPUT) return this->handleInput(payloadData, game);
-    if (payloadHeader.dataId == START) return this->handleInput(payloadData, game);
+    if (payloadHeader.dataId == START) return this->handleStart(payloadData, server);
     return this->closeAndDisconnect();
 }
 
@@ -97,5 +98,29 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData, std:
 
     (void)game;
     (void)payloadData;
+    return false;
+}
+
+bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,  jetpack::server::Server &server) {
+    std::cerr << "Handling start command from client ID: " << _id << std::endl;
+
+    // Parse the payload data for the START command
+    if (payloadData.size() < static_cast<size_t>(getPayloadSize(START))) {
+        std::cerr << "Invalid START payload size" << std::endl;
+        return this->closeAndDisconnect();
+    }
+
+    // Example: Extracting some data from the payload
+    uint8_t startFlag = payloadData[0];
+    std::cerr << "Start flag: " << static_cast<int>(startFlag) << std::endl;
+
+    // Perform game-specific logic for the START command
+    if (startFlag == 1) {
+        server.setToRun();
+    } else {
+        std::cerr << "Invalid start flag value" << std::endl;
+        return this->closeAndDisconnect();
+    }
+
     return false;
 }

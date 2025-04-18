@@ -74,7 +74,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/server/client  -I ./src/shared/include		\
 						-I ./src/shared/sfml    -I ./src/server				\
 						-I ./src/client		    -I ./src/shared				\
-						-I ./src/server/logic
+						-I ./src/server/logic	-I ./src/server/
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
  						-L./ -ljetpack -O2 -g  -lstdc++ -lncurses
