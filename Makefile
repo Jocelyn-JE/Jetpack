@@ -48,6 +48,7 @@ CLIENT_SRC			=	./src/client/Graphic.cpp							\
 						./src/client/Coin/CoinGraphic.cpp					\
 						./src/client/CoinStats/CoinStats.cpp				\
 						./src/client/Laser/LaserGraphic.cpp					\
+						./src/client/EndGame/EndGame.cpp					\
 
 CLIENT_OBJ			=	$(CLIENT_SRC:.cpp=.o)
 

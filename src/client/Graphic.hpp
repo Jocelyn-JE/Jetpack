@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <EndGame/EndGame.hpp>
 
 #include <SFML/Graphics.hpp>
 
@@ -29,6 +30,7 @@ class Graphic {
 
     WindowType _windowType;
     size_t _gameSpeed = 0;
+    bool _isEndGame = false;
 
     sf::RenderWindow _window;
     std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f> >
@@ -41,8 +43,15 @@ class Graphic {
 
     std::function<int()> &_getIdWithAuth;
 
+
+    std::function<void()> _switchToMenuFct =
+    ([this]() {
+        this->switchToMenu();
+    });
+
     Menu _menu;
     Game _game;
+    EndGame _endGame;
 
  public:
     void display();
@@ -71,9 +80,13 @@ class Graphic {
 
     void addNewPlayer(unsigned int id, bool isCurrent);
 
+    void setPlayerStatus(unsigned int id, bool isDead);
+
     void switchToGame();
 
     void switchToMenu();
+
+    void switchToDeath();
 
     void serverError();
 

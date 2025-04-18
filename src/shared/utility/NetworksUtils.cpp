@@ -71,6 +71,12 @@ int getPayloadSize(unsigned char dataId) {
             return 4;
         case jetpack::PayloadType_t::VELOCITY_LIMITS:
             return 8;
+        case jetpack::PayloadType_t::GETNBPLAYER:
+            return 0;
+        case jetpack::PayloadType_t::NBPLAYER:
+            return 4;
+        case jetpack::PayloadType_t::ENDOFGAME:
+            return 0;
         default:
             return 0;
     }
