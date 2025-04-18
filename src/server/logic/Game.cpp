@@ -23,6 +23,15 @@ void Game::start(const std::string& mapFile) {
         return;
     }
     std::cerr << "Map loaded successfully" << std::endl;
+    {
+        std::lock_guard<std::mutex> lock(this->gameData->dataMutex);
+        for (auto& [_, player] : this->gameData->players) {
+            player->coins.clear();
+            for (const auto& coin : this->gameData->coins) {
+                player->coins.push_back(coin);
+            }
+        }
+    }
     // initNcursesMap();
 }
 
@@ -74,15 +83,14 @@ void Game::update(float deltaTime) {
 void Game::checkCollisions() {
     for (auto& [_, player] : this->gameData->players) {
         if (player->is_dead) continue;
-        for (auto it = this->gameData->coins.begin();
-             it != this->gameData->coins.end();) {
+        for (auto it = player->coins.begin(); it != player->coins.end();) {
             auto& coin = *it;
             if (coin->y_pos <= player->y_pos + 1.0 &&
                 coin->y_pos + 1.0 >= player->y_pos &&
                 coin->x_pos <= this->gameData->advancement + 1.0 &&
                 coin->x_pos + 1.0 >= this->gameData->advancement) {
                 player->coins_collected++;
-                it = this->gameData->coins.erase(it);
+                it = player->coins.erase(it);
             } else {
                 ++it;
             }

@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-
 #include "Parser.hpp"
 
 jetpack::Parser::Parser(int argc, char** argv)

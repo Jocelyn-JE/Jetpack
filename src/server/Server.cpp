@@ -53,7 +53,7 @@ int jetpack::server::Server::runServer(Parser &parser) {
             }
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
-                server.sendToAllClients(server.createCoinListPacket());
+                server.sendCoinListsToPlayers();
                 server.sendToAllClients(server.createObstacleListPacket());
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(25));
@@ -171,24 +171,22 @@ std::vector<uint8_t> jetpack::server::Server::createPlayerListPacket() {
     return packet.getPacket();
 }
 
-std::vector<uint8_t> jetpack::server::Server::createCoinListPacket() {
+std::vector<uint8_t> jetpack::server::Server::createCoinListPacket(
+    const std::vector<std::shared_ptr<coinsPos_t>> &coins) {
     jetpack::server::Packet packet(1);
     size_t coinCount = 0;
-    for (size_t i = 0; i < _gameData->coins.size(); i++) {
-        if (_gameData->coins[i]->x_pos >= _gameData->advancement - 5 &&
-            _gameData->coins[i]->x_pos <= _gameData->advancement + 25) {
+    for (const auto &coin : coins) {
+        if (coin->x_pos >= _gameData->advancement - 5 &&
+            coin->x_pos <= _gameData->advancement + 25) {
             coinCount++;
         }
     }
-    // std::cout << "Coin count: " << coinCount << std::endl;
     packet.addPayloadHeader(coinCount, PayloadType_t::COIN_POS);
-    for (size_t i = 0; i < _gameData->coins.size(); i++) {
-        if (_gameData->coins[i]->x_pos >= _gameData->advancement - 5 &&
-            _gameData->coins[i]->x_pos <= _gameData->advancement + 25) {
-            // std::cout << "Coin x: " << _gameData->coins[i]->x_pos
-            //           << " y: " << _gameData->coins[i]->y_pos << std::endl;
-            packet.addData(_gameData->coins[i]->x_pos - _gameData->advancement);
-            packet.addData(static_cast<double>(_gameData->coins[i]->y_pos));
+    for (const auto &coin : coins) {
+        if (coin->x_pos >= _gameData->advancement - 5 &&
+            coin->x_pos <= _gameData->advancement + 25) {
+            packet.addData(coin->x_pos - _gameData->advancement);
+            packet.addData(static_cast<double>(coin->y_pos));
         }
     }
     return packet.getPacket();
@@ -252,4 +250,17 @@ std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
         std::cerr << std::bitset<8>(byte) << " ";
     }
     return packet.getPacket();
+}
+
+void jetpack::server::Server::sendCoinListsToPlayers() {
+    std::lock_guard<std::mutex> lock(this->_gameData->dataMutex);
+    for (const auto &client : this->_clients) {
+        int playerId = client->getId();
+        auto playerIt = this->_gameData->players.find(playerId);
+        if (playerIt != this->_gameData->players.end()) {
+            const auto &player = playerIt->second;
+            auto coinPacket = this->createCoinListPacket(player->coins);
+            client->sendData(coinPacket);
+        }
+    }
 }

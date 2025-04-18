@@ -54,10 +54,12 @@ class Server {
             this->_clients[i]->sendData(data);
     }
 
+    void sendCoinListsToPlayers();
     std::vector<uint8_t> createConnectionPacket(size_t id, size_t gameSpeed);
     std::vector<uint8_t> createStartGamePacket(void);
     std::vector<uint8_t> createPlayerListPacket(void);
-    std::vector<uint8_t> createCoinListPacket(void);
+    std::vector<uint8_t> createCoinListPacket(
+        const std::vector<std::shared_ptr<coinsPos_t>> &coins);
     std::vector<uint8_t> createObstacleListPacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
