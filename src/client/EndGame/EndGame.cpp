@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 void jetpack::Client::EndGame::resetEndGameClock() {
     this->_endGameClock.restart();
@@ -16,27 +17,54 @@ void jetpack::Client::EndGame::display(sf::RenderWindow &window) {
     window.draw(this->_text);
 }
 
-void jetpack::Client::EndGame::compute(int id,  const std::map<unsigned int,
-    std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer) {
-    if (this->_endGameClock.getElapsedTime().asSeconds() <= 5) {
-        this->_switchToMenu();
-    }
-    std::vector<unsigned int> idDeadPlayer = {};
-    for (auto &s : listPlayer) {
-        if (s.second.first->isDead() == true)
-            idDeadPlayer.push_back(s.first);
-    }
-    if (!idDeadPlayer.empty()) {
-        bool isCurrentPlayerDead = std::find(idDeadPlayer.begin(),
-            idDeadPlayer.end(), id) != idDeadPlayer.end();
+void jetpack::Client::EndGame::setResult(unsigned int id,
+    const std::map<unsigned int, std::pair<std::unique_ptr<Player>,
+    sf::Vector2f>> &listPlayer) {
+    std::vector<unsigned int> playersAlive;
+    unsigned int maxCoins = 0;
+    unsigned int playerCoins = 0;
+    bool isDraw = false;
 
-        if (isCurrentPlayerDead)
-            this->_text.setString("You Lost!");
-        else
-            this->_text.setString("You Won!");
-    } else {
-        this->_text.setString("Draw!");
+    for (const auto& [playerId, playerData] : listPlayer) {
+        const auto &player = playerData.first;
+        if (!player->isDead()) {
+            playersAlive.push_back(playerId);
+            unsigned int coins = player->getCoinsAmount();
+            if (playerId == id)
+                playerCoins = coins;
+            if (coins > maxCoins) {
+                maxCoins = coins;
+                isDraw = false;
+            } else {
+                if (coins == maxCoins && coins > 0)
+                    isDraw = true;
+            }
+        }
     }
+    if (playersAlive.size() == 1) {
+        if (playersAlive[0] == id)
+            this->_text.setString("WIN");
+        else
+            this->_text.setString("LOSE");
+    } else {
+        if (playersAlive.size() > 1) {
+            if (isDraw && playerCoins == maxCoins) {
+                this->_text.setString("DRAW");
+            } else {
+                if (playerCoins == maxCoins)
+                    this->_text.setString("WIN");
+                else
+                    this->_text.setString("LOSE");
+            }
+        } else {
+            this->_text.setString("DRAW");
+        }
+    }
+}
+
+void jetpack::Client::EndGame::compute() {
+    if (this->_endGameClock.getElapsedTime().asSeconds() >= 5)
+        this->_switchToMenu();
 }
 
 jetpack::Client::EndGame::EndGame(std::function<void()> &switchToMenu) :
@@ -46,6 +74,7 @@ jetpack::Client::EndGame::EndGame(std::function<void()> &switchToMenu) :
             "JetpackFont.ttf");
     }
     this->_text.setCharacterSize(50);
+    this->_text.setPosition({250, 250});
     this->_text.setFillColor(sf::Color::White);
     this->_text.setFont(this->_font);
 }

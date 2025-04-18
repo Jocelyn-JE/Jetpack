@@ -26,10 +26,12 @@ class EndGame {
  public:
         void resetEndGameClock();
 
+        void setResult(unsigned int id, const std::map<unsigned int,
+            std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer);
+
         void display(sf::RenderWindow &window);
 
-        void compute(int id, const std::map<unsigned int,
-            std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer);
+        void compute();
 
         explicit EndGame(std::function<void()> &switchToMenu);
 
