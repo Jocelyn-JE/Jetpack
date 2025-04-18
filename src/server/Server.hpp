@@ -14,10 +14,10 @@
 
 #include "Client.hpp"
 #include "CommunicationHeader.hpp"
-#include "PollFdList.hpp"
-#include "Socket.hpp"
 #include "Game.hpp"
 #include "GameServer.hpp"
+#include "PollFdList.hpp"
+#include "Socket.hpp"
 #include "parsing/Parser.hpp"
 
 #define LISTEN_BACKLOG 128

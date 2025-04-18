@@ -64,10 +64,8 @@ void jetpack::Client::Game::_handleKeyRelease(const sf::Event &event) {
 }
 
 void jetpack::Client::Game::analyze(const sf::Event &event) {
-    if (event.type == sf::Event::KeyPressed)
-        this->_handleKeyPressed(event);
-    if (event.type == sf::Event::KeyReleased)
-        this->_handleKeyRelease(event);
+    if (event.type == sf::Event::KeyPressed) this->_handleKeyPressed(event);
+    if (event.type == sf::Event::KeyReleased) this->_handleKeyRelease(event);
 }
 
 jetpack::Client::Game::Game(

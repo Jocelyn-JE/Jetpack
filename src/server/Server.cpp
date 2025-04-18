@@ -21,7 +21,6 @@
 #include "Server.hpp"
 #include "Socket.hpp"
 
-
 volatile sig_atomic_t stopFlag = 0;
 
 static void handler(int signum) { stopFlag = signum; }
@@ -47,7 +46,8 @@ int jetpack::server::Server::runServer(Parser &parser) {
             previousTime = currentTime;
             poll_result = server.pollSockets();
             server.updateSockets();
-            if (server._setToRun && server._clients.size() >= 2 && !server._game->isStarted()) {
+            if (server._setToRun && server._clients.size() >= 2 &&
+                !server._game->isStarted()) {
                 server.sendToAllClients(server.createStartGamePacket());
                 server._game->start(server._gameData->filename);
             }

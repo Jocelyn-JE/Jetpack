@@ -5,8 +5,6 @@
 ** Client
 */
 
-
-#include "Server.hpp"
 #include "Client.hpp"
 
 #include <iostream>
@@ -14,10 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "NetworksUtils.hpp"
 #include <CommunicationHeader.hpp>
 
 #include "NetworksUtils.hpp"
+#include "Server.hpp"
 
 // Helper functions -----------------------------------------------------------
 
@@ -55,7 +53,9 @@ bool jetpack::server::Client::badInput() {
     return false;
 }
 
-bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload, std::shared_ptr<Game> game,  jetpack::server::Server &server) {
+bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
+                                            std::shared_ptr<Game> game,
+                                            jetpack::server::Server &server) {
     for (const auto &byte : payload) {
         std::cerr << std::hex << std::uppercase << std::setw(2)
                   << std::setfill('0') << static_cast<int>(byte) << " ";
@@ -79,8 +79,10 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload, std::s
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
     if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
-    if (payloadHeader.dataId == PLAYER_INPUT) return this->handleInput(payloadData, game);
-    if (payloadHeader.dataId == START) return this->handleStart(payloadData, server);
+    if (payloadHeader.dataId == PLAYER_INPUT)
+        return this->handleInput(payloadData, game);
+    if (payloadHeader.dataId == START)
+        return this->handleStart(payloadData, server);
     return this->closeAndDisconnect();
 }
 
@@ -109,7 +111,8 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
     return false;
 }
 
-bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,  jetpack::server::Server &server) {
+bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,
+                                          jetpack::server::Server &server) {
     std::cerr << "Handling start command from client ID: " << _id << std::endl;
 
     // Parse the payload data for the START command

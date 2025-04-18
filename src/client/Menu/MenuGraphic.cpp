@@ -4,9 +4,9 @@
 
 #include "MenuGraphic.hpp"
 
+#include <iostream>
 #include <string>
 #include <utility>
-#include <iostream>
 
 void jetpack::Client::Menu::_handleMousePressed(const sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
