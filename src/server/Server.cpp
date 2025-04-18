@@ -54,14 +54,15 @@ int jetpack::server::Server::runServer(Parser &parser) {
             server._setToEnd = server._game->checkEndgame();
             std::cerr << "############setToEnd: " << server._setToEnd
                       << std::endl;
-            if (server._setToEnd && server._game->isStarted()) {
-                server.sendToAllClients(server.createEndgamePacket());
-                exit(0);
-            }
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
                 server.sendCoinListsToPlayers();
                 server.sendToAllClients(server.createObstacleListPacket());
+            }
+            if (server._setToEnd && server._game->isStarted()) {
+                server.sendToAllClients(server.createEndgamePacket());
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                return 0;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(25));
         }
