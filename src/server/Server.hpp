@@ -22,7 +22,6 @@
 
 #define LISTEN_BACKLOG 128
 
-
 namespace jetpack {
 namespace server {
 class Server {

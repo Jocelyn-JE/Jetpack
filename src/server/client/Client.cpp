@@ -71,7 +71,8 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
     if (header.magic1 != 42 || header.magic2 != 42) {
         return this->badInput();
     }
-    std::cerr << "------------------------------------------------From ID: " << _id << std::endl;
+    std::cerr << "------------------------------------------------From ID: "
+              << _id << std::endl;
     std::cerr << "Header: magic1 = " << header.magic1
               << ", magic2 = " << header.magic2
               << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
