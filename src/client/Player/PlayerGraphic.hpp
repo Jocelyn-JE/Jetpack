@@ -22,6 +22,7 @@ class Player {
     };
     PlayerSprite_t _currentSpriteState = RUNNING;
     bool _isHost = false;
+    bool _isDead = false;
     unsigned int _coinsAmount = 0;
     sf::Vector2f _pos;
     std::string _username;
@@ -40,11 +41,17 @@ class Player {
 
     bool isHost() const { return this->_isHost; }
 
+    bool isDead() const { return this->_isDead; }
+
     void display(sf::RenderWindow &window);
 
     void compute();
 
     void changePosValue(sf::Vector2f pos);
+
+    void setPlayerStatus(bool isDead) {
+        this->_isDead = isDead;
+    }
 
     explicit Player(bool isPlayer, unsigned int id);
 

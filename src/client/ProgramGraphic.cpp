@@ -87,6 +87,7 @@ void jetpack::Client::Program::_setPlayerData(std::vector<unsigned char> msg) {
     this->_logger.log("Player is jetpack on: " +
         std::to_string(player.is_jetpack_on));
     this->_graphic.addNewPlayer(player.id, this->_auth.getId() == player.id);
+    this->_graphic.setPlayerStatus(player.id, player.is_dead);
     this->_graphic.setPosPlayer(player.id,
                                 sf::Vector2f(90, player.y_pos * 39.f + 90.f));
     this->_graphic.setCoinAmount(player.id, player.coins_collected);
@@ -160,10 +161,17 @@ void jetpack::Client::Program::_getServerMessage() {
         } catch (PayloadException &) {
             throw GetMessageException("Payload error");
         }
-        if (payload.dataId == PayloadType_t::START)
+        if (payload.dataId == PayloadType_t::START) {
+            this->_sendInputBool = true;
             this->_graphic.switchToGame();
-        else
-            this->_handleMessageFromServer(payload);
+            continue;
+        }
+        if (payload.dataId == PayloadType_t::ENDOFGAME) {
+            this->_sendInputBool = false;
+            this->_graphic.switchToDeath();
+            continue;
+        }
+        this->_handleMessageFromServer(payload);
     }
 }
 
@@ -242,7 +250,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             }
             struct pollfd pfd;
             pfd.fd = socketFd;
-            pfd.events = POLLIN;
+            pfd.events = POLLIN | POLLOUT;
             int pollResult = poll(&pfd, 1, 10);
 
             if (pollResult < 0) {
@@ -322,6 +330,7 @@ void jetpack::Client::Program::_sendStartEvent() {
         this->_logger.log("Cannot send username: not connected to server");
         return;
     }
+    std::cout << "Sending start event" << std::endl;
     Header_t header = generateHeader(1);
     auto valueHeaderBigEndian = htons(header.rawData);
     Payload_t payload = generatePayload(1, 14);
@@ -334,7 +343,8 @@ void jetpack::Client::Program::_sendPlayerInput() {
     this->_communicationMutex.lock();
     this->_userInteractionMutex.lock();
     try {
-        if (this->_socket.getSocketFd() != -1) {
+
+        if (this->_socket.getSocketFd() != -1 && this->_sendInputBool == true) {
             if (this->_lastUserInteraction == jetpack::Client::UP)
                 this->_sendUpEvent();
             if (this->_lastUserInteraction == jetpack::Client::NO_INTERACTION)
@@ -354,8 +364,10 @@ void jetpack::Client::Program::_sendPlayerInput() {
 void jetpack::Client::Program::_sendStartInput() {
     try {
         if (this->_socket.getSocketFd() != -1) {
-            if (this->_startGameInteraction == jetpack::Client::START)
+            if (this->_startGameInteraction == jetpack::Client::START) {
                 this->_sendStartEvent();
+                this->_startGameInteraction = jetpack::Client::NOTHING;
+            }
         }
     } catch (const Socket::SocketError &e) {
         // std::cerr << "Error sending player input: " << e.what() << std::endl;

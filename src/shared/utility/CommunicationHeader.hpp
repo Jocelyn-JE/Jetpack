@@ -25,6 +25,9 @@ enum PayloadType_t {
     HEALTHCHECK = 15,
     JETPACK_FORCE = 16,
     VELOCITY_LIMITS = 17,
+    GETNBPLAYER = 18,
+    NBPLAYER = 19,
+    ENDOFGAME = 20,
     INVALID
 };
 

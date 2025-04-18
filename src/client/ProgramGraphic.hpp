@@ -37,6 +37,7 @@ class Program {
     StartGame_s _startGameInteraction =
         StartGame_s::NOTHING;
     bool _isChangeUsername = false;
+    bool _sendInputBool = false;
 
     Auth _auth;
     jetpack::Logger &_logger;

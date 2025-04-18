@@ -18,6 +18,8 @@ void jetpack::Client::Graphic::display() {
         this->_game.display(this->_window, this->_posCoin, this->_posLaser);
         for (auto &s : this->_listPlayers)
             s.second.first->display(this->_window);
+        if (this->_isEndGame)
+            this->_endGame.display(this->_window);
     }
     this->_posMutex.unlock();
     this->_window.display();
@@ -48,6 +50,8 @@ void jetpack::Client::Graphic::compute() {
                 s.second.first->id)
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
         }
+        if (this->_isEndGame)
+            this->_endGame.compute(this->_getIdWithAuth(), this->_listPlayers);
     }
     this->_posMutex.unlock();
 }
@@ -104,9 +108,21 @@ void jetpack::Client::Graphic::addNewPlayer(unsigned int id,
     this->_posMutex.unlock();
 }
 
+void jetpack::Client::Graphic::setPlayerStatus(unsigned int id, bool isDead) {
+    this->_listPlayers.at(id).first->setPlayerStatus(isDead);
+}
+
 void jetpack::Client::Graphic::switchToGame() { this->_windowType = GAME; }
 
-void jetpack::Client::Graphic::switchToMenu() { this->_windowType = MENU; }
+void jetpack::Client::Graphic::switchToMenu() {
+    this->_isEndGame = false;
+    this->_windowType = MENU;
+}
+
+void jetpack::Client::Graphic::switchToDeath() {
+    this->_endGame.resetEndGameClock();
+    this->_isEndGame = true;
+}
 
 void jetpack::Client::Graphic::serverError() {
     this->_posMutex.lock();
@@ -134,7 +150,8 @@ jetpack::Client::Graphic::Graphic(
       _getIdWithAuth(getIdWithAuth),
       _menu(changeUsername, getUsername, getSocketSettings, sendSocketSetting,
             getIdWithAuth, getIsConnectedWithAuth, sendStartGame),
-      _game(sendUserInteraction) {
+      _game(sendUserInteraction),
+      _endGame(_switchToMenuFct) {
     this->_windowType = MENU;
     this->_window.setFramerateLimit(144);
 }
