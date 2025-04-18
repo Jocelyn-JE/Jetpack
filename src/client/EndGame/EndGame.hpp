@@ -2,11 +2,14 @@
 // Created by roussierenoa on 4/18/25.
 //
 
-#ifndef ENDGAME_HPP
-#define ENDGAME_HPP
+#ifndef SRC_CLIENT_ENDGAME_ENDGAME_HPP_
+#define SRC_CLIENT_ENDGAME_ENDGAME_HPP_
 
 #include <functional>
 #include <memory>
+#include <map>
+#include <string>
+#include <utility>
 #include <SFML/Graphics.hpp>
 #include "Player/PlayerGraphic.hpp"
 
@@ -21,19 +24,19 @@ class EndGame {
         std::function<void()> &_switchToMenu;
 
  public:
-
         void resetEndGameClock();
 
         void display(sf::RenderWindow &window);
 
-        void compute(int id, const std::map<unsigned int, std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer);
+        void compute(int id, const std::map<unsigned int,
+            std::pair<std::unique_ptr<Player>, sf::Vector2f>> &listPlayer);
 
-        EndGame(std::function<void()> &switchToMenu);
+        explicit EndGame(std::function<void()> &switchToMenu);
 
         ~EndGame();
 };
-}
+}  // namespace jetpack::Client
 
 
 
-#endif //ENDGAME_HPP
+#endif  // SRC_CLIENT_ENDGAME_ENDGAME_HPP_

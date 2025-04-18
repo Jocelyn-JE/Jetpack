@@ -343,7 +343,6 @@ void jetpack::Client::Program::_sendPlayerInput() {
     this->_communicationMutex.lock();
     this->_userInteractionMutex.lock();
     try {
-
         if (this->_socket.getSocketFd() != -1 && this->_sendInputBool == true) {
             if (this->_lastUserInteraction == jetpack::Client::UP)
                 this->_sendUpEvent();
