@@ -78,12 +78,12 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
     payloadData = this->_controlSocket.readFromSocket(2);
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
-    if (payloadHeader.dataId >= INVALID) return this->closeAndDisconnect();
+    if (payloadHeader.dataId >= INVALID) return this->badInput();
     if (payloadHeader.dataId == PLAYER_INPUT)
         return this->handleInput(payloadData, game);
     if (payloadHeader.dataId == START)
         return this->handleStart(payloadData, server);
-    return this->closeAndDisconnect();
+    return this->badInput();
 }
 
 bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
@@ -118,7 +118,7 @@ bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,
     // Parse the payload data for the START command
     if (payloadData.size() < static_cast<size_t>(getPayloadSize(START))) {
         std::cerr << "Invalid START payload size" << std::endl;
-        return this->closeAndDisconnect();
+        return this->badInput();
     }
 
     // Example: Extracting some data from the payload
@@ -130,7 +130,7 @@ bool jetpack::server::Client::handleStart(std::vector<uint8_t> payloadData,
         server.setToRun();
     } else {
         std::cerr << "Invalid start flag value" << std::endl;
-        return this->closeAndDisconnect();
+        return this->badInput();
     }
 
     return false;

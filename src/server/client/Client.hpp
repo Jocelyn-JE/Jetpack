@@ -17,7 +17,6 @@
 
 #include "Game.hpp"
 #include "GameServer.hpp"
-#include "Server.hpp"
 #include "Socket.hpp"
 
 namespace jetpack::server {
