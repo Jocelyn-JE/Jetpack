@@ -91,10 +91,13 @@ jetpack::Header_t getHeader(jetpack::Logger &logger, Socket &socket) {
     std::vector<unsigned char> headerBuffer;
     headerBuffer.resize(2);
     headerBuffer = socket.readFromSocket(2);
-    if (headerBuffer.empty() ||
-        headerBuffer == std::vector<unsigned char>(2, 0)) {
-        logger.log("Header Error or Server disconnected");
+    if (headerBuffer.empty()) {
+        logger.log("Server disconnected");
         throw HeaderException("Incomplete Header size = 0");
+    }
+    if (headerBuffer == std::vector<unsigned char>(2, 0)) {
+        logger.log("Header Error 2 bytes == 0");
+        throw HeaderException("Incomplete Header 2 bytes == 0");
     }
     if (headerBuffer.size() < 2) {
         logger.log("Incomplete Header");

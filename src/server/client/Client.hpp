@@ -54,7 +54,7 @@ class Client {
     bool handleStart(std::vector<uint8_t> payloadData,  jetpack::server::Server &server);
 
  private:
-    bool closeAndDisconnect();
+    bool badInput();
     unsigned int _id;
 };
 }  // namespace server

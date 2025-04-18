@@ -35,7 +35,7 @@ class Game {
 
     void _handleKeyRelease(const sf::Event &event);
 
-public:
+ public:
     void setCoinsAmount(unsigned int coinsAmount);
 
     void display(sf::RenderWindow &window, std::vector<sf::Vector2f> _posCoin,

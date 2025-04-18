@@ -10,5 +10,9 @@ enum UserInteractions_s {
     UP,
     NO_INTERACTION,
 };
+enum StartGame_s {
+    START,
+    NOTHING,
+};
 }
 #endif  // SRC_CLIENT_USERINTERACTIONS_HPP_
