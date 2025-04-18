@@ -2,6 +2,8 @@
 #include <cstring>
 #include <string>
 
+#include "Coin.hpp"
+
 typedef struct gameplayer {
     int id;
     char username[20];
@@ -11,6 +13,7 @@ typedef struct gameplayer {
     bool is_dead;
     bool is_jetpack_on;
     bool host;
+    std::vector<std::shared_ptr<coinsPos_t>> coins;
 
     gameplayer(int _id = 0, const std::string &_username = "")
         : id(_id),
@@ -19,7 +22,8 @@ typedef struct gameplayer {
           coins_collected(0),
           is_dead(false),
           is_jetpack_on(false),
-          host(false) {
+          host(false),
+          coins() {
         std::strncpy(username, _username.c_str(), sizeof(username) - 1);
         username[sizeof(username) - 1] = '\0';
     }
