@@ -43,14 +43,15 @@ class Graphic {
 
     std::function<int()> &_getIdWithAuth;
 
-    Menu _menu;
-    Game _game;
-    EndGame _endGame;
 
     std::function<void()> _switchToMenuFct =
     ([this]() {
         this->switchToMenu();
     });
+
+    Menu _menu;
+    Game _game;
+    EndGame _endGame;
 
  public:
     void display();
