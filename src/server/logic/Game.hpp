@@ -42,8 +42,8 @@ class Game {
     bool loadMap(const std::string& filename);
     // Initialize ncurses map
     void initNcursesMap();
-
- public:
+    
+    public:
     // Constructor
     // Initializes the game with the given game data
     // The game data contains the players, coins, obstacles, and other game
@@ -53,6 +53,8 @@ class Game {
     void update(float deltaTime);
     // Loads the map
     void start(const std::string& mapFile);
+    // Check if the game has ended
+    bool checkEndgame();
     // Stops the game
     void stop();
     // Main game loop standalone

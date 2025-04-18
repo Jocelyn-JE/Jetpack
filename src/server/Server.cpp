@@ -51,6 +51,12 @@ int jetpack::server::Server::runServer(Parser &parser) {
                 server.sendToAllClients(server.createStartGamePacket());
                 server._game->start(server._gameData->filename);
             }
+            server._setToEnd = server._game->checkEndgame();
+            std::cerr << "############setToEnd: " << server._setToEnd << std::endl;
+            if (server._setToEnd && server._game->isStarted()) {
+                server.sendToAllClients(server.createEndgamePacket());
+                exit(0);
+            }
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
                 server.sendCoinListsToPlayers();
@@ -246,6 +252,17 @@ std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
     packet.addPayloadHeader(0, PayloadType_t::START);
     const auto &packetData = packet.getPacket();
     std::cerr << "Connection Packet Binary for game start: ";
+    for (const auto &byte : packetData) {
+        std::cerr << std::bitset<8>(byte) << " ";
+    }
+    return packet.getPacket();
+}
+
+std::vector<uint8_t> jetpack::server::Server::createEndgamePacket() {
+    jetpack::server::Packet packet(1);
+    packet.addPayloadHeader(0, PayloadType_t::ENDOFGAME);
+    const auto &packetData = packet.getPacket();
+    std::cerr << "Connection Packet Binary for endgame: ";
     for (const auto &byte : packetData) {
         std::cerr << std::bitset<8>(byte) << " ";
     }

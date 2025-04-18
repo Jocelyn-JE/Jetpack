@@ -61,6 +61,7 @@ class Server {
     std::vector<uint8_t> createCoinListPacket(
         const std::vector<std::shared_ptr<coinsPos_t>> &coins);
     std::vector<uint8_t> createObstacleListPacket(void);
+    std::vector<uint8_t> createEndgamePacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
@@ -68,6 +69,7 @@ class Server {
     std::shared_ptr<GameData> _gameData;
     std::shared_ptr<Game> _game;
     bool _setToRun = false;
+    bool _setToEnd = false;
 };
 }  // namespace server
 }  // namespace jetpack
