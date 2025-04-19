@@ -16,9 +16,12 @@ void jetpack::Client::Graphic::display() {
     if (this->_windowType == MENU) this->_menu.display(this->_window);
     if (this->_windowType == GAME) {
         this->_game.display(this->_window, this->_posCoin, this->_posLaser);
-        for (auto &s : this->_listPlayers)
-            s.second.first->display(this->_window);
-        if (this->_isEndGame) this->_endGame.display(this->_window);
+        for (auto &s : this->_listPlayers) {
+            if (!s.second.first->isDead())
+                s.second.first->display(this->_window);
+        }
+        if (this->_isEndGame)
+            this->_endGame.display(this->_window);
     }
     this->_posMutex.unlock();
     this->_window.display();
@@ -50,7 +53,7 @@ void jetpack::Client::Graphic::compute() {
                 this->_game.setCoinsAmount(s.second.first->getCoinsAmount());
         }
         if (this->_isEndGame)
-            this->_endGame.compute(this->_getIdWithAuth(), this->_listPlayers);
+            this->_endGame.compute();
     }
     this->_posMutex.unlock();
 }
@@ -120,6 +123,8 @@ void jetpack::Client::Graphic::switchToMenu() {
 
 void jetpack::Client::Graphic::switchToDeath() {
     this->_endGame.resetEndGameClock();
+    this->_endGame.setResult(this->_getIdWithAuth(), this->_listPlayers);
+    this->_listPlayers.clear();
     this->_isEndGame = true;
 }
 

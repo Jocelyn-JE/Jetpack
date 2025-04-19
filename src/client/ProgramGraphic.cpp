@@ -145,8 +145,8 @@ void jetpack::Client::Program::_getServerMessage() {
     Header_t header{};
     try {
         header = getHeader(this->_logger, this->_socket);
-    } catch (HeaderException &) {
-        throw GetMessageException("Header error");
+    } catch (HeaderException &e) {
+        throw GetMessageException("Header error: " + std::string(e.what()));
     }
     if (header.nbrPayload == 0) {
         this->_logger.log("No payload");
@@ -234,7 +234,6 @@ void jetpack::Client::Program::_sniffANetwork() {
             int socketFd = this->_socket.getSocketFd();
 
             if (socketFd == -1 || this->_manualReco) {
-                this->_graphic.switchToMenu();
                 this->_manualReco = false;
                 this->_graphic.serverError();
                 this->_auth.resetAuth();
@@ -270,7 +269,12 @@ void jetpack::Client::Program::_sniffANetwork() {
                 try {
                     try {
                         this->_getServerMessage();
-                    } catch (GetMessageException &) {
+                    } catch (GetMessageException &e) {
+                        std::cerr << "Error getting message from server" +
+                            std::string(e.what()) << std::endl;
+                        this->_manualReco = true;
+                        this->_graphic.serverError();
+                        this->_auth.resetAuth();
                         continue;
                     }
                     this->_graphic.serverOK();
@@ -329,7 +333,6 @@ void jetpack::Client::Program::_sendStartEvent() {
         this->_logger.log("Cannot send username: not connected to server");
         return;
     }
-    std::cout << "Sending start event" << std::endl;
     Header_t header = generateHeader(1);
     auto valueHeaderBigEndian = htons(header.rawData);
     Payload_t payload = generatePayload(1, 14);
@@ -342,18 +345,18 @@ void jetpack::Client::Program::_sendPlayerInput() {
     this->_communicationMutex.lock();
     this->_userInteractionMutex.lock();
     try {
-        if (this->_socket.getSocketFd() != -1 && this->_sendInputBool == true) {
+        if (this->_socket.getSocketFd() != -1 && this->_sendInputBool) {
             if (this->_lastUserInteraction == jetpack::Client::UP)
                 this->_sendUpEvent();
             if (this->_lastUserInteraction == jetpack::Client::NO_INTERACTION)
                 this->_sendEmptyEvent();
         }
     } catch (const Socket::SocketError &e) {
-        // std::cerr << "Error sending player input: " << e.what() << std::endl;
-        // try {
-        //     this->_manualReco = true;
-        // } catch (...) {
-        // }
+        std::cerr << "Error sending player input: " << e.what() << std::endl;
+        try {
+            this->_manualReco = true;
+        } catch (...) {
+        }
     }
     this->_userInteractionMutex.unlock();
     this->_communicationMutex.unlock();
@@ -368,11 +371,11 @@ void jetpack::Client::Program::_sendStartInput() {
             }
         }
     } catch (const Socket::SocketError &e) {
-        // std::cerr << "Error sending player input: " << e.what() << std::endl;
-        // try {
-        //     this->_manualReco = true;
-        // } catch (...) {
-        // }
+        std::cerr << "Error sending player input: " << e.what() << std::endl;
+        try {
+            this->_manualReco = true;
+        } catch (...) {
+        }
     }
 }
 
