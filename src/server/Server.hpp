@@ -45,11 +45,25 @@ class Server {
     bool isClosed();
     template <typename T>
     void sendToAllClients(T data) {
+        if (this->_debug) {
+            std::cerr << ">>";
+            for (const auto &byte : data) {
+                std::cerr << std::bitset<8>(byte) << " ";
+            }
+        } else
+            std::this_thread::sleep_for(std::chrono::microseconds(1500));
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
     template <typename T>
     void sendToAllClients(std::vector<T> data) {
+        if (this->_debug) {
+            std::cerr << ">>";
+            for (const auto &byte : data) {
+                std::cerr << std::bitset<8>(byte) << " ";
+            }
+        } else
+            std::this_thread::sleep_for(std::chrono::microseconds(1500));
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
@@ -68,6 +82,7 @@ class Server {
     unsigned int _nextClientId;
     std::shared_ptr<GameData> _gameData;
     std::shared_ptr<Game> _game;
+    bool _debug = false;
     bool _setToRun = false;
     bool _setToEnd = false;
 };

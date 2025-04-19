@@ -28,7 +28,7 @@ namespace server {
 class Client {
  public:
     Client() = delete;
-    Client(int fd, struct sockaddr_in address, unsigned int id);
+    Client(int fd, struct sockaddr_in address, unsigned int id, bool debug = false);
     ~Client();
     Socket _controlSocket;
     // handlePayload returns true if the client should be disconnected
@@ -58,6 +58,7 @@ class Client {
  private:
     bool badInput();
     unsigned int _id;
+    bool _debug;
 };
 }  // namespace server
 }  // namespace jetpack

@@ -28,8 +28,6 @@ Payload_t Packet::createPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload;
     payload.dataCount = dataCount;
     payload.dataId = dataId;
-    std::cerr << "Payload header created: dataCount = " << dataCount
-              << ", dataId = " << static_cast<int>(dataId) << std::endl;
     return payload;
 }
 
@@ -40,11 +38,6 @@ Packet::Packet(uint8_t nbrPayload) {
     uint16_t headerBigEndian = htons(raw);
     this->_packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
     this->_packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
-    std::cerr << "hex packed: ";
-    for (const auto& byte : this->_packet) {
-        std::cerr << std::hex << std::uppercase << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << ' ';
-    }
     std::cerr << std::dec << std::endl;
 }
 
