@@ -220,7 +220,7 @@ std::vector<uint8_t> jetpack::server::Server::createObstacleListPacket() {
             packet.addData(static_cast<double>(_gameData->obstacles[i]->y_pos));
         }
     }
-    //const auto &packetData = packet.getPacket();
+    // const auto &packetData = packet.getPacket();
 
     return packet.getPacket();
 }
@@ -232,7 +232,6 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     packet.addData(static_cast<uint64_t>(id));
     packet.addData(static_cast<uint64_t>(gameSpeed));
     const auto &packetData = packet.getPacket();
-
 
     return packetData;
 }

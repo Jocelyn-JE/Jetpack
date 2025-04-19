@@ -28,7 +28,8 @@ namespace server {
 class Client {
  public:
     Client() = delete;
-    Client(int fd, struct sockaddr_in address, unsigned int id, bool debug = false);
+    Client(int fd, struct sockaddr_in address, unsigned int id,
+           bool debug = false);
     ~Client();
     Socket _controlSocket;
     // handlePayload returns true if the client should be disconnected

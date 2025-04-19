@@ -48,9 +48,7 @@ bool jetpack::server::Client::handlePayload(std::string commandLine) {
     return false;
 }
 
-bool jetpack::server::Client::badInput() {
-    return false;
-}
+bool jetpack::server::Client::badInput() { return false; }
 
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
                                             std::shared_ptr<Game> game,
@@ -66,21 +64,21 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
         return this->badInput();
     }
     if (_debug) {
-        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< From ID: "
-                << _id << std::endl;
+        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< From ID: " << _id
+                  << std::endl;
         std::cerr << "Header: magic1 = " << header.magic1
-                << ", magic2 = " << header.magic2
-                << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
-                << std::endl;
+                  << ", magic2 = " << header.magic2
+                  << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
+                  << std::endl;
     } else
         std::this_thread::sleep_for(std::chrono::microseconds(300));
     payloadData = this->_controlSocket.readFromSocket(2);
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
     if (_debug) {
-        std::cerr << "Payload: dataId = " << static_cast<int>(payloadHeader.dataId)
-                << ", dataCount = " << static_cast<int>(payloadHeader.dataCount)
-                << std::endl;
+        std::cerr << "Payload: dataId = "
+                  << static_cast<int>(payloadHeader.dataId) << ", dataCount = "
+                  << static_cast<int>(payloadHeader.dataCount) << std::endl;
     } else
         std::this_thread::sleep_for(std::chrono::microseconds(300));
     if (payloadHeader.dataId >= INVALID) return this->badInput();
@@ -101,7 +99,7 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
         std::cerr << "Handling input from player: ";
         for (const auto &byte : payloadData2) {
             std::cerr << std::hex << std::uppercase << std::setw(2)
-                    << std::setfill('0') << static_cast<int>(byte) << " ";
+                      << std::setfill('0') << static_cast<int>(byte) << " ";
             std::cerr << std::dec;
         }
     } else
