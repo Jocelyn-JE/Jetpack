@@ -3,6 +3,7 @@
 //
 
 #include "EndGame.hpp"
+
 #include <map>
 #include <string>
 #include <utility>
@@ -70,7 +71,8 @@ void jetpack::Client::EndGame::compute() {
 jetpack::Client::EndGame::EndGame(std::function<void()> &switchToMenu) :
     _switchToMenu(switchToMenu) {
     if (!this->_font.loadFromFile("src/client/assets/JetpackFont.ttf")) {
-        throw std::runtime_error("Erreur : Impossible de charger la police"
+        throw std::runtime_error(
+            "Erreur : Impossible de charger la police"
             "JetpackFont.ttf");
     }
     this->_text.setCharacterSize(50);
@@ -79,5 +81,4 @@ jetpack::Client::EndGame::EndGame(std::function<void()> &switchToMenu) :
     this->_text.setFont(this->_font);
 }
 
-jetpack::Client::EndGame::~EndGame() {
-}
+jetpack::Client::EndGame::~EndGame() {}

@@ -78,7 +78,7 @@ INCLUDES			=	-I ./src/shared/parsing -I ./src/shared/socket		\
 						-I ./src/server/logic	-I ./src/server/
 
 CPPFLAGS			+=	-std=c++20 -Wall -Wextra -Werror $(INCLUDES) 		\
- 						-L./ -ljetpack -O2 -g  -lstdc++ -lncurses
+ 						-L./ -ljetpack -O3 -flto  -lstdc++ -lncurses
 
 CPPTESTFLAGS		=	--coverage -lcriterion $(CPPFLAGS) $(SFML_FLAGS)
 

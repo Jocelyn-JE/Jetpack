@@ -35,6 +35,7 @@ class Parser {
     std::string getServerUsage();
     std::string getClientUsage();
     void parseServerFlags(GameData& data);
+    bool hasDebugFlag() const;
 
  private:
     std::vector<std::string> _args;

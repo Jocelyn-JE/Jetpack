@@ -12,8 +12,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <EndGame/EndGame.hpp>
 
+#include <EndGame/EndGame.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "Coin/CoinGraphic.hpp"
@@ -43,11 +43,8 @@ class Graphic {
 
     std::function<int()> &_getIdWithAuth;
 
-
     std::function<void()> _switchToMenuFct =
-    ([this]() {
-        this->switchToMenu();
-    });
+        ([this]() { this->switchToMenu(); });
 
     Menu _menu;
     Game _game;

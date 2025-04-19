@@ -107,6 +107,22 @@ void Game::checkCollisions() {
     }
 }
 
+bool Game::checkEndgame() {
+    int alivePlayers = 0;
+    {
+        std::lock_guard<std::mutex> lock(this->gameData->dataMutex);
+        for (const auto& [_, player] : this->gameData->players) {
+            if (!player->is_dead) {
+                alivePlayers++;
+            }
+        }
+    }
+    if (alivePlayers <= 1) {
+        return true;
+    }
+    return false;
+}
+
 void Game::stop() {
     this->gameData->isRunning = false;
     if (this->mapWin) {
