@@ -70,8 +70,9 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
                   << ", magic2 = " << header.magic2
                   << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
                   << std::endl;
-    } else
+    } else {
         std::this_thread::sleep_for(std::chrono::microseconds(300));
+    }
     payloadData = this->_controlSocket.readFromSocket(2);
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
@@ -79,8 +80,9 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
         std::cerr << "Payload: dataId = "
                   << static_cast<int>(payloadHeader.dataId) << ", dataCount = "
                   << static_cast<int>(payloadHeader.dataCount) << std::endl;
-    } else
+    } else {
         std::this_thread::sleep_for(std::chrono::microseconds(300));
+    }
     if (payloadHeader.dataId >= INVALID) return this->badInput();
     if (payloadHeader.dataId == PLAYER_INPUT)
         return this->handleInput(payloadData, game);
@@ -102,8 +104,9 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
                       << std::setfill('0') << static_cast<int>(byte) << " ";
             std::cerr << std::dec;
         }
-    } else
+    } else {
         std::this_thread::sleep_for(std::chrono::microseconds(800));
+    }
     std::cerr << std::dec << std::endl;
     bool jetpackOn = static_cast<bool>(payloadData2[0]);
     if (jetpackOn) {

@@ -50,8 +50,9 @@ class Server {
             for (const auto &byte : data) {
                 std::cerr << std::bitset<8>(byte) << " ";
             }
-        } else
+        } else {
             std::this_thread::sleep_for(std::chrono::microseconds(1500));
+        }
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
@@ -62,8 +63,9 @@ class Server {
             for (const auto &byte : data) {
                 std::cerr << std::bitset<8>(byte) << " ";
             }
-        } else
+        } else {
             std::this_thread::sleep_for(std::chrono::microseconds(1500));
+        }
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
