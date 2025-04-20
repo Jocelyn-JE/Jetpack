@@ -28,8 +28,6 @@ Payload_t Packet::createPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload;
     payload.dataCount = dataCount;
     payload.dataId = dataId;
-    std::cerr << "Payload header created: dataCount = " << dataCount
-              << ", dataId = " << static_cast<int>(dataId) << std::endl;
     return payload;
 }
 
@@ -37,24 +35,18 @@ Packet::Packet(uint8_t nbrPayload) {
     Header_t header = createPacketHeader(nbrPayload);
     uint16_t raw = ((header.magic1 & 0x3F) << 10) |
                    ((header.magic2 & 0x3F) << 4) | (header.nbrPayload & 0xF);
-    // uint16_t headerBigEndian = htons(raw);
-    this->_packet.push_back(static_cast<uint8_t>(raw >> 8));
-    this->_packet.push_back(static_cast<uint8_t>(raw & 0xFF));
-    std::cerr << "hex packed: ";
-    for (const auto& byte : this->_packet) {
-        std::cerr << std::hex << std::uppercase << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << ' ';
-    }
+    uint16_t headerBigEndian = htons(raw);
+    this->_packet.push_back(static_cast<uint8_t>(headerBigEndian & 0xFF));
+    this->_packet.push_back(static_cast<uint8_t>(headerBigEndian >> 8));
     std::cerr << std::dec << std::endl;
 }
 
 void Packet::addPayloadHeader(uint16_t dataCount, uint8_t dataId) {
     Payload_t payload = createPayloadHeader(dataCount, dataId);
-    uint16_t raw =
-        ((payload.dataCount & 0x3FF) << 6) | ((payload.dataId & 0x3F) & 0Xf);
-    // uint16_t payloadBigEndian = htons(raw);
-    this->_packet.push_back(static_cast<uint8_t>(raw >> 8));
-    this->_packet.push_back(static_cast<uint8_t>(raw & 0xFF));
+    uint16_t raw = ((payload.dataCount & 0x3FF) << 6) | (payload.dataId & 0x3F);
+    uint16_t payloadBigEndian = htons(raw);
+    this->_packet.push_back(static_cast<uint8_t>(payloadBigEndian & 0xFF));
+    this->_packet.push_back(static_cast<uint8_t>(payloadBigEndian >> 8));
 }
 
 void Packet::addData(uint64_t data) {

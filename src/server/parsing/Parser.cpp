@@ -87,6 +87,10 @@ size_t jetpack::Parser::findFlagIndex(const std::string& flag) const {
     return it - _args.begin();
 }
 
+bool jetpack::Parser::hasDebugFlag() const {
+    return std::find(_args.begin(), _args.end(), "-d") != _args.end();
+}
+
 void jetpack::Parser::parseServerFlags(GameData& data) {
     if (this->_argc == 2 && this->_args[1] == "-help") {
         std::cerr << getServerUsage() << std::endl;

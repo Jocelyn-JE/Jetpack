@@ -51,10 +51,16 @@ int jetpack::server::Server::runServer(Parser &parser) {
                 server.sendToAllClients(server.createStartGamePacket());
                 server._game->start(server._gameData->filename);
             }
+            server._setToEnd = server._game->checkEndgame();
             if (server._game->isStarted()) {
                 server.sendToAllClients(server.createPlayerListPacket());
                 server.sendCoinListsToPlayers();
                 server.sendToAllClients(server.createObstacleListPacket());
+            }
+            if (server._setToEnd && server._game->isStarted()) {
+                server.sendToAllClients(server.createEndgamePacket());
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                return 0;
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(25));
         }
@@ -79,7 +85,6 @@ void jetpack::server::Server::updateSockets() {
         }
         if (_socketPollList[i].revents & POLLIN && i != 0) {
             buffer = _clients[i - 1]->_controlSocket.readFromSocket(2);
-            std::cerr << "Buffer size: " << buffer.size() << std::endl;
             if (_clients[i - 1]->handlePayload(buffer, _game, *this)) {
                 _game->delPlayer(_clients[i - 1]->getId());
                 this->handleDisconnection(i);
@@ -101,7 +106,8 @@ jetpack::server::Server::Server(Parser &parser)
       _socketPollList(_serverSocket.getSocketFd()),
       _nextClientId(0),
       _gameData(std::make_shared<GameData>()),
-      _game(std::make_shared<Game>(_gameData)) {
+      _game(std::make_shared<Game>(_gameData)),
+      _debug(parser.hasDebugFlag()) {
     parser.parseServerFlags(*_gameData);
     _serverSocket.bindSocket(_gameData->port);
     _serverSocket.listenSocket(LISTEN_BACKLOG);
@@ -137,7 +143,7 @@ void jetpack::server::Server::handleConnection() {
                &client_addr_size);
 
     this->_clients.push_back(std::make_unique<Client>(
-        client_socket, client_addr, this->_nextClientId));
+        client_socket, client_addr, this->_nextClientId, _debug));
     this->_nextClientId++;
     this->_socketPollList.addSocket(client_socket, POLLIN);
     // std::cerr << inet_ntoa(client_addr.sin_addr) << ":"
@@ -214,29 +220,18 @@ std::vector<uint8_t> jetpack::server::Server::createObstacleListPacket() {
             packet.addData(static_cast<double>(_gameData->obstacles[i]->y_pos));
         }
     }
-    const auto &packetData = packet.getPacket();
-    std::cerr << "Connection Packet Binary for obstacles: ";
-    for (const auto &byte : packetData) {
-        std::cerr << std::bitset<8>(byte) << " ";
-    }
+    // const auto &packetData = packet.getPacket();
+
     return packet.getPacket();
 }
 
 std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
     size_t id, size_t gameSpeed) {
     jetpack::server::Packet packet(1);
-    // packet.add(std::vector<uint64_t>{id, gameSpeed}, PayloadType_t::SIZE_T);
     packet.addPayloadHeader(2, PayloadType_t::SIZE_T);
     packet.addData(static_cast<uint64_t>(id));
     packet.addData(static_cast<uint64_t>(gameSpeed));
     const auto &packetData = packet.getPacket();
-
-    // Debug: Print binary representation of the packet
-    std::cerr << "Connection Packet Binary: ";
-    for (const auto &byte : packetData) {
-        std::cerr << std::bitset<8>(byte) << " ";
-    }
-    std::cerr << std::endl;
 
     return packetData;
 }
@@ -244,11 +239,12 @@ std::vector<uint8_t> jetpack::server::Server::createConnectionPacket(
 std::vector<uint8_t> jetpack::server::Server::createStartGamePacket(void) {
     jetpack::server::Packet packet(1);
     packet.addPayloadHeader(0, PayloadType_t::START);
-    const auto &packetData = packet.getPacket();
-    std::cerr << "Connection Packet Binary for game start: ";
-    for (const auto &byte : packetData) {
-        std::cerr << std::bitset<8>(byte) << " ";
-    }
+    return packet.getPacket();
+}
+
+std::vector<uint8_t> jetpack::server::Server::createEndgamePacket() {
+    jetpack::server::Packet packet(1);
+    packet.addPayloadHeader(0, PayloadType_t::ENDOFGAME);
     return packet.getPacket();
 }
 

@@ -29,8 +29,8 @@ static bool clientDisconnect(jetpack::server::Client const &client) {
 // ----------------------------------------------
 
 jetpack::server::Client::Client(int fd, struct sockaddr_in address,
-                                unsigned int id)
-    : _controlSocket(fd, address), _id(id) {}
+                                unsigned int id, bool debug)
+    : _controlSocket(fd, address), _id(id), _debug(debug) {}
 
 jetpack::server::Client::~Client() {
     std::cerr << "Destroying client" << std::endl;
@@ -48,19 +48,11 @@ bool jetpack::server::Client::handlePayload(std::string commandLine) {
     return false;
 }
 
-bool jetpack::server::Client::badInput() {
-    std::cerr << "Client sent garbage data" << std::endl;
-    return false;
-}
+bool jetpack::server::Client::badInput() { return false; }
 
 bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
                                             std::shared_ptr<Game> game,
                                             jetpack::server::Server &server) {
-    for (const auto &byte : payload) {
-        std::cerr << std::hex << std::uppercase << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << " ";
-        std::cerr << std::dec;
-    }
     Header_t header;
     Payload_t payloadHeader;
     std::vector<uint8_t> payloadData;
@@ -71,18 +63,26 @@ bool jetpack::server::Client::handlePayload(std::vector<uint8_t> payload,
     if (header.magic1 != 42 || header.magic2 != 42) {
         return this->badInput();
     }
-    std::cerr << "------------------------------------------------From ID: "
-              << _id << std::endl;
-    std::cerr << "Header: magic1 = " << header.magic1
-              << ", magic2 = " << header.magic2
-              << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
-              << std::endl;
+    if (_debug) {
+        std::cerr << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< From ID: " << _id
+                  << std::endl;
+        std::cerr << "Header: magic1 = " << header.magic1
+                  << ", magic2 = " << header.magic2
+                  << ", nbrPayload = " << static_cast<int>(header.nbrPayload)
+                  << std::endl;
+    } else {
+        std::this_thread::sleep_for(std::chrono::microseconds(300));
+    }
     payloadData = this->_controlSocket.readFromSocket(2);
     payloadHeader.rawData = (static_cast<uint16_t>(payloadData[0]) << 8) |
                             (static_cast<uint16_t>(payloadData[1]));
-    std::cerr << "Payload: dataId = " << static_cast<int>(payloadHeader.dataId)
-              << ", dataCount = " << static_cast<int>(payloadHeader.dataCount)
-              << std::endl;
+    if (_debug) {
+        std::cerr << "Payload: dataId = "
+                  << static_cast<int>(payloadHeader.dataId) << ", dataCount = "
+                  << static_cast<int>(payloadHeader.dataCount) << std::endl;
+    } else {
+        std::this_thread::sleep_for(std::chrono::microseconds(300));
+    }
     if (payloadHeader.dataId >= INVALID) return this->badInput();
     if (payloadHeader.dataId == PLAYER_INPUT)
         return this->handleInput(payloadData, game);
@@ -97,16 +97,18 @@ bool jetpack::server::Client::handleInput(std::vector<uint8_t> payloadData,
 
     payloadData2 =
         this->_controlSocket.readFromSocket(getPayloadSize(PLAYER_INPUT));
-
-    std::cerr << "Handling input from player: ";
-    for (const auto &byte : payloadData2) {
-        std::cerr << std::hex << std::uppercase << std::setw(2)
-                  << std::setfill('0') << static_cast<int>(byte) << " ";
-        std::cerr << std::dec;
+    if (_debug) {
+        std::cerr << "Handling input from player: ";
+        for (const auto &byte : payloadData2) {
+            std::cerr << std::hex << std::uppercase << std::setw(2)
+                      << std::setfill('0') << static_cast<int>(byte) << " ";
+            std::cerr << std::dec;
+        }
+    } else {
+        std::this_thread::sleep_for(std::chrono::microseconds(800));
     }
     std::cerr << std::dec << std::endl;
     bool jetpackOn = static_cast<bool>(payloadData2[0]);
-    std::cerr << "Jetpack on: " << jetpackOn << std::endl;
     if (jetpackOn) {
         game->getPlayer(_id)->is_jetpack_on = true;
     } else {

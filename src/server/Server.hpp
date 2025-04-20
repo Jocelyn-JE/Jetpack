@@ -45,11 +45,27 @@ class Server {
     bool isClosed();
     template <typename T>
     void sendToAllClients(T data) {
+        if (this->_debug) {
+            std::cerr << ">>";
+            for (const auto &byte : data) {
+                std::cerr << std::bitset<8>(byte) << " ";
+            }
+        } else {
+            std::this_thread::sleep_for(std::chrono::microseconds(1500));
+        }
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
     template <typename T>
     void sendToAllClients(std::vector<T> data) {
+        if (this->_debug) {
+            std::cerr << ">>";
+            for (const auto &byte : data) {
+                std::cerr << std::bitset<8>(byte) << " ";
+            }
+        } else {
+            std::this_thread::sleep_for(std::chrono::microseconds(1500));
+        }
         for (size_t i = 0; i < this->_clients.size(); i++)
             this->_clients[i]->sendData(data);
     }
@@ -61,13 +77,16 @@ class Server {
     std::vector<uint8_t> createCoinListPacket(
         const std::vector<std::shared_ptr<coinsPos_t>> &coins);
     std::vector<uint8_t> createObstacleListPacket(void);
+    std::vector<uint8_t> createEndgamePacket(void);
     std::vector<std::unique_ptr<Client>> _clients;
     Socket _serverSocket;
     PollFdList _socketPollList;
     unsigned int _nextClientId;
     std::shared_ptr<GameData> _gameData;
     std::shared_ptr<Game> _game;
+    bool _debug = false;
     bool _setToRun = false;
+    bool _setToEnd = false;
 };
 }  // namespace server
 }  // namespace jetpack

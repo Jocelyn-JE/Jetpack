@@ -53,6 +53,8 @@ class Game {
     void update(float deltaTime);
     // Loads the map
     void start(const std::string& mapFile);
+    // Check if the game has ended
+    bool checkEndgame();
     // Stops the game
     void stop();
     // Main game loop standalone

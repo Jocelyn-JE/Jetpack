@@ -248,6 +248,7 @@ void jetpack::Client::Program::_sniffANetwork() {
             struct pollfd pfd;
             pfd.fd = socketFd;
             pfd.events = POLLIN | POLLOUT;
+            std::this_thread::sleep_for(std::chrono::microseconds(1500));
             int pollResult = poll(&pfd, 1, 10);
 
             if (pollResult < 0) {
